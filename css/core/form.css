@@ -1,0 +1,111 @@
+form {
+	clear: both;
+	font: inherit;
+}
+
+input {
+	border: 1px solid #999999;
+	font: inherit;
+	vertical-align: middle;
+	color: #000000;
+}
+
+label {
+	vertical-align: middle;
+	color: #000000;
+}
+
+textarea {
+	border: 1px solid #999999;
+	font: inherit;
+	color: #000000;
+}
+
+select {
+	border: 1px solid #999999;
+	font: inherit;
+	color: #000000;
+}
+
+#form {
+	margin: 10px auto;
+	width: 400px;
+	text-align: left;
+}
+
+#form > fieldset {
+	border: 1px solid #C0C0C0;
+	background-color: #f0f0f0;
+	margin-bottom: 20px;
+}
+
+#form > fieldset > legend {
+	font-style: italic;
+	font-size: 115%;
+}
+
+#form > ul {
+	list-style: square;
+}
+
+.fb {
+	text-align: center;
+	clear: both;
+	padding: 5px;
+	min-height: 20px;
+}
+
+.fbl {
+	text-align: right;
+	float: left;
+	width: 28%;
+	min-height: 20px;
+}
+
+.fbr {
+	text-align: left;
+	float: right;
+	width: 70%;
+	min-height: 20px;
+}
+
+.fbc {
+	text-align: justify;
+	margin-top: 5px;
+}
+
+#fbb {
+	clear: both;
+	width: 75%;
+	padding: 4px;
+	padding-top: 10px;
+	margin: auto;
+	margin-top: 20px;
+	text-align: center;
+	border-top: 1px solid #c0c0c0;
+}
+
+.valid_label {
+	color: #000000;
+}
+
+.valid_field {
+	border: 1px solid #999999;
+}
+
+.invalid_label {
+	color: #FF0000;
+	font-weight: bold;
+}
+
+.invalid_field {
+	border: 1px solid #FF0000;
+}
+
+.error_container {
+	padding: 5px;
+	margin-top: 25px;
+	clear: both;
+	border: 1px solid red;
+	text-align: center;
+}

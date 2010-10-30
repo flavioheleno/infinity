@@ -1,0 +1,17 @@
+<div class="alerta" id="mensagem">
+	<div id="alerta_titulo">
+		<strong>{confirmacao-alerta}</strong> {confirmacao-titulo}
+	</div>
+	<div id="alerta_mensagem">
+		<h2>{confirmacao-conteudo}</h2>
+		<div style="text-align: center">
+			<form title="{confirmacao-titulo}" id="form_confirmacao" action="{confirmacao-acao}" method="post" enctype="application/x-www-form-urlencoded">
+				<input type="submit" id="submit_confirmar" name="submit_confirmar" value="Confirmar" />
+				<input type="submit" id="submit_cancelar" name="submit_cancelar" value="Cancelar" />
+			</form>
+		</div>
+	</div>
+	<div id="alerta_rodape">
+		Voc&ecirc; pode clicar <a href="javascript:history.back(-1);">aqui</a> para voltar para a p&aacute;gina anterior.
+	</div>
+</div>

@@ -1,0 +1,100 @@
+#mensagem {
+	padding: 15px;
+	margin-top: 5px;
+	width: 400px;
+}
+
+.erro {
+	border: 1px dashed #FF0000;
+	background-color: #FFDFDF;
+	clear: both;
+	padding: 10px;
+	margin: auto;
+}
+
+.erro #erro_titulo {
+	border-bottom: 1px dotted #FF0000;
+	font-size: 110%;
+	color: #000;
+}
+
+.erro #erro_mensagem {
+	padding: 20px;
+	text-align: justify;
+	color: #000;
+}
+
+.erro #erro_rodape {
+	border-top: 1px dotted #FF0000;
+	text-align: right;
+}
+
+.alerta {
+	border: 1px dashed #E8E800;
+	background-color: #FFFFDD;
+	clear: both;
+	padding: 10px;
+	margin: auto;
+}
+
+.alerta #alerta_titulo {
+	border-bottom: 1px dotted #E8E800;
+	font-size: 110%;
+	color: #000;
+}
+
+.alerta #alerta_mensagem {
+	padding: 20px;
+	text-align: justify;
+	color: #000;
+}
+
+.alerta #alerta_rodape {
+	border-top: 1px dotted #E8E800;
+	text-align: right;
+}
+
+.sucesso {
+	border: 1px dashed #00FF00;
+	background-color: #DFFFDF;
+	clear: both;
+	padding: 10px;
+	margin: auto;
+}
+
+.sucesso #sucesso_titulo {
+	border-bottom: 1px dotted #00FF00;
+	font-size: 110%;
+	color: #000;
+}
+
+.sucesso #sucesso_mensagem {
+	padding: 20px;
+	text-align: justify;
+	color: #000;
+}
+
+.ajuda {
+	border: 1px dashed #0000FF;
+	background-color: #DFDFFF;
+	clear: both;
+	padding: 10px;
+	margin: auto;
+}
+
+.ajuda #ajuda_titulo {
+	border-bottom: 1px dotted #FF0000;
+	font-size: 110%;
+	color: #000;
+}
+
+.ajuda #ajuda_mensagem {
+	padding: 20px;
+	text-align: justify;
+	color: #000;
+}
+
+#invisivel {
+	display: none;
+	visibility: hidden;
+}
