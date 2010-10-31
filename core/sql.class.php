@@ -10,6 +10,8 @@
 		private $select = false;
 		//holds the last performed query
 		private $last_query = '';
+		//holds table prefix
+		private $prefix = '';
 		
 		//sql glue for statements
 		private $glue = array('AND', 'OR');
@@ -19,6 +21,8 @@
 		private $func = array('CURDATE', 'CURRENT_DATE', 'CURTIME', 'CURRENT_TIME', 'NOW', 'CURRENT_TIMESTAMP', 'DAY', 'MONTH', 'YEAR', 'HOUR', 'MINUTE', 'SECOND', 'COUNT', 'MIN', 'MAX', 'TIMESTAMPDIFF', 'UNIX_TIMESTAMP', 'SHA1', 'CONCAT', 'MD5', 'CAST', 'DATE_ADD', 'DATE_SUB');
 
 		function __construct(array $cfg) {
+			if (isset($cfg['prefix']))
+				$this->prefix = $cfg['prefix'];
 			$this->db = new DB($cfg);
 			$this->status = $this->db->connect();
 		}
@@ -45,9 +49,9 @@
 					$tmp = explode('.', $data);
 					if (strpos($tmp[1], ' ')) {
 						$tmp2 = explode(' ', $tmp[1]);
-						$ret[] = $this->sqlField($tmp[0]).'.'.$this->sqlField($tmp2[0]).substr($tmp[1], strpos($tmp[1], ' '));
+						$ret[] = $this->sqlField($this->prefix.$tmp[0]).'.'.$this->sqlField($tmp2[0]).substr($tmp[1], strpos($tmp[1], ' '));
 					} else
-						$ret[] = $this->sqlField($tmp[0]).'.'.$this->sqlField($tmp[1]);
+						$ret[] = $this->sqlField($this->prefix.$tmp[0]).'.'.$this->sqlField($tmp[1]);
 				} else if (strpos($data, ' ')) {
 					$tmp = explode(' ', $data);
 					$ret[] = $this->sqlField($tmp[0]).' '.$tmp[1].' '.$this->protect($tmp[2]);
@@ -293,7 +297,7 @@
 					$sql_order = $this->sqlOrder($order);
 					$sql_limit = $this->sqlDoubleLimit($limit);
 
-					$sql = 'SELECT '.$sql_fields.' FROM `'.$table.'`';
+					$sql = 'SELECT '.$sql_fields.' FROM `'.$this->prefix.$table.'`';
 					if ($sql_join)
 						$sql .= ' '.$sql_join;
 					if ($sql_condition)
@@ -330,7 +334,7 @@
 						}
 						$sql_duplicate = $this->sqlDuplicate($duplicate);
 
-						$sql = 'INSERT INTO `'.$table.'` ';
+						$sql = 'INSERT INTO `'.$this->prefix.$table.'` ';
 						$sql .= '('.implode(', ', $f).')';
 						$sql .= ' VALUES ';
 						$sql .= '('.implode(', ', $v).')';
@@ -356,7 +360,7 @@
 					$sql_condition = $this->sqlCondition($condition);
 					$sql_limit = $this->sqlSingleLimit($limit);
 
-					$sql = 'DELETE FROM `'.$table.'`';
+					$sql = 'DELETE FROM `'.$this->prefix.$table.'`';
 					if ($sql_condition)
 						$sql .= ' WHERE '.$sql_condition;
 					if ($sql_limit)
@@ -384,7 +388,7 @@
 						$sql_condition = $this->sqlCondition($condition);
 						$sql_limit = $this->sqlSingleLimit($limit);
 
-						$sql = 'UPDATE `'.$table.'`';
+						$sql = 'UPDATE `'.$this->prefix.$table.'`';
 						$sql .= ' SET ';
 						$sql .= implode(', ', $u);
 						if ($sql_condition)

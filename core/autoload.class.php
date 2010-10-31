@@ -2,6 +2,14 @@
 
 	class AUTOLOAD {
 
+		public static function loadPlugin($file) {
+			if (file_exists($file)) {
+				require_once $file;
+				return true;
+			} else
+				return false;
+		}
+
 		public static function loadController($module, $session, $email, $msg, $path) {
 			$file = __DIR__.'/../app/'.strtolower($module).'.controller.php';
 			if (file_exists($file)) {

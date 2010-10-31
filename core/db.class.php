@@ -1,5 +1,5 @@
 <?php
-	require_once(__DIR__.'/log.class.php');
+	require_once __DIR__.'/log.class.php';
 
 	class DB {
 		private $db = null;
@@ -29,14 +29,14 @@
 		}
 
 		private function initialize($cfg) {
-			$config_options = array('username' => '', 'password' => '', 'hostname' => '', 'database' => '', 'mysqli' => false, 'debug' => false);
+			$options = array('username' => '', 'password' => '', 'hostname' => '', 'database' => '', 'mysqli' => false, 'debug' => false);
 			
-			foreach ($config_options as $option => $default_value) {
+			foreach ($options as $option => $default) {
 				if (isset($cfg[$option])) {
 					if (!is_null($cfg[$option]) && ($cfg[$option] != ''))
 						$this->$option = $cfg[$option];
 				} else
-					$this->$option = $default_value;
+					$this->$option = $default;
 			}
 		}
 
