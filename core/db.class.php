@@ -33,12 +33,10 @@
 			
 			foreach ($config_options as $option => $default_value) {
 				if (array_key_exists($option, $cfg)) {
-					if (!is_null($cfg[$option]) || ($cfg[$option] != '')) {
+					if (!is_null($cfg[$option]) && ($cfg[$option] != ''))
 						$this->$option = $cfg[$option];
-					}
-				} else {
+				} else
 					$this->$option = $default_value;
-				}
 			}
 		}
 
@@ -96,14 +94,13 @@
 
 		public function connect() {
 			$this->log->add('connect('.$this->hostname.', '.$this->username.', '.$this->password.', '.$this->database.')');
-			if ($this->mysqli) {
-				$this->connect_using_mysqli();
-			} else {
-				$this->connect_using_mysql();
-			}
+			if ($this->mysqli)
+				$this->connectMysqli();
+			else
+				$this->connectMysql();
 		}
 
-		private function connect_using_mysqli() {
+		private function connectMysqli() {
 			$this->db = new mysqli($this->hostname, $this->username, $this->password, $this->database);
 			if (!$this->db->connect_error) {
 				$this->log->add('set-charset: utf8');
@@ -124,7 +121,7 @@
 			}
 		}
 		
-		private function connect_using_mysql() {
+		private function connectMysql() {
 			$this->db = @mysql_connect($this->hostname, $this->username, $this->password, TRUE, MYSQL_CLIENT_COMPRESS);
 			if ($this->db) {
 				$this->log->add('select: '.$this->database);
