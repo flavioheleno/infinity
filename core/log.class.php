@@ -5,6 +5,8 @@
 		private static $instance = null;
 		//holds log file handler
 		private $handler = null;
+		//holds log enable/disabled
+		private $enabled = true;
 
 		//class constructor
 		public function __construct($filename, $path) {
@@ -25,15 +27,24 @@
 				if (!mkdir($path))
 					die(__CLASS__.': can\'t create path ('.$path.')');
 
-			//open log file and prints start message
+			//open log file
 			$this->handler = fopen($path.'/'.$filename, 'a');
-			$this->add('Iniciando log..');
+		}
+
+		public function enable() {
+			$this->enabled = true;
+		}
+
+		public function disable() {
+			$this->enabled = false;
+		}
+
+		public function isEnabled() {
+			return $this->enabled;
 		}
 
 		//class destructor
 		public function __destruct() {
-			//prints finish message
-			$this->add('Finalizando log..');
 			//if log file was oppened, close it
 			if ($this->handler)
 				fclose($this->handler);
@@ -49,8 +60,8 @@
 
 		//add method - adds text to log file
 		public function add($text) {
-			//if log file was oppened, prints text to it
-			if ($this->handler)
+			//if log is enabled and log file was oppened, prints text to it
+			if (($this->enabled) && ($this->handler))
 				fwrite($this->handler, date('[d/m/Y - H:i:s] ').$text."\n");
 		}
 

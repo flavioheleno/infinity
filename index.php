@@ -1,5 +1,6 @@
 <?php
 
+	require_once __DIR__.'/core/log.class.php';
 	require_once __DIR__.'/core/session.class.php';
 	require_once __DIR__.'/core/email.class.php';
 	require_once __DIR__.'/core/msg.class.php';
@@ -7,6 +8,9 @@
 	require_once __DIR__.'/cfg/core/framework.config.php';
 
 	global $_INFINITY_CFG;
+
+	//creates log object
+	$log = new LOG('infinity.log');
 
 	//creates session controller
 	$session = new SESSION($_INFINITY_CFG['domain'], true);
@@ -65,5 +69,6 @@
 			}
 		}
 	}
+	$log->add('Can\'t find '.$module.'->'.$action.', showing default page');
 	$msg::page($_INFINITY_CFG['default_page']);
 ?>
