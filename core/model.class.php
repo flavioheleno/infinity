@@ -13,6 +13,8 @@
 		public $rules = array();
 		//database fields used in this model
 		public $fields = array();
+		//sets the helpers needed by class
+		protected $uses = array();
 
 		//class constructor
 		public function __construct() {
@@ -26,7 +28,8 @@
 				'debg' => db_debg
 			);
 			$this->db = new SQL($cfg);
-			$this->aux = AUTOLOAD::loadAuxModel();
+			if (in_array('aux', $this->uses))
+				$this->aux = AUTOLOAD::loadAuxModel();
 		}
 
 		public abstract function loadFields(array $env);

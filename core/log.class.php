@@ -31,18 +31,6 @@
 			$this->handler = fopen($path.'/'.$filename, 'a');
 		}
 
-		public function enable() {
-			$this->enabled = true;
-		}
-
-		public function disable() {
-			$this->enabled = false;
-		}
-
-		public function isEnabled() {
-			return $this->enabled;
-		}
-
 		//class destructor
 		public function __destruct() {
 			//if log file was oppened, close it
@@ -56,6 +44,21 @@
 			if (!isset(self::$instance))
 				self::$instance = new LOG($filename, $path);
 			return self::$instance;
+		}
+
+		//enables log
+		public function enable() {
+			$this->enabled = true;
+		}
+
+		//disables log
+		public function disable() {
+			$this->enabled = false;
+		}
+
+		//returns log state
+		public function isEnabled() {
+			return $this->enabled;
 		}
 
 		//add method - adds text to log file

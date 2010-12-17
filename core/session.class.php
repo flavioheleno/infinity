@@ -1,6 +1,8 @@
 <?php
 
 	class SESSION {
+		//holds class instance for singleton
+		private static $instance = null;
 		//holds the domain name
 		private $domain = '';
 		//holds the session name
@@ -36,6 +38,14 @@
 		//class destructor
 		public function __destruct() {
 			session_write_close();
+		}
+
+		//singleton method - avoids the creation of more than one instance
+		public static function singleton($domain, $subdomain = false, $idletime = 1800) {
+			//checks if there is an instance of class, if not, create it
+			if (!isset(self::$instance))
+				self::$instance = new LOG($domain, $subdomain, $idletime);
+			return self::$instance;
 		}
 
 		//regenerates session id

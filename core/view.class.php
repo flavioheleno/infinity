@@ -3,6 +3,7 @@
 	require_once __DIR__.'/template.class.php';
 	require_once __DIR__.'/form.class.php';
 	require_once __DIR__.'/xhtml.class.php';
+	require_once __DIR__.'/msg.class.php';
 
 	abstract class VIEW {
 		//instance of template class
@@ -11,18 +12,21 @@
 		protected $form = null;
 		//instance of auxiliar class
 		protected $aux = null;
-		//instance of msg class
-		protected $msg = null;
 		//instance of xhtml class
 		protected $xhtml = null;
+		//sets the helpers needed by class
+		protected $uses = array();
 
 		//class constructor
 		public function __construct($path, $cache, $msg) {
-			$this->tpl = new TEMPLATE($path, $cache);
-			$this->form = new FORM();
-			$this->aux = AUTOLOAD::loadAuxView();
-			$this->msg = $msg;
-			$this->xhtml = new XHTML();
+			if (in_array('template', $this->uses))
+				$this->tpl = new TEMPLATE($path, $cache);
+			if (in_array('form', $this->uses))
+				$this->form = new FORM();
+			if (in_array('aux', $this->uses))
+				$this->aux = AUTOLOAD::loadAuxView();
+			if (in_array('xhtml', $this->uses))
+				$this->xhtml = new XHTML();
 		}
 
 		public function message($type, $alert, $title, $message, $back = false, $block = 'template-mensagem') {

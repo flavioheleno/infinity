@@ -1,25 +1,14 @@
 <?php
 
 	require_once __DIR__.'/core/log.class.php';
-	require_once __DIR__.'/core/session.class.php';
-	require_once __DIR__.'/core/email.class.php';
-	require_once __DIR__.'/core/msg.class.php';
 	require_once __DIR__.'/core/autoload.class.php';
 	require_once __DIR__.'/cfg/core/framework.config.php';
+	require_once __DIR__.'/core/msg.class.php';
 
 	global $_INFINITY_CFG;
 
 	//creates log object
-	$log = new LOG('infinity.log');
-
-	//creates session controller
-	$session = new SESSION($_INFINITY_CFG['domain'], true);
-
-	//creates email object
-	$email = new EMAIL($_INFINITY_CFG['email']);
-
-	//creates msg object
-	$msg = new MSG();
+	$log = LOG::singleton('infinity.log');
 
 	//defines the module
 	if (isset($_REQUEST['m']))
@@ -34,7 +23,7 @@
 	//checks if module name is well formed
 	if (preg_match('/^[a-z0-9_-]+$/i', $module))
 		//grabs a new instance of module
-		$controller = AUTOLOAD::loadController($module, $session, $email, $msg, $_INFINITY_CFG['base_path']);
+		$controller = AUTOLOAD::loadController($module, $_INFINITY_CFG['base_path'], $_INFINITY_CFG['domain'], $_INFINITY_CFG['email']);
 	else
 		$controller = null;
 
@@ -70,5 +59,5 @@
 		}
 	}
 	$log->add('Can\'t find '.$module.'->'.$action.', showing default page');
-	$msg::page($_INFINITY_CFG['default_page']);
+	MSG::page($_INFINITY_CFG['default_page']);
 ?>

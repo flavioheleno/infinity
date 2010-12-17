@@ -1,6 +1,8 @@
 <?php
 
 	require_once __DIR__.'/autoload.class.php';
+	require_once __DIR__.'/session.class.php';
+	require_once __DIR__.'/email.class.php';
 
 	class CONTROLLER {
 		//module name
@@ -15,21 +17,30 @@
 		protected $session = null;
 		//instance of email class
 		protected $email = null;
-		//instance of msg class
-		protected $msg = null;
 		//web path
 		protected $path = '/';
+		//sets the helpers needed by class
+		protected $uses = array();
 
 		//class constructor
-		public function __construct($name, $session, $email, $msg, $path) {
+		public function __construct($name, $path, $domain, $email) {
 			$this->name = $name;
-			$this->view = AUTOLOAD::loadView($name, __DIR__.'/../tpl', __DIR__.'/../tpl/cache', $msg);
-			$this->model = AUTOLOAD::loadModel($name);
-			$this->aux = AUTOLOAD::loadAuxController();
-			$this->session = $session;
-			$this->email = $email;
-			$this->msg = $msg;
 			$this->path = $path;
+			//creates view object
+			if (in_array('view', $this->uses))
+				$this->view = AUTOLOAD::loadView($name, __DIR__.'/../tpl', __DIR__.'/../tpl/cache');
+			//creates model object
+			if (in_array('model', $this->uses))
+				$this->model = AUTOLOAD::loadModel($name);
+			//creates controller's auxiliar object
+			if (in_array('aux', $this->uses))
+				$this->aux = AUTOLOAD::loadAuxController();
+			//creates session controller
+			if (in_array('session', $this->uses))
+				$this->session = SESSION::singleton($domain, true);
+			//creates email object
+			if (in_array('email', $this->uses))
+				$this->email = new EMAIL($email);
 		}
 
 		//creates a 302 HTTP redirect
