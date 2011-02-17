@@ -19,6 +19,8 @@
 		$module = strtolower($_REQUEST['module']);
 	else
 		$module = $_INFINITY_CFG['default_module'];
+	$log->add('Module parameter: '.$module);
+
 
 	//checks if module name is well formed
 	if (preg_match('/^[a-z0-9_-]+$/i', $module))
@@ -38,6 +40,7 @@
 			$action = strtolower($_REQUEST['action']);
 		else
 			$action = 'index';
+		$log->add('Action parameter: '.$action);
 
 		//checks if action name is well formed
 		if ((preg_match('/^[a-z0-9_-]+$/i', $action)) && (substr($action, 0, 2) != '__')) {

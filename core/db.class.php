@@ -1,4 +1,5 @@
 <?php
+
 	require_once __DIR__.'/log.class.php';
 
 	class DB {
@@ -17,10 +18,12 @@
 			if (count($cfg)) {
 				$this->initialize($cfg);
 
-				$this->log = Log::singleton();
+				$this->log = LOG::singleton('db.log');
 				$this->log->add('construct('.$this->username.', '.$this->password.', '.$this->database.', '.$this->hostname.')');
-			} else
-				die(__CLASS__.' config array is empty'."\n");
+			} else {
+				$this->log->add(__CLASS__.': config array is empty');
+				die(__CLASS__.': config array is empty'."\n");
+			}
 		}
 
 		public function __destruct() {

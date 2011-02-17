@@ -15,7 +15,7 @@
 	//sets table prefix
 	define('db_prefix', '');
 
-	//sets to use mysql improved driver instead of mysql driver
+	//sets to use mysql improved driver instead of mysql standard driver
 	define('db_mysqli', true);
 
 	//sets debug mode
