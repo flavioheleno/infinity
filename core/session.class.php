@@ -55,7 +55,7 @@
 
 		//destroys entire session information
 		public function destroy() {
-			setcookie(session_name(), '', (time() - 3600), '/', ($subdomain ? '.' : '').$domain);
+			setcookie(session_name(), '', (time() - 3600), '/', ($this->subdomain ? '.' : '').$this->domain);
 			session_unset();
 			session_destroy();
 			$_SESSION = array();

@@ -34,6 +34,7 @@
 				'debug' => db_debug
 			);
 			$this->db = new SQL($cfg);
+			//creates model's auxiliar object
 			if (in_array('aux', $this->uses))
 				$this->aux = AUTOLOAD::load_aux_model();
 		}

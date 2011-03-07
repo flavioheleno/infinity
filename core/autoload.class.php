@@ -27,18 +27,18 @@
 			$file = __DIR__.'/../app/aux.controller.php';
 			if (file_exists($file)) {
 				require_once $file;
-				return new AuxController;
+				return new AUX_CONTROLLER;
 			} else
 				return null;
 		}
 
-		public static function load_view($name, &$log) {
+		public static function load_view($name, &$log, $domain) {
 			$file = __DIR__.'/../app/'.strtolower($name).'.view.php';
 			if (file_exists($file)) {
 				require_once $file;
 				$name = strtoupper($name);
 				$module = $name.'_VIEW';
-				return new $module($name, $log);
+				return new $module($name, $log, $domain);
 			} else
 				return null;
 		}
@@ -47,7 +47,7 @@
 			$file = __DIR__.'/../app/aux.view.php';
 			if (file_exists($file)) {
 				require_once $file;
-				return new AuxView;
+				return new AUX_VIEW;
 			} else
 				return null;
 		}
@@ -67,7 +67,7 @@
 			$file = __DIR__.'/../app/aux.model.php';
 			if (file_exists($file)) {
 				require_once $file;
-				return new AuxModel;
+				return new AUX_MODEL;
 			} else
 				return null;
 		}

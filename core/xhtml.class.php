@@ -141,13 +141,13 @@
 			$this->meta = array_unique($this->meta);
 			foreach ($this->meta as $key => $value)
 				echo '		<meta name="'.$key.'" content="'.$value.'" xml:lang="'.$this->lang.'" lang="'.$this->lang.'" />'."\n";
-			if (!is_null($this->description))
+			if ((!is_null($this->description)) && ($this->description))
 				echo '		<meta name="description" content="'.$this->description.'" xml:lang="'.$this->lang.'" lang="'.$this->lang.'" />'."\n";
-			if (!is_null($this->keywords))
+			if ((!is_null($this->keywords)) && ($this->keywords))
 				echo '		<meta name="keywords" content="'.$this->keywords.'" xml:lang="'.$this->lang.'" lang="'.$this->lang.'" />'."\n";
-			if (!is_null($this->title))
+			if ((!is_null($this->title)) && ($this->title))
 				echo '		<title>'.$this->title.'</title>'."\n";
-			if (!is_null($this->favicon))
+			if ((!is_null($this->favicon)) && ($this->favicon))
 				echo '		<link rel="shortcut icon" type="image/x-icon" href="'.$this->favicon.'" />'."\n";
 			$this->css = array_unique($this->css);
 			foreach ($this->css as $item)

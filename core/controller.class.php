@@ -34,14 +34,14 @@
 			$this->log = $log;
 			//creates view object
 			if (in_array('view', $this->uses))
-				$this->view = AUTOLOAD::load_view($name, $log);
+				$this->view = AUTOLOAD::load_view($name, $log, $domain);
 			//creates model object
 			if (in_array('model', $this->uses))
 				$this->model = AUTOLOAD::load_model($name, $log);
 			//creates controller's auxiliar object
 			if (in_array('aux', $this->uses))
 				$this->aux = AUTOLOAD::load_aux_controller();
-			//creates session controller
+			//creates session helper
 			if (in_array('session', $this->uses))
 				$this->session = SESSION::singleton($domain, true);
 			//creates email object

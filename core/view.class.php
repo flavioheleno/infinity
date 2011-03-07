@@ -17,23 +17,32 @@
 		protected $aux = null;
 		//instance of xhtml class
 		protected $xhtml = null;
+		//instance of session class
+		protected $session = null;
 		//instance of log class
 		protected $log = null;
 		//sets the helpers needed by class
 		protected $uses = array();
 
 		//class constructor
-		public function __construct($name, &$log) {
+		public function __construct($name, &$log, $domain = '') {
 			$this->name = $name;
 			$this->log = $log;
+			//creates template object
 			if (in_array('template', $this->uses))
 				$this->tpl = new TEMPLATE(__DIR__.'/../tpl', __DIR__.'/../tpl/cache');
+			//creates form object
 			if (in_array('form', $this->uses))
 				$this->form = new FORM;
+			//creates view's auxiliar object
 			if (in_array('aux', $this->uses))
 				$this->aux = AUTOLOAD::load_aux_view();
+			//creates xhtml object
 			if (in_array('xhtml', $this->uses))
 				$this->xhtml = new XHTML;
+			//creates session helper
+			if (in_array('session', $this->uses))
+				$this->session = SESSION::singleton($domain, true);
 		}
 
 		protected function display($title, $description = '', $keywords = '') {

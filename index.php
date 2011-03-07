@@ -46,15 +46,21 @@
 		if ((preg_match('/^[a-z_][a-z0-9_-]+$/i', $action)) && (substr($action, 0, 2) != '__')) {
 			//checks if there is a route for the given module->action and updates it
 			$controller->check_route($action);
+			//creates enviroment variable to hold request data, server data and user data
+			$env = array(
+				'request' => $_REQUEST,
+				'server' => $_SERVER,
+				'user' => array()
+			);
 			//checks if action exists
 			if (method_exists($controller, $action)) {
 				//calls the controller's action
-				$controller->$action($_REQUEST);
+				$controller->$action($env);
 				//prevents default page to be shown
 				exit;
 			} else {
 				//tries to call the controller's action
-				if ($controller->$action($_REQUEST))
+				if ($controller->$action($env))
 					//prevents default page to be shown
 					exit;
 			}
