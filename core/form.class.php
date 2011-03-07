@@ -18,7 +18,7 @@
 				'js/core/jquery.validate.js',
 				'js/core/jquery.validate.additional-methods.js',
 				'js/core/jquery.validate.messages_ptbr.js',
-				'js/core/msg.js'
+				'js/core/jquery.infinity.js'
 			);
 		}
 

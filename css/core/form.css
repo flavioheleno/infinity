@@ -10,6 +10,10 @@ input {
 	color: #000000;
 }
 
+input:focus {
+	border: 1px solid darkred;
+}
+
 label {
 	vertical-align: middle;
 	color: #000000;
@@ -19,6 +23,10 @@ textarea {
 	border: 1px solid #999999;
 	font: inherit;
 	color: #000000;
+}
+
+textarea:focus {
+	border: 1px solid darkred;
 }
 
 select {

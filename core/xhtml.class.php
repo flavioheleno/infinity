@@ -49,7 +49,11 @@
 		}
 
 		public function add_js($file) {
-			$this->js[] = $file;
+			if (!is_array($file))
+				$this->js[] = $file;
+			else
+				foreach ($file as $item)
+					$this->js[] = $item;
 		}
 
 		public function clean_js() {
@@ -58,7 +62,11 @@
 		}
 
 		public function add_css($file) {
-			$this->css[] = $file;
+			if (!is_array($file))
+				$this->css[] = $file;
+			else
+				foreach ($file as $item)
+					$this->css[] = $item;
 		}
 
 		public function clean_css() {
