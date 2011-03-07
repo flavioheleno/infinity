@@ -1,9 +1,9 @@
 <?php
 
-	require_once __DIR__.'/core/log.class.php';
 	require_once __DIR__.'/core/autoload.class.php';
-	require_once __DIR__.'/cfg/core/framework.config.php';
+	require_once __DIR__.'/core/log.class.php';
 	require_once __DIR__.'/core/msg.class.php';
+	require_once __DIR__.'/cfg/core/framework.config.php';
 
 	global $_INFINITY_CFG;
 
@@ -23,9 +23,9 @@
 
 
 	//checks if module name is well formed
-	if (preg_match('/^[a-z0-9_-]+$/i', $module))
+	if (preg_match('/^[a-z_][a-z0-9_-]+$/i', $module))
 		//grabs a new instance of module
-		$controller = AUTOLOAD::loadController($module, $_INFINITY_CFG['base_path'], $_INFINITY_CFG['domain'], $_INFINITY_CFG['email']);
+		$controller = AUTOLOAD::load_controller($module, $log, $_INFINITY_CFG['domain'], $_INFINITY_CFG['base_path'], $_INFINITY_CFG['email']);
 	else
 		$controller = null;
 
@@ -43,24 +43,24 @@
 		$log->add('Action parameter: '.$action);
 
 		//checks if action name is well formed
-		if ((preg_match('/^[a-z0-9_-]+$/i', $action)) && (substr($action, 0, 2) != '__')) {
-			//checks if there is a route for the given module->action
-			if (isset($_INFINITY_CFG['routes'][$module][$action]))
-				$action = $_INFINITY_CFG['routes'][$module][$action];
+		if ((preg_match('/^[a-z_][a-z0-9_-]+$/i', $action)) && (substr($action, 0, 2) != '__')) {
+			//checks if there is a route for the given module->action and updates it
+			$controller->check_route($action);
 			//checks if action exists
 			if (method_exists($controller, $action)) {
 				//calls the controller's action
 				$controller->$action($_REQUEST);
 				//prevents default page to be shown
-				exit(0);
+				exit;
 			} else {
 				//tries to call the controller's action
 				if ($controller->$action($_REQUEST))
 					//prevents default page to be shown
-					exit(0);
+					exit;
 			}
 		}
 	}
 	$log->add('Can\'t find '.$module.'->'.$action.', showing default page');
-	MSG::page($_INFINITY_CFG['default_page']);
+	header('Status: 404 Not Found');
+	echo '404 Not Found';
 ?>

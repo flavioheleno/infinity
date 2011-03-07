@@ -67,6 +67,16 @@
 			);
 		}
 
+		//javascript that will be executed before submitting the form
+		public function before_submit($js) {
+			$handle['submit']['pre'] = $js;
+		}
+
+		//javascript that will be executed after submitting the form
+		public function after_submit($js) {
+			$handle['submit']['pos'] = $js;
+		}
+
 		//renders the form
 		public function render($handle, $validation = true, array $message = array()) {
 			$bfr = '<div id="form">'."\n";
@@ -252,9 +262,18 @@
 				$bfr .= '				$(form).ajaxSubmit({'."\n";
 				$bfr .= '					clearForm: true,'."\n";
 				$bfr .= '					dataType: \'json\','."\n";
-				$bfr .= '					success: function (data) {'."\n";
-				$bfr .= '						display_box(data.msg);'."\n";
-				$bfr .= '					}'."\n";
+				if (isset($handle['submit'])) {
+					if (isset($handle['submit']['pre'])) {
+						$bfr .= '					beforeSubmit: function() {'."\n";
+						$bfr .=	'						'.$handle['submit']['pre']."\n";
+						$bfr .= '					},'."\n";
+					}
+					if (isset($handle['submit']['pos'])) {
+						$bfr .= '					success: function (data) {'."\n";
+						$bfr .= '						'.$handle['submit']['pos']."\n";
+						$bfr .= '					}'."\n";
+					}
+				}
 				$bfr .= '				});'."\n";
 				$bfr .= '			}'."\n";
 				$bfr .= '			return false;'."\n";

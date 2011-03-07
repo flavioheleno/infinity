@@ -15,7 +15,7 @@
 
 		public function __construct($lang = 'pt-br', $enc = 'iso-8859-1', array $http = array(), array $meta = array()) {
 			$this->lang = $lang;
-			$this->enc = 'iso-8859-1';
+			$this->enc = $enc;
 			$this->http = array(
 				'Content-Language' => $this->lang,
 				'Content-Type' => 'text/html; charset='.$this->enc,
@@ -32,61 +32,61 @@
 				$this->meta[$key] = $value;
 		}
 
-		public function setTitle($value) {
+		public function set_title($value) {
 			$this->title = $value;
 		}
 
-		public function setDescription($value) {
+		public function set_description($value) {
 			$this->description = $value;
 		}
 
-		public function setKeywords($value) {
+		public function set_keywords($value) {
 			$this->keywords = $value;
 		}
 
-		public function setFavicon($file) {
+		public function set_favicon($file) {
 			$this->favicon = $file;
 		}
 
-		public function addJS($file) {
+		public function add_js($file) {
 			$this->js[] = $file;
 		}
 
-		public function cleanJS() {
+		public function clean_js() {
 			unset($this->js);
 			$this->js = array();
 		}
 
-		public function addCSS($file) {
+		public function add_css($file) {
 			$this->css[] = $file;
 		}
 
-		public function cleanCSS() {
+		public function clean_css() {
 			unset($this->css);
 			$this->css = array();
 		}
 
-		public function addANCHOR($href, $text, array $prop = array(), $pre = '', $pos = '') {
+		public function add_anchor($href, $text, array $prop = array(), $pre = '', $pos = '') {
 			$tmp = $pre."\n";
 			$tmp .= '<a href="'.$href.'"';
 			foreach ($prop as $key => $value)
 				$tmp .= ' '.$key.'="'.$value.'"';
 			$tmp .= '>'.$text.'</a>'."\n";
 			$tmp .= $pos."\n";
-			$this->appendContent($tmp);
+			$this->append_content($tmp);
 		}
 
-		public function addIMG($src, $alt = '', array $prop = array(), $pre = '', $pos = '') {
+		public function add_image($src, $alt = '', array $prop = array(), $pre = '', $pos = '') {
 			$tmp = $pre."\n";
 			$tmp .= '<img src="'.$src.'" alt="'.$alt.'" ';
 			foreach ($prop as $key => $value)
 				$tmp .= $key.'="'.$value.'" ';
 			$tmp .= '/>'."\n";
 			$tmp .= $pos."\n";
-			$this->appendContent($tmp);
+			$this->append_content($tmp);
 		}
 
-		public function addDIV($content, $id = null, $class = null) {
+		public function add_div($content, $id = null, $class = null) {
 			$tmp = '<div';
 			if (!is_null($id))
 				$tmp .= ' id="'.$id.'"';
@@ -95,23 +95,18 @@
 			$tmp .= '>'."\n";
 			$tmp .= $content."\n";
 			$tmp .= '</div>'."\n";
-			$this->appendContent($tmp);
+			$this->append_content($tmp);
 		}
 
-		public function prependContent($content) {
-			$tmp = array();
-			$tmp[] = $content;
-			foreach ($this->content as $item)
-				$tmp[] = $item;
-			unset($this->content);
-			$this->content = $tmp;
+		public function prepend_content($content) {
+			array_unshift($this->content, $this->content);
 		}
 
-		public function appendContent($content) {
-			$this->content[] = $content;
+		public function append_content($content) {
+			array_push($this->content, $content);
 		}
 
-		public function cleanContent() {
+		public function clean_content() {
 			unset($this->content);
 			$this->content = array();
 		}

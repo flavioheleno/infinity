@@ -9,12 +9,8 @@
 			$this->sigma = new HTML_Template_Sigma($path, $cache);
 		}
 
-		public function loadDefaultTemplate() {
-			$this->sigma->loadTemplateFile('core/template.html', true, true);
-		}
-
-		public function loadFileTemplate($template) {
-			$this->sigma->loadTemplateFile('app/'.$template, true, true);
+		public function load_file_template($template) {
+			$this->sigma->loadTemplateFile($template, true, true);
 		}
 
 		public function set($index, $value) {
@@ -22,7 +18,7 @@
 		}
 
 		public function add($block, $file) {
-			$this->sigma->addBlockFile($block, $block, 'app/'.$file);
+			$this->sigma->addBlockFile($block, $block, $file);
 		}
 
 		public function hide($block) {

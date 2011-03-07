@@ -22,7 +22,7 @@
 				$this->log->add('construct('.$this->username.', '.$this->password.', '.$this->database.', '.$this->hostname.')');
 			} else {
 				$this->log->add(__CLASS__.': config array is empty');
-				die(__CLASS__.': config array is empty'."\n");
+				exit(__CLASS__.': config array is empty'."\n");
 			}
 		}
 
@@ -43,21 +43,21 @@
 			}
 		}
 
-		public function setDebug($state) {
+		public function set_debug($state) {
 			$this->debug = $state;
 		}
 
-		public function getDebug() {
+		public function get_debug() {
 			return $this->debug;
 		}
 
-		public function getStatus() {
+		public function get_status() {
 			return $this->online;
 		}
 
-		public function blockBegin() {
+		public function block_begin() {
 			if ($this->db) {
-				$this->log->add('blockBegin()');
+				$this->log->add('block_begin()');
 				if ($this->mysqli)
 					$this->db->autocommit(false);
 				else
@@ -65,9 +65,9 @@
 			}
 		}
 
-		public function blockCancel() {
+		public function block_cancel() {
 			if ($this->db) {
-				$this->log->add('blockCancel()');
+				$this->log->add('block_cancel()');
 				if ($this->mysqli) {
 					$this->db->rollback();
 					$this->db->autocommit(true);
@@ -76,9 +76,9 @@
 			}
 		}
 
-		public function blockEnd() {
+		public function block_end() {
 			if ($this->db) {
-				$this->log->add('blockEnd()');
+				$this->log->add('block_end()');
 				if ($this->mysqli) {
 					$this->db->commit();
 					$this->db->autocommit(true);
@@ -90,12 +90,12 @@
 		public function connect() {
 			$this->log->add('connect('.$this->hostname.', '.$this->username.', '.$this->password.', '.$this->database.')');
 			if ($this->mysqli)
-				$this->connectMysqli();
+				$this->connect_mysqli();
 			else
-				$this->connectMysql();
+				$this->connect_mysql();
 		}
 
-		private function connectMysqli() {
+		private function connect_mysqli() {
 			$this->db = new mysqli($this->hostname, $this->username, $this->password, $this->database);
 			if (!$this->db->connect_error) {
 				$this->log->add('set-charset: utf8');
@@ -116,7 +116,7 @@
 			}
 		}
 		
-		private function connectMysql() {
+		private function connect_mysql() {
 			$this->db = @mysql_connect($this->hostname, $this->username, $this->password, TRUE, MYSQL_CLIENT_COMPRESS);
 			if ($this->db) {
 				$this->log->add('select: '.$this->database);
@@ -144,9 +144,9 @@
 			}
 		}
 		
-		public function lastError() {
+		public function last_error() {
 			if ($this->db) {
-				$this->log->add('lastError()');
+				$this->log->add('last_error()');
 				if ($this->mysqli)
 					return @$this->db->error;
 				else
@@ -186,9 +186,9 @@
 			}
 		}
 
-		public function lastInsertID() {
+		public function last_insert_id() {
 			if ($this->db) {
-				$this->log->add('lastInsertID()');
+				$this->log->add('last_insert_id()');
 				if ($this->mysqli)
 					return $this->db->insert_id;
 				else {
@@ -199,39 +199,39 @@
 			}
 		}
 
-		public function numRows($resource) {
+		public function num_rows($resource) {
 			if ($this->db) {
 				if ($this->mysqli)
 					$ret = @$resource->num_rows;
 				else
 					$ret = @mysql_num_rows($resource);
-				$this->log->add('numRows: '.$ret);
+				$this->log->add('num_rows: '.$ret);
 				return $ret;
 			}
 		}
 
-		public function affectedRows() {
+		public function affected_rows() {
 			if ($this->db) {
 				if ($this->mysqli)
 					$ret = @$this->db->affected_rows;
 				else
 					$ret = @mysql_affected_rows($this->db);
-				$this->log->add('affectedRows: '.$ret);
+				$this->log->add('affected_rows: '.$ret);
 				return $ret;
 			} else
 				return false;
 		}
 
-		public function fetchRow($resource) {
-			$this->log->add('fetchRow()');
+		public function fetch_row($resource) {
+			$this->log->add('fetch_row()');
 			if ($this->mysqli)
 				return @$resource->fetch_row();
 			else
 				return @mysql_fetch_row($resource);
 		}
 
-		public function fetchAssoc($resource) {
-			$this->log->add('fetchAssoc()');
+		public function fetch_assoc($resource) {
+			$this->log->add('fetch_assoc()');
 			if ($this->mysqli)
 				return @$resource->fetch_assoc();
 			else

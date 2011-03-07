@@ -65,7 +65,7 @@
 								$valid = false;
 							break;
 						default:
-							die('invalid validator rule: '.$k);
+							exit('invalid validator rule: '.$k);
 					}
 			}
 			return $valid;

@@ -80,28 +80,32 @@
 			return this.trigger("unmask").each(function() {
 				var input = $(this);
 				var buffer = $.map(mask.split(""), function(c, i) { if (c != '?') return defs[c] ? settings.placeholder : c });
-				var ignore = false;  			//Variable for ignoring control keys
 				var focusText = input.val();
 
 				function seekNext(pos) {
 					while (++pos <= len && !tests[pos]);
 					return pos;
 				};
+				function seekPrev(pos) {
+					while (--pos >= 0 && !tests[pos]);
+					return pos;
+				};
 
-				function shiftL(pos) {
-					while (!tests[pos] && --pos >= 0);
-					for (var i = pos; i < len; i++) {
+				function shiftL(begin,end) {
+					if(begin<0)
+					   return;
+					for (var i = begin,j = seekNext(end); i < len; i++) {
 						if (tests[i]) {
-							buffer[i] = settings.placeholder;
-							var j = seekNext(i);
 							if (j < len && tests[i].test(buffer[j])) {
 								buffer[i] = buffer[j];
+								buffer[j] = settings.placeholder;
 							} else
 								break;
+							j = seekNext(j);
 						}
 					}
 					writeBuffer();
-					input.caret(Math.max(firstNonMaskPos, pos));
+					input.caret(Math.max(firstNonMaskPos, begin));
 				};
 
 				function shiftR(pos) {
@@ -119,17 +123,21 @@
 				};
 
 				function keydownEvent(e) {
-					var pos = $(this).caret();
-					var k = e.keyCode;
-					ignore = (k < 16 || (k > 16 && k < 32) || (k > 32 && k < 41));
-
-					//delete selection before proceeding
-					if ((pos.begin - pos.end) != 0 && (!ignore || k == 8 || k == 46))
-						clearBuffer(pos.begin, pos.end);
+					var k=e.which;
 
 					//backspace, delete, and escape get special treatment
-					if (k == 8 || k == 46 || (iPhone && k == 127)) {//backspace/delete
-						shiftL(pos.begin + (k == 46 ? (tests[pos.begin]?0:1) : -1));
+					if(k == 8 || k == 46 || (iPhone && k == 127)){
+						var pos = input.caret(),
+							begin = pos.begin,
+							end = pos.end;
+						
+						if(end-begin==0){
+							begin=k!=46?seekPrev(begin):(end=seekNext(begin-1));
+							end=k==46?seekNext(end):end;
+						}
+						clearBuffer(begin, end);
+						shiftL(begin,end-1);
+
 						return false;
 					} else if (k == 27) {//escape
 						input.val(focusText);
@@ -139,18 +147,16 @@
 				};
 
 				function keypressEvent(e) {
-					if (ignore) {
-						ignore = false;
-						//Fixes Mac FF bug on backspace
-						return (e.keyCode == 8) ? false : null;
-					}
-
-					var k = e.which;
-					var pos = $(this).caret();
-
-					if (e.ctrlKey || e.altKey || e.metaKey) {//Ignore
+					var k = e.which,
+						pos = input.caret();
+					if (e.ctrlKey || e.altKey || e.metaKey || k<32) {//Ignore
 						return true;
-					} else if (k) {//typeable characters
+					} else if (k) {
+						if(pos.end-pos.begin!=0){
+							clearBuffer(pos.begin, pos.end);
+							shiftL(pos.begin, pos.end-1);
+						}
+
 						var p = seekNext(pos.begin - 1);
 						if (p < len) {
 							var c = String.fromCharCode(k);
@@ -159,13 +165,13 @@
 								buffer[p] = c;
 								writeBuffer();
 								var next = seekNext(p);
-								$(this).caret(next);
+								input.caret(next);
 								if (settings.completed && next >= len)
 									settings.completed.call(input);
 							}
 						}
+						return false;
 					}
-					return false;
 				};
 
 				function clearBuffer(start, end) {

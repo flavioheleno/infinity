@@ -44,7 +44,7 @@
 		public static function singleton($domain, $subdomain = false, $idletime = 1800) {
 			//checks if there is an instance of class, if not, create it
 			if (!isset(self::$instance))
-				self::$instance = new LOG($domain, $subdomain, $idletime);
+				self::$instance = new SESSION($domain, $subdomain, $idletime);
 			return self::$instance;
 		}
 
@@ -67,7 +67,7 @@
 		}
 
 		//checks session auth information
-		public function checkAuth($name) {
+		public function check_auth($name) {
 			if (isset($_SESSION[$name]))
 				return !is_null($_SESSION[$name]);
 			else
@@ -75,7 +75,7 @@
 		}
 
 		//checks session timeout
-		public function checkTimeout() {
+		public function check_timeout() {
 			return $this->timeout;
 		}
 

@@ -1,8 +1,8 @@
 <?php
 
 	class LOG {
-		//holds class instance for singleton
-		private static $instance = null;
+		//holds class instances for singleton
+		private static $instance = array();
 		//holds log file handler
 		private $handler = null;
 		//holds log enable/disabled
@@ -25,7 +25,7 @@
 			//ensure path exists
 			if (!file_exists($path))
 				if (!mkdir($path))
-					die(__CLASS__.': can\'t create path ('.$path.')');
+					exit(__CLASS__.': can\'t create path ('.$path.')');
 
 			//open log file
 			$this->handler = fopen($path.'/'.$filename, 'a');
@@ -38,12 +38,12 @@
 				fclose($this->handler);
 		}
 
-		//singleton method - avoids the creation of more than one instance
+		//singleton method - avoids the creation of more than one instance per log file
 		public static function singleton($filename = 'data.log', $path = '') {
 			//checks if there is an instance of class, if not, create it
-			if (!isset(self::$instance))
-				self::$instance = new LOG($filename, $path);
-			return self::$instance;
+			if (!isset(self::$instance[$filename]))
+				self::$instance[$filename] = new LOG($filename, $path);
+			return self::$instance[$filename];
 		}
 
 		//enables log
@@ -57,7 +57,7 @@
 		}
 
 		//returns log state
-		public function isEnabled() {
+		public function is_enabled() {
 			return $this->enabled;
 		}
 

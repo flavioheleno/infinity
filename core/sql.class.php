@@ -33,14 +33,14 @@
 				$this->db->disconnect();
 		}
 
-		private function sqlField($data) {
+		private function sql_field($data) {
 			$ret = array();
 			if ((is_null($data)) || ($data == '*'))
 				$ret[] = '*';
 			else if (is_array($data)) {
 				if (count($data))
 					foreach ($data as $item)
-						$ret[] = $this->sqlField($item);
+						$ret[] = $this->sql_field($item);
 				else
 					$ret[] = '*';
 			} else {
@@ -50,19 +50,19 @@
 					$tmp = explode('.', $data);
 					if (strpos($tmp[1], ' ')) {
 						$tmp2 = explode(' ', $tmp[1]);
-						$ret[] = $this->sqlField($this->prefix.$tmp[0]).'.'.$this->sqlField($tmp2[0]).substr($tmp[1], strpos($tmp[1], ' '));
+						$ret[] = $this->sql_field($this->prefix.$tmp[0]).'.'.$this->sql_field($tmp2[0]).substr($tmp[1], strpos($tmp[1], ' '));
 					} else
-						$ret[] = $this->sqlField($this->prefix.$tmp[0]).'.'.$this->sqlField($tmp[1]);
+						$ret[] = $this->sql_field($this->prefix.$tmp[0]).'.'.$this->sql_field($tmp[1]);
 				} else if (strpos($data, ' ')) {
 					$tmp = explode(' ', $data);
-					$ret[] = $this->sqlField($tmp[0]).' '.$tmp[1].' '.$this->protect($tmp[2]);
+					$ret[] = $this->sql_field($tmp[0]).' '.$tmp[1].' '.$this->protect($tmp[2]);
 				} else
 					$ret[] = '`'.$data.'`';
 			}
 			return implode(', ', $ret);
 		}
 
-		private function sqlJoin($join = null) {
+		private function sql_join($join = null) {
 			if (!is_null($join)) {
 				if ((is_array($join)) && (count($join)))
 					return implode(' ', $join);
@@ -74,7 +74,7 @@
 				return false;
 		}
 
-		private function sqlCondition($condition = null) {
+		private function sql_condition($condition = null) {
 			if (!is_null($condition)) {
 				if ((is_array($condition)) && (count($condition)))
 					return $this->where($condition);
@@ -86,7 +86,7 @@
 				return false;
 		}
 
-		public function sqlGroup($group = null) {
+		private function sql_group($group = null) {
 			if (!is_null($group)) {
 				if ((is_array($group)) && (count($group)))
 					return '`'.implode('`, `', $group).'`';
@@ -98,7 +98,7 @@
 				return false;
 		}
 
-		private function sqlHaving($having = null) {
+		private function sql_having($having = null) {
 			if (!is_null($having)) {
 				if ((is_array($having)) && (count($having)))
 					return $this->where($having);
@@ -110,7 +110,7 @@
 				return false;
 		}
 
-		private function sqlOrder($order = null) {
+		private function sql_order($order = null) {
 			if (!is_null($order)) {
 				if ((is_array($order)) && (count($order))) {
 					$tmp = array();
@@ -125,7 +125,7 @@
 				return false;
 		}
 
-		public function sqlSingleLimit($limit = null) {
+		private function sql_single_limit($limit = null) {
 			if (!is_null($limit)) {
 				if (is_int($limit))
 					return intval($limit);
@@ -135,7 +135,7 @@
 				return false;
 		}
 
-		public function sqlDoubleLimit($limit = null) {
+		private function sql_double_limit($limit = null) {
 			if (!is_null($limit)) {
 				if ((is_array($limit)) && (count($limit) == 2))
 					return implode(', ', $limit);
@@ -147,16 +147,16 @@
 				return false;
 		}
 
-		public function sqlDuplicate($duplicate = null) {
+		private function sql_duplicate(array $values, $duplicate = null) {
 			if (!is_null($duplicate)) {
 				$tmp = array();
 				if ((is_array($duplicate)) && (count($duplicate))) {
 					foreach ($values as $key => $value)
 						if (in_array($key, $duplicate))
-							$tmp[] = $this->sqlField($key).' = '.$this->protect($value);
+							$tmp[] = $this->sql_field($key).' = '.$this->protect($value);
 					return implode(', ', $tmp);
 				} else if (is_string($duplicate))
-					return $this->sqlField($duplicate).' = '.$this->protect($values[$duplicate]);
+					return $this->sql_field($duplicate).' = '.$this->protect($values[$duplicate]);
 			} else
 				return false;
 		}
@@ -198,7 +198,7 @@
 						$oper = false;
 						$ret .= $this->protect($item);
 					} else
-						$ret .= $this->sqlField($item);
+						$ret .= $this->sql_field($item);
 				}
 			}
 			return '('.$ret.')';
@@ -208,35 +208,35 @@
 			return $this->status;
 		}
 
-		public function transactionOpen() {
+		public function transaction_open() {
 			if (!is_null($this->db))
-				$this->db->blockBegin();
+				$this->db->block_begin();
 		}
 
-		public function transactionClose() {
+		public function transaction_close() {
 			if (!is_null($this->db))
-				$this->db->blockEnd();
+				$this->db->block_end();
 		}
 
-		public function transactionCancel() {
+		public function transaction_cancel() {
 			if (!is_null($this->db))
-				$this->db->blockCancel();
+				$this->db->block_cancel();
 		}
 
-		public function lastQuery() {
+		public function last_query() {
 			return $this->last_query;
 		}
 
-		public function lastError() {
+		public function last_error() {
 			if (!is_null($this->db))
-				return $this->db->lastError();
+				return $this->db->last_error();
 			else
 				return false;
 		}
 
-		public function lastID() {
+		public function last_id() {
 			if (!is_null($this->db))
-				return $this->db->lastInsertID();
+				return $this->db->last_insert_id();
 			else
 				return false;
 		}
@@ -245,18 +245,18 @@
 			if (!is_null($this->db)) {
 				if ($this->select) {
 					if ($resource)
-						return $this->db->numRows($resource);
+						return $this->db->num_rows($resource);
 					else
 						return false;
 				} else
-					return $this->db->affectedRows();
+					return $this->db->affected_rows();
 			} else
 				return false;
 		}
 
 		public function next($resource = false) {
 			if ($resource)
-				return $this->db->fetchAssoc($resource);
+				return $this->db->fetch_assoc($resource);
 			else
 				return false;
 		}
@@ -290,13 +290,13 @@
 			if (!is_null($this->db)) {
 				$table = trim($table);
 				if ($table != '') {
-					$sql_fields = $this->sqlField($fields);
-					$sql_join = $this->sqlJoin($join);
-					$sql_condition = $this->sqlCondition($condition);
-					$sql_group = $this->sqlGroup($group);
-					$sql_having = $this->sqlHaving($having);
-					$sql_order = $this->sqlOrder($order);
-					$sql_limit = $this->sqlDoubleLimit($limit);
+					$sql_fields = $this->sql_field($fields);
+					$sql_join = $this->sql_join($join);
+					$sql_condition = $this->sql_condition($condition);
+					$sql_group = $this->sql_group($group);
+					$sql_having = $this->sql_having($having);
+					$sql_order = $this->sql_order($order);
+					$sql_limit = $this->sql_double_limit($limit);
 
 					$sql = 'SELECT '.$sql_fields.' FROM `'.$this->prefix.$table.'`';
 					if ($sql_join)
@@ -330,10 +330,10 @@
 						$f = array();
 						$v = array();
 						foreach ($values as $key => $value) {
-							$f[] = $this->sqlField($key);
+							$f[] = $this->sql_field($key);
 							$v[] = $this->protect($value);
 						}
-						$sql_duplicate = $this->sqlDuplicate($duplicate);
+						$sql_duplicate = $this->sql_duplicate($values, $duplicate);
 
 						$sql = 'INSERT INTO `'.$this->prefix.$table.'` ';
 						$sql .= '('.implode(', ', $f).')';
@@ -358,8 +358,8 @@
 			if (!is_null($this->db)) {
 				$table = trim($table);
 				if ($table != '') {
-					$sql_condition = $this->sqlCondition($condition);
-					$sql_limit = $this->sqlSingleLimit($limit);
+					$sql_condition = $this->sql_condition($condition);
+					$sql_limit = $this->sql_single_limit($limit);
 
 					$sql = 'DELETE FROM `'.$this->prefix.$table.'`';
 					if ($sql_condition)
@@ -384,10 +384,10 @@
 					if ((!is_null($fields)) && (is_array($fields)) && (count($fields))) {
 						$u = array();
 						foreach ($fields as $key => $value)
-							$u[] = $this->sqlField($key).' = '.$this->protect($value);
+							$u[] = $this->sql_field($key).' = '.$this->protect($value);
 
-						$sql_condition = $this->sqlCondition($condition);
-						$sql_limit = $this->sqlSingleLimit($limit);
+						$sql_condition = $this->sql_condition($condition);
+						$sql_limit = $this->sql_single_limit($limit);
 
 						$sql = 'UPDATE `'.$this->prefix.$table.'`';
 						$sql .= ' SET ';

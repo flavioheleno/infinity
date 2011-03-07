@@ -20,9 +20,7 @@ Estrutura de diretórios
 ./js/core:			arquivos de javascript do framework (não edite a não ser que saiba o que está fazendo)
 ./tpl:				pasta que armazena os templates do sistema
 ./tpl/cache:		pasta que armazena os arquivos de cachê dos templates
-./tpl/app:			templates da aplicação do usuário
-./tpl/app/default:	páginas comuns (padrão) da aplicação
-./tpl/core:			templates do framework (não edite a não ser que saiba o que está fazendo)
+./tpl:				templates da aplicação do usuário
 
 Helpers disponíveis
 ---------------------------------
