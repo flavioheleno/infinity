@@ -37,8 +37,8 @@
 		}
 
 		//adds an input field to given handle
-		public function input(&$handle, $type, $label, $name, $value, array $properties = array(), array $rules = array(), array $messages = array()) {
-			$handle['input'][] = array(
+		public function input(&$handler, $type, $label, $name, $value, array $properties = array(), array $rules = array(), array $messages = array()) {
+			$handler['input'][] = array(
 				'type' => $type,
 				'label' => $label,
 				'name' => $name,
@@ -50,8 +50,8 @@
 		}
 
 		//adds a command button to given handle
-		public function command(&$handle, $name, $value, array $properties = array()) {
-			$handle['command'][] = array(
+		public function command(&$handler, $name, $value, array $properties = array()) {
+			$handler['command'][] = array(
 				'name' => $name,
 				'value' => $value,
 				'properties' => $properties
@@ -59,8 +59,8 @@
 		}
 
 		//adds a cancel button to given handle
-		public function cancel(&$handle, $name, $value, array $properties = array()) {
-			$handle['cancel'][] = array(
+		public function cancel(&$handler, $name, $value, array $properties = array()) {
+			$handler['cancel'][] = array(
 				'name' => $name,
 				'value' => $value,
 				'properties' => $properties
@@ -68,25 +68,30 @@
 		}
 
 		//javascript that will be executed before submitting the form
-		public function before_submit($js) {
-			$handle['submit']['pre'] = $js;
+		public function before_submit(&$handler, $js) {
+			$handler['submit']['pre'] = $js;
 		}
 
 		//javascript that will be executed after submitting the form
-		public function after_submit($js) {
-			$handle['submit']['pos'] = $js;
+		public function after_submit(&$handler, $js) {
+			$handler['submit']['pos'] = $js;
+		}
+
+		//adds javascript functions to validation code
+		public function add_script(&$handler, $js) {
+			$handler['script'][] = $js;
 		}
 
 		//renders the form
-		public function render($handle, $validation = true, array $message = array()) {
+		public function render($handler, $validation = true, array $message = array()) {
 			$bfr = '<div id="form">'."\n";
 			$bfr .= '	<fieldset>'."\n";
-			$bfr .= '		<legend>'.$handle['header']['title'].'</legend>'."\n";
+			$bfr .= '		<legend>'.$handler['header']['title'].'</legend>'."\n";
 			$bfr .= '		<form';
-			foreach ($handle['header'] as $key => $value)
+			foreach ($handler['header'] as $key => $value)
 				$bfr .= ' '.$key.'="'.$value.'"';
 			$bfr .= '>'."\n";
-			foreach ($handle['input'] as $item)
+			foreach ($handler['input'] as $item)
 				switch ($item['type']) {
 					case 'text':
 					case 'password':
@@ -136,7 +141,7 @@
 						$bfr .= ' />'."\n";
 						$bfr .= '				</div>'."\n";
 						$bfr .= '				<div class="fbr">'."\n";
-						$bfr .= '					<label id="label_'.$item['name'].'" for="'.$item['type'].'_'.$item['name'].'">'.$item['label'].':</label>'."\n";
+						$bfr .= '					<label id="label_'.$item['name'].'" for="'.$item['type'].'_'.$item['name'].'">'.$item['label'].'</label>'."\n";
 						$bfr .= '				</div>'."\n";
 						$bfr .= '			</div>'."\n";
 						$bfr .= '			<div id="error_'.$item['type'].'_'.$item['name'].'" class="error_container">'."\n";
@@ -170,15 +175,15 @@
 						$bfr .= '			<p><strong>Unsupported type: '.$item['type'].'</strong></p>'."\n";
 				}
 			$bfr .= '			<div id="fbb">'."\n";
-			if (isset($handle['command']))
-				foreach ($handle['command'] as $item) {
+			if (isset($handler['command']))
+				foreach ($handler['command'] as $item) {
 					$bfr .= '				<input type="submit" id="submit_'.$item['name'].'" name="submit_'.$item['name'].'" value="'.$item['value'].'"';
 					foreach ($item['properties'] as $key => $value)
 						$bfr .= ' '.$key.'="'.$value.'"';
 					$bfr .= ' />'."\n";
 				}
-			if (isset($handle['cancel']))
-				foreach ($handle['cancel'] as $item) {
+			if (isset($handler['cancel']))
+				foreach ($handler['cancel'] as $item) {
 					$bfr .= '				<input type="reset" id="reset_'.$item['name'].'" name="reset_'.$item['name'].'" value="'.$item['value'].'"';
 					foreach ($item['properties'] as $key => $value)
 						$bfr .= ' '.$key.'="'.$value.'"';
@@ -198,11 +203,14 @@
 			if ($validation) {
 				$bfr .= '<script type="text/javascript">'."\n";
 				$bfr .= '	$(document).ready(function() {'."\n";
+				if (isset($handler['script']))
+					foreach ($handler['script'] as $script)
+						$bfr .= '		'.$script."\n";
 				$bfr .= '		$(\'[id^=error_]\').hide();'."\n";
 				$bfr .= '	});'."\n";
-				$bfr .= '	$("#'.$handle['header']['id'].'").validate({'."\n";
+				$bfr .= '	$("#'.$handler['header']['id'].'").validate({'."\n";
 				$r = array();
-				foreach ($handle['input'] as $item) {
+				foreach ($handler['input'] as $item) {
 					if (count($item['rules'])) {
 						$line = '			'.$item['type'].'_'.$item['name'].': {'."\n";
 						$tmp = array();
@@ -224,7 +232,7 @@
 					$bfr .= '		},'."\n";
 				}
 				$m = array();
-				foreach ($handle['input'] as $item) {
+				foreach ($handler['input'] as $item) {
 					if (count($item['messages'])) {
 						$line = '			'.$item['type'].'_'.$item['name'].': {'."\n";
 						$tmp = array();
@@ -262,15 +270,15 @@
 				$bfr .= '				$(form).ajaxSubmit({'."\n";
 				$bfr .= '					clearForm: true,'."\n";
 				$bfr .= '					dataType: \'json\','."\n";
-				if (isset($handle['submit'])) {
-					if (isset($handle['submit']['pre'])) {
+				if (isset($handler['submit'])) {
+					if (isset($handler['submit']['pre'])) {
 						$bfr .= '					beforeSubmit: function() {'."\n";
-						$bfr .=	'						'.$handle['submit']['pre']."\n";
+						$bfr .=	'						'.$handler['submit']['pre']."\n";
 						$bfr .= '					},'."\n";
 					}
-					if (isset($handle['submit']['pos'])) {
+					if (isset($handler['submit']['pos'])) {
 						$bfr .= '					success: function (data) {'."\n";
-						$bfr .= '						'.$handle['submit']['pos']."\n";
+						$bfr .= '						'.$handler['submit']['pos']."\n";
 						$bfr .= '					}'."\n";
 					}
 				}

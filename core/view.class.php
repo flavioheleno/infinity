@@ -17,8 +17,6 @@
 		protected $aux = null;
 		//instance of xhtml class
 		protected $xhtml = null;
-		//instance of session class
-		protected $session = null;
 		//instance of log class
 		protected $log = null;
 		//sets the helpers needed by class
@@ -40,9 +38,6 @@
 			//creates xhtml object
 			if (in_array('xhtml', $this->uses))
 				$this->xhtml = new XHTML;
-			//creates session helper
-			if (in_array('session', $this->uses))
-				$this->session = SESSION::singleton($domain, true);
 		}
 
 		protected function display($title, $description = '', $keywords = '') {
