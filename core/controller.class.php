@@ -4,7 +4,7 @@
 	require_once __DIR__.'/session.class.php';
 	require_once __DIR__.'/email.class.php';
 	require_once __DIR__.'/privilege.class.php';
-	require_once __DIR__.'/cfg/core/framework.config.php';
+	require_once __DIR__.'/../cfg/core/framework.config.php';
 
 	class CONTROLLER {
 		//module name
@@ -32,7 +32,7 @@
 		public function __construct($name, &$log) {
 			global $_INFINITY_CFG;
 			$this->name = $name;
-			$this->path = $_INFINITY_CFG['path'];
+			$this->path = $_INFINITY_CFG['base_path'];
 			$this->log = $log;
 			//creates view object
 			if (in_array('view', $this->uses))

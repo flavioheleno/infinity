@@ -1,6 +1,6 @@
 <?php
 
-	require_once __DIR__.'/cfg/core/framework.config.php';
+	require_once __DIR__.'/../cfg/core/framework.config.php';
 
 	class EMAIL {
 		//holds configuration for email connection

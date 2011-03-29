@@ -1,6 +1,6 @@
 <?php
 
-	require_once __DIR__.'/cfg/core/framework.config.php';
+	require_once __DIR__.'/../cfg/core/framework.config.php';
 
 	class SESSION {
 		//holds class instance for singleton
