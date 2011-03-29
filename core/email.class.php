@@ -1,12 +1,15 @@
 <?php
 
+	require_once __DIR__.'/cfg/core/framework.config.php';
+
 	class EMAIL {
 		//holds configuration for email connection
 		private $cfg = array();
 
 		//class constructor
-		public function __construct(array $cfg) {
-			$this->cfg = $cfg;
+		public function __construct() {
+			global $_INFINITY_CFG;
+			$this->cfg = $_INFINITY_CFG['email'];
 		}
 
 		//sends the email

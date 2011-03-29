@@ -67,6 +67,11 @@
 			);
 		}
 
+		//adds a text item to given handle
+		public function text(&$handler, $text) {
+			$handler['text'][] = $text;
+		}
+
 		//javascript that will be executed before submitting the form
 		public function before_submit(&$handler, $js) {
 			$handler['submit']['pre'] = $js;
@@ -190,6 +195,12 @@
 					$bfr .= ' />'."\n";
 				}
 			$bfr .= '			</div>'."\n";
+			if (isset($handler['text']))
+				foreach ($handler['text'] as $item) {
+					$bfr .= '			<div class="fbc">'."\n";
+					$bfr .= '				'.$item."\n";
+					$bfr .= '			</div>'."\n";
+				}
 			$bfr .= '		</form>'."\n";
 			if (count($message)) {
 				$bfr .= '		<legend>Observa&ccedil;&atilde;o</legend>'."\n";

@@ -10,16 +10,16 @@
 				return false;
 		}
 
-		public static function load_controller($name, &$log, $domain, $path, $email) {
+		public static function load_controller($name, &$log) {
 			$file = __DIR__.'/../app/'.strtolower($name).'.controller.php';
 			if (file_exists($file)) {
 				require_once $file;
 				$name = strtoupper($name);
 				$module = $name.'_CONTROLLER';
-				return new $module($name, $log, $domain, $path, $email);
+				return new $module($name, $log);
 			} else {
 				require_once __DIR__.'/controller.class.php';
-				return new CONTROLLER(strtoupper($name), $log, $domain, $path, $email);
+				return new CONTROLLER(strtoupper($name), $log);
 			}
 		}
 
@@ -32,13 +32,13 @@
 				return null;
 		}
 
-		public static function load_view($name, &$log, $domain) {
+		public static function load_view($name, &$log) {
 			$file = __DIR__.'/../app/'.strtolower($name).'.view.php';
 			if (file_exists($file)) {
 				require_once $file;
 				$name = strtoupper($name);
 				$module = $name.'_VIEW';
-				return new $module($name, $log, $domain);
+				return new $module($name, $log);
 			} else
 				return null;
 		}

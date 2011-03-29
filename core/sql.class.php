@@ -278,7 +278,7 @@
 			if (!is_null($this->db)) {
 				if (!is_null($command)) {
 					$this->last_query = $command;
-					$this->db->query($command);
+					return $this->db->query($command);
 				} else
 					return false;
 			} else

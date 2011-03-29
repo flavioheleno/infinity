@@ -4,6 +4,7 @@
 	require_once __DIR__.'/session.class.php';
 	require_once __DIR__.'/email.class.php';
 	require_once __DIR__.'/privilege.class.php';
+	require_once __DIR__.'/cfg/core/framework.config.php';
 
 	class CONTROLLER {
 		//module name
@@ -28,13 +29,14 @@
 		protected $uses = array('view');
 
 		//class constructor
-		public function __construct($name, &$log, $domain, $path, $email) {
+		public function __construct($name, &$log) {
+			global $_INFINITY_CFG;
 			$this->name = $name;
-			$this->path = $path;
+			$this->path = $_INFINITY_CFG['path'];
 			$this->log = $log;
 			//creates view object
 			if (in_array('view', $this->uses))
-				$this->view = AUTOLOAD::load_view($name, $log, $domain);
+				$this->view = AUTOLOAD::load_view($name, $log);
 			//creates model object
 			if (in_array('model', $this->uses))
 				$this->model = AUTOLOAD::load_model($name, $log);
@@ -43,10 +45,10 @@
 				$this->aux = AUTOLOAD::load_aux_controller();
 			//creates session helper
 			if (in_array('session', $this->uses))
-				$this->session = SESSION::singleton($domain, true);
+				$this->session = SESSION::singleton(true);
 			//creates email object
 			if (in_array('email', $this->uses))
-				$this->email = new EMAIL($email);
+				$this->email = new EMAIL;
 		}
 
 		//changes a route for a given action
@@ -56,8 +58,8 @@
 		}
 
 		//creates a 302 HTTP redirect
-		public function redirect($url) {
-			if (strtolower(substr($url, 0, 7)) == 'http://')
+		public function redirect($url = '') {
+			if (($url != '') && (strtolower(substr($url, 0, 7)) == 'http://'))
 				header('Location: '.$url);
 			else
 				header('Location: '.$this->path.$url);

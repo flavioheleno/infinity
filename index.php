@@ -25,7 +25,7 @@
 	//checks if module name is well formed
 	if (preg_match('/^[a-z_][a-z0-9_-]+$/i', $module))
 		//grabs a new instance of module
-		$controller = AUTOLOAD::load_controller($module, $log, $_INFINITY_CFG['domain'], $_INFINITY_CFG['base_path'], $_INFINITY_CFG['email']);
+		$controller = AUTOLOAD::load_controller($module, $log);
 	else
 		$controller = null;
 

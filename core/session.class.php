@@ -1,5 +1,7 @@
 <?php
 
+	require_once __DIR__.'/cfg/core/framework.config.php';
+
 	class SESSION {
 		//holds class instance for singleton
 		private static $instance = null;
@@ -15,15 +17,16 @@
 		private $idletime = 0;
 
 		//class constructor
-		public function __construct($domain, $subdomain = false, $idletime = 1800) {
-			if ($domain != '') {
-				$this->name = substr($domain, 0, strpos($domain, '.'));
+		public function __construct($subdomain = false, $idletime = 1800) {
+			global $_INFINITY_CFG;
+			if ($_INFINITY_CFG['domain'] != '') {
+				$this->name = substr($_INFINITY_CFG['domain'], 0, strpos($_INFINITY_CFG['domain'], '.'));
 				session_name($this->name);
 			}
-			$this->domain = $domain;
+			$this->domain = $_INFINITY_CFG['domain'];
 			$this->subdomain = $subdomain;
 			$this->idletime = $idletime;
-			session_set_cookie_params(0, '/', ($subdomain ? '.' : '').$domain);
+			session_set_cookie_params(0, '/', ($subdomain ? '.' : '').$_INFINITY_CFG['domain']);
 			session_start();
 			if (!isset($_SESSION['timeout']))
 				$_SESSION['timeout'] = time() + $this->idletime;
@@ -41,10 +44,10 @@
 		}
 
 		//singleton method - avoids the creation of more than one instance
-		public static function singleton($domain, $subdomain = false, $idletime = 1800) {
+		public static function singleton($subdomain = false, $idletime = 1800) {
 			//checks if there is an instance of class, if not, create it
 			if (!isset(self::$instance))
-				self::$instance = new SESSION($domain, $subdomain, $idletime);
+				self::$instance = new SESSION($subdomain, $idletime);
 			return self::$instance;
 		}
 

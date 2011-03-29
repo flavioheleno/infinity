@@ -3,6 +3,7 @@
 	require_once __DIR__.'/template.class.php';
 	require_once __DIR__.'/form.class.php';
 	require_once __DIR__.'/xhtml.class.php';
+	require_once __DIR__.'/url.class.php';
 	require_once __DIR__.'/log.class.php';
 	require_once __DIR__.'/msg.class.php';
 
@@ -17,13 +18,15 @@
 		protected $aux = null;
 		//instance of xhtml class
 		protected $xhtml = null;
+		//instance of url class
+		protected $url = null;
 		//instance of log class
 		protected $log = null;
 		//sets the helpers needed by class
 		protected $uses = array();
 
 		//class constructor
-		public function __construct($name, &$log, $domain = '') {
+		public function __construct($name, &$log) {
 			$this->name = $name;
 			$this->log = $log;
 			//creates template object
@@ -38,6 +41,9 @@
 			//creates xhtml object
 			if (in_array('xhtml', $this->uses))
 				$this->xhtml = new XHTML;
+			//creates url object
+			if (in_array('url', $this->uses))
+				$this->url = new URL;
 		}
 
 		protected function display($title, $description = '', $keywords = '') {
