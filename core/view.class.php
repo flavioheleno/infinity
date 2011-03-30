@@ -48,10 +48,6 @@
 
 		protected function display($title, $description = '', $keywords = '') {
 			if ((!is_null($this->tpl)) && (!is_null($this->xhtml))) {
-				if (basename($_SERVER['SCRIPT_NAME']) == 'index.php')
-					$this->tpl->set('base-link', dirname($_SERVER['SCRIPT_NAME']).'?'.$_SERVER['QUERY_STRING'].'&amp;');
-				else
-					$this->tpl->set('base-link', $_SERVER['SCRIPT_NAME'].'?'.$_SERVER['QUERY_STRING'].'&amp;');
 				$this->xhtml->set_title($title);
 				$this->xhtml->set_description($description);
 				$this->xhtml->set_keywords($keywords);

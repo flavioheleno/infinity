@@ -69,4 +69,5 @@
 	$log->add('Can\'t find '.$module.'->'.$action.', showing default page');
 	header('Status: 404 Not Found');
 	echo '404 - Not Found';
+
 ?>
