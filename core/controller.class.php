@@ -23,8 +23,8 @@
 		protected $log = null;
 		//web path
 		protected $path = '/';
-		//sets the routes for this controller
-		protected $routes = array();
+		//sets the aliases for this controller
+		protected $alias = array();
 		//sets the helpers needed by class
 		protected $uses = array('view');
 
@@ -51,10 +51,10 @@
 				$this->email = new EMAIL;
 		}
 
-		//changes a route for a given action
-		public function check_route(&$action) {
-			if (isset($this->routes[$action]))
-				$action = $this->routes[$action];
+		//changes an alias for a given action
+		public function check_alias(&$action) {
+			if (isset($this->alias[$action]))
+				$action = $this->alias[$action];
 		}
 
 		//creates a 302 HTTP redirect
@@ -68,19 +68,22 @@
 
 		//cleans every form variable
 		public static function clean_enviroment(array &$env) {
-			foreach ($env as $k => $v)
-				if (preg_match('/^(text_|password_|textarea_|checkbox_|radio_|select_|hidden_|submit_|reset_)/', $k))
-					unset($env[$k]);
+			foreach ($env['request'] as $key => $value)
+				if (preg_match('/^(text_|password_|textarea_|checkbox_|radio_|select_|hidden_|submit_|reset_)/', $key))
+					unset($env['request'][$key]);
 		}
 
 		//direct calls view function
 		public function __call($function, $arguments) {
 			if (!is_null($this->view)) {
-				if (is_callable(array($this->view, $function)))
+				if (is_callable(array($this->view, $function))) {
 					$this->view->$function($arguments);
-				else
+					return true;
+				} else if (is_callable(array($this->view, 'error'))) {
 					$this->view->error($arguments);
-				return true;
+					return true;
+				} else
+					return false;
 			} else
 				return false;
 		}

@@ -37,7 +37,7 @@
 		}
 
 		//adds an input field to given handle
-		public function input(&$handler, $type, $label, $name, $value, array $properties = array(), array $rules = array(), array $messages = array()) {
+		public function input(&$handler, $type, $label, $name, $value = '', array $properties = array(), array $rules = array(), array $messages = array()) {
 			$handler['input'][] = array(
 				'type' => $type,
 				'label' => $label,

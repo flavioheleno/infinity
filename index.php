@@ -44,8 +44,8 @@
 
 		//checks if action name is well formed
 		if ((preg_match('/^[a-z_][a-z0-9_-]+$/i', $action)) && (substr($action, 0, 2) != '__')) {
-			//checks if there is a route for the given module->action and updates it
-			$controller->check_route($action);
+			//checks if there is an alias for the given module->action and updates it
+			$controller->check_alias($action);
 			//creates enviroment variable to hold request data, server data and user data
 			$env = array(
 				'request' => $_REQUEST,

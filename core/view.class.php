@@ -59,9 +59,6 @@
 		//default called method when no action is defined
 		public abstract function index(array $env);
 
-		//error method, called when not existent action is called
-		public abstract function error(array $env);
-
 	}
 
 ?>

@@ -43,7 +43,7 @@ select {
 
 #form > fieldset {
 	border: 1px solid #C0C0C0;
-	background-color: #f0f0f0;
+	background-image: url('../../img/white-bg.png');
 	margin-bottom: 20px;
 }
 
