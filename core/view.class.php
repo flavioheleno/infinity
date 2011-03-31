@@ -1,5 +1,6 @@
 <?php
 
+	require_once __DIR__.'/data.class.php';
 	require_once __DIR__.'/template.class.php';
 	require_once __DIR__.'/form.class.php';
 	require_once __DIR__.'/xhtml.class.php';
@@ -10,6 +11,8 @@
 	abstract class VIEW {
 		//module name
 		protected $name = '';
+		//instance of data class
+		protected $data = null;
 		//instance of template class
 		protected $tpl = null;
 		//instance of form class
@@ -29,6 +32,7 @@
 		public function __construct($name, &$log) {
 			$this->name = $name;
 			$this->log = $log;
+			$this->data = DATA::singleton();
 			//creates template object
 			if (in_array('template', $this->uses))
 				$this->tpl = new TEMPLATE(__DIR__.'/../tpl', __DIR__.'/../tpl/cache');
@@ -55,9 +59,6 @@
 				$this->xhtml->render();
 			}
 		}
-
-		//default called method when no action is defined
-		public abstract function index(array $env);
 
 	}
 

@@ -1,5 +1,6 @@
 <?php
 
+	require_once __DIR__.'/data.class.php';
 	require_once __DIR__.'/validator.class.php';
 	require_once __DIR__.'/sql.class.php';
 	require_once __DIR__.'/../cfg/core/db.config.php';
@@ -7,6 +8,8 @@
 	abstract class MODEL {
 		//module name
 		protected $name = '';
+		//instance of data class
+		protected $data = null;
 		//instance of sql class
 		protected $db = null;
 		//instance of auxiliar class
@@ -24,6 +27,7 @@
 		public function __construct($name, &$log) {
 			$this->name = $name;
 			$this->log = $log;
+			$this->data = DATA::singleton();
 			$cfg = array(
 				'hostname' => db_hostname,
 				'database' => db_database,

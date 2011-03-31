@@ -1,6 +1,7 @@
 <?php
 
 	require_once __DIR__.'/autoload.class.php';
+	require_once __DIR__.'/data.class.php';
 	require_once __DIR__.'/session.class.php';
 	require_once __DIR__.'/email.class.php';
 	require_once __DIR__.'/privilege.class.php';
@@ -9,6 +10,8 @@
 	class CONTROLLER {
 		//module name
 		protected $name = '';
+		//instance of data class
+		protected $data = null;
 		//instance of view class
 		protected $view = null;
 		//instance of model class
@@ -27,6 +30,8 @@
 		protected $alias = array();
 		//sets the helpers needed by class
 		protected $uses = array('view');
+		//sets the controller's default action
+		public $default_action = 'index';
 
 		//class constructor
 		public function __construct($name, &$log) {
@@ -34,6 +39,7 @@
 			$this->name = $name;
 			$this->path = $_INFINITY_CFG['base_path'];
 			$this->log = $log;
+			$this->data = DATA::singleton();
 			//creates view object
 			if (in_array('view', $this->uses))
 				$this->view = AUTOLOAD::load_view($name, $log);
@@ -67,10 +73,10 @@
 		}
 
 		//cleans every form variable
-		public static function clean_enviroment(array &$env) {
-			foreach ($env['request'] as $key => $value)
+		public static function clean_enviroment() {
+			foreach ($_REQUEST as $key => $value)
 				if (preg_match('/^(text_|password_|textarea_|checkbox_|radio_|select_|hidden_|submit_|reset_)/', $key))
-					unset($env['request'][$key]);
+					unset($_REQUEST[$key]);
 		}
 
 		//direct calls view function

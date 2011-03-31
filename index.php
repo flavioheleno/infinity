@@ -39,28 +39,22 @@
 		else if (isset($_REQUEST['action']))
 			$action = strtolower($_REQUEST['action']);
 		else
-			$action = 'index';
+			$action = $controller->default_action;
 		$log->add('Action parameter: '.$action);
 
 		//checks if action name is well formed
 		if ((preg_match('/^[a-z_][a-z0-9_-]+$/i', $action)) && (substr($action, 0, 2) != '__')) {
 			//checks if there is an alias for the given module->action and updates it
 			$controller->check_alias($action);
-			//creates enviroment variable to hold request data, server data and user data
-			$env = array(
-				'request' => $_REQUEST,
-				'server' => $_SERVER,
-				'user' => array()
-			);
 			//checks if action exists
 			if (method_exists($controller, $action)) {
 				//calls the controller's action
-				$controller->$action($env);
+				$controller->$action();
 				//prevents default page to be shown
 				exit;
 			} else {
 				//tries to call the controller's action
-				if ($controller->$action($env))
+				if ($controller->$action())
 					//prevents default page to be shown
 					exit;
 			}
