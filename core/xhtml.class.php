@@ -123,52 +123,55 @@
 			$content = str_replace("\r", '', $content);
 			$tmp = explode("\n", $content);
 			$count = count($tmp);
+			$bfr = '';
 			for ($i = 0; $i < $count; $i++) {
 				$tmp[$i] = trim($tmp[$i]);	
 				if ((preg_match('/^<[^>]+\/>$/', $tmp[$i])) || (preg_match('/<[^>]+>.*?<\/[^>]+>$/', $tmp[$i])))
-					echo str_repeat("\t", $indent).$tmp[$i]."\n";
+					$bfr .= str_repeat("\t", $indent).$tmp[$i]."\n";
 				else if (preg_match('/^<\/[^>]+>$/', $tmp[$i])) {
 					$indent--;
-					echo str_repeat("\t", $indent).$tmp[$i]."\n";
+					$bfr .= str_repeat("\t", $indent).$tmp[$i]."\n";
 				} else if (preg_match('/^<[^>]+>$/', $tmp[$i])) {
-					echo str_repeat("\t", $indent).$tmp[$i]."\n";
+					$bfr .= str_repeat("\t", $indent).$tmp[$i]."\n";
 					$indent++;
 				} else
-					echo str_repeat("\t", $indent).$tmp[$i]."\n";
+					$bfr .= str_repeat("\t", $indent).$tmp[$i]."\n";
 			}
+			return $bfr;
 		}
 
 		public function render() {
-			echo '<?xml version="1.0" encoding="'.$this->enc.'"?>'."\n";
-			echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'."\n";
-			echo '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="'.$this->lang.'" lang="'.$this->lang.'">'."\n";
-			echo '	<head>'."\n";
+			$bfr = '<?xml version="1.0" encoding="'.$this->enc.'"?>'."\n";
+			$bfr .= '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'."\n";
+			$bfr .= '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="'.$this->lang.'" lang="'.$this->lang.'">'."\n";
+			$bfr .= '	<head>'."\n";
 			$this->http = array_unique($this->http);
 			foreach ($this->http as $key => $value)
-				echo '		<meta http-equiv="'.$key.'" content="'.$value.'" />'."\n";
+				$bfr .= '		<meta http-equiv="'.$key.'" content="'.$value.'" />'."\n";
 			$this->meta = array_unique($this->meta);
 			foreach ($this->meta as $key => $value)
-				echo '		<meta name="'.$key.'" content="'.$value.'" xml:lang="'.$this->lang.'" lang="'.$this->lang.'" />'."\n";
+				$bfr .= '		<meta name="'.$key.'" content="'.$value.'" xml:lang="'.$this->lang.'" lang="'.$this->lang.'" />'."\n";
 			if ((!is_null($this->description)) && ($this->description))
-				echo '		<meta name="description" content="'.$this->description.'" xml:lang="'.$this->lang.'" lang="'.$this->lang.'" />'."\n";
+				$bfr .= '		<meta name="description" content="'.$this->description.'" xml:lang="'.$this->lang.'" lang="'.$this->lang.'" />'."\n";
 			if ((!is_null($this->keywords)) && ($this->keywords))
-				echo '		<meta name="keywords" content="'.$this->keywords.'" xml:lang="'.$this->lang.'" lang="'.$this->lang.'" />'."\n";
+				$bfr .= '		<meta name="keywords" content="'.$this->keywords.'" xml:lang="'.$this->lang.'" lang="'.$this->lang.'" />'."\n";
 			if ((!is_null($this->title)) && ($this->title))
-				echo '		<title>'.$this->title.'</title>'."\n";
+				$bfr .= '		<title>'.$this->title.'</title>'."\n";
 			if ((!is_null($this->favicon)) && ($this->favicon))
-				echo '		<link rel="shortcut icon" type="image/x-icon" href="'.$this->favicon.'" />'."\n";
+				$bfr .= '		<link rel="shortcut icon" type="image/x-icon" href="'.$this->favicon.'" />'."\n";
 			$this->css = array_unique($this->css);
 			foreach ($this->css as $item)
-				echo '		<link rel="stylesheet" type="text/css" href="'.$item.'" />'."\n";
+				$bfr .= '		<link rel="stylesheet" type="text/css" href="'.$item.'" />'."\n";
 			$this->js = array_unique($this->js);
 			foreach ($this->js as $item)
-				echo '		<script type="text/javascript" src="'.$item.'"></script>'."\n";
-			echo '	</head>'."\n";
-			echo '	<body>'."\n";
+				$bfr .= '		<script type="text/javascript" src="'.$item.'"></script>'."\n";
+			$bfr .= '	</head>'."\n";
+			$bfr .= '	<body>'."\n";
 			foreach ($this->content as $item)
-				$this->parse($item, 2);
-			echo '	</body>'."\n";
-			echo '</html>'."\n";
+				$bfr .= $this->parse($item, 2);
+			$bfr .= '	</body>'."\n";
+			$bfr .= '</html>'."\n";
+			return $bfr;
 		}
 
 	}

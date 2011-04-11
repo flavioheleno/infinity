@@ -9,6 +9,8 @@
 		protected $tpl = null;
 		//instance of xhtml class
 		protected $xhtml = null;
+		//instance of cache class
+		protected $cache = null;
 		//instance of log class
 		protected $log = null;
 		//sets the helpers needed by class
@@ -22,8 +24,12 @@
 			//creates template object
 			if (in_array('template', $this->uses))
 				$this->tpl = new TEMPLATE(__DIR__.'/../tpl', __DIR__.'/../tpl/cache');
+			//creates xhtml object
 			if (in_array('xhtml', $this->uses))
 				$this->xhtml = new XHTML;
+			//creates cache object
+			if (in_array('cache', $this->uses))
+				$this->cache = new CACHE($name);
 		}
 
 		protected function display($title, $description = '', $keywords = '') {
@@ -32,8 +38,9 @@
 				$this->xhtml->set_description($description);
 				$this->xhtml->set_keywords($keywords);
 				$this->xhtml->append_content($this->tpl->get());
-				$this->xhtml->render();
-			}
+				return $this->xhtml->render();
+			} else
+				return null;
 		}
 
 	}
