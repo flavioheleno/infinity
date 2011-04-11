@@ -10,63 +10,96 @@
 			return utf8_encode($value);
 		}
 
-		public static function check($value, $rules) {
-			$valid = true;
-			$value = self::cleanup($value);
-			foreach ($rules as $k => $v) {
+		public static function sanitize(&$value, $rules) {
+			foreach ($rules as $k => $v)
 				if ($v)
 					switch ($k) {
-						case 'required':
-							$valid &= ($value != '');
-							break;
 						case 'alphanumeric':
-							$valid &= preg_match('/^[0-9a-z _-]+$/i', $value);
+							$value = filter_var($value, FILTER_SANITIZE_STRING, (FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH));
 							break;
 						case 'number':
-							$valid &= preg_match('/^[0-9]+$/', $value);
+						case 'min':
+						case 'max':
+						case 'range':
+							$value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
 							break;
 						case 'decimal':
-							$valid &= preg_match('/^[0-9]+,[0-9]+$/', $value);
+							$value = filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT, (FILTER_FLAG_ALLOW_FRACTION | FILTER_FLAG_ALLOW_THOUSAND));
 							break;
 						case 'string':
-							$valid &= preg_match('/^[a-z _-]+$/i', $value);
+						case 'minlength':
+						case 'maxlength':
+						case 'rangelength':
+							$value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
 							break;
 						case 'email':
-							
+							$value = filter_var($value, FILTER_SANITIZE_EMAIL);
 							break;
 						case 'url':
-							
+							$value = filter_var($value, FILTER_SANITIZE_URL);
 							break;
 						case 'date':
-							$valid &= preg_match('/^(0[1-9]|1[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/[1-9][0-9]{3}$/', $value);
-							break;
-						case 'min':
-							$valid &= ($value >= intval($v));
-							break;
-						case 'max':
-							$valid &= ($value <= intval($v));
-							break;
-						case 'range':
-							if ((is_array($v)) && (count($v) == 2))
-								$valid &= (($value >= intval($v[0])) && ($value <= intval($v[1])));
-							else
-								$valid = false;
-							break;
-						case 'minlength':
-							$valid &= (strlen($value) >= intval($v));
-							break;
-						case 'maxlength':
-							$valid &= (strlen($value) <= intval($v));
-							break;
-						case 'rangelength':
-							if ((is_array($v)) && (count($v) == 2))
-								$valid &= ((strlen($value) >= intval($v[0])) && (strlen($value) <= intval($v[1])));
-							else
-								$valid = false;
+							$value = preg_replace('/[^0-9\/]+/', '', $value);
 							break;
 						default:
 							exit('invalid validator rule: '.$k);
 					}
+		}
+
+		public static function check($value, $rules) {
+			$valid = true;
+			$item = true;
+			//$value = self::cleanup($value);
+			foreach ($rules as $k => $v) {
+				if ($v)
+					switch ($k) {
+						case 'required':
+							$item = (boolean)($value != '');
+							break;
+						case 'alphanumeric':
+							$item = (boolean)preg_match('/^[0-9a-z _-]+$/i', $value);
+							break;
+						case 'number':
+							$item = filter_var($value, FILTER_VALIDATE_INT);
+							break;
+						case 'decimal':
+							$item = filter_var($value, FILTER_VALIDATE_FLOAT, FILTER_FLAG_ALLOW_THOUSAND);
+							break;
+						case 'string':
+							$item = filter_var($value, FILTER_VALIDATE_STRING);
+							break;
+						case 'email':
+							$item = filter_var($value, FILTER_VALIDATE_EMAIL);
+							break;
+						case 'url':
+							$item = filter_var($value, FILTER_VALIDATE_URL);
+							break;
+						case 'date':
+							$item = (boolean)preg_match('/^(0[1-9]|1[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/[1-2][0-9]{3}$/', $value);
+							break;
+						case 'min':
+							$item = (boolean)($value >= intval($v));
+							break;
+						case 'max':
+							$item = (boolean)($value <= intval($v));
+							break;
+						case 'range':
+							$item = filter_var($value, FILTER_VALIDATE_INT, array('min_range' => $v[0], 'max_range' => $v[1]));
+							break;
+						case 'minlength':
+							$item = (boolean)(strlen($value) >= intval($v));
+							break;
+						case 'maxlength':
+							$item = (boolean)(strlen($value) <= intval($v));
+							break;
+						case 'rangelength':
+							$item = filter_var(strlen($value), FILTER_VALIDATE_INT, array('min_range' => $v[0], 'max_range' => $v[1]));$item = filter_var($value, FILTER_VALIDATE_INT, array('min_range' => $v[0], 'max_range' => $v[1]));
+							break;
+						default:
+							exit('invalid validator rule: '.$k);
+					}
+				if ($item === false)
+					$valid = false;
 			}
 			return $valid;
 		}

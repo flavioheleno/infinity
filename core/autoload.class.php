@@ -1,13 +1,17 @@
 <?php
 
+	spl_autoload_register('AUTOLOAD::load');
+
 	class AUTOLOAD {
 
-		public static function load_plugin($file) {
-			if (file_exists($file)) {
-				require_once $file;
-				return true;
-			} else
-				return false;
+		public static function load($class) {
+			$class = strtolower($class);
+			if (preg_match('/^aux_/i', $class)) {
+				$class = str_replace('_', '.', $class);
+				if ((file_exists(__DIR__.'/../app/'.$class.'.php')) && (is_file(__DIR__.'/../app/'.$class.'.php')))
+					require_once __DIR__.'/../app/'.$class.'.php';
+			} else if ((file_exists(__DIR__.'/'.$class.'.class.php')) && (is_file(__DIR__.'/'.$class.'.class.php')))
+				require_once __DIR__.'/'.$class.'.class.php';
 		}
 
 		public static function load_controller($name, &$log) {
@@ -23,15 +27,6 @@
 			}
 		}
 
-		public static function load_aux_controller() {
-			$file = __DIR__.'/../app/aux.controller.php';
-			if (file_exists($file)) {
-				require_once $file;
-				return new AUX_CONTROLLER;
-			} else
-				return null;
-		}
-
 		public static function load_view($name, &$log) {
 			$file = __DIR__.'/../app/'.strtolower($name).'.view.php';
 			if (file_exists($file)) {
@@ -43,15 +38,6 @@
 				return null;
 		}
 
-		public static function load_aux_view() {
-			$file = __DIR__.'/../app/aux.view.php';
-			if (file_exists($file)) {
-				require_once $file;
-				return new AUX_VIEW;
-			} else
-				return null;
-		}
-
 		public static function load_model($name, &$log) {
 			$file = __DIR__.'/../app/'.strtolower($name).'.model.php';
 			if (file_exists($file)) {
@@ -59,15 +45,6 @@
 				$name = strtoupper($name);
 				$module = $name.'_MODEL';
 				return new $module($name, $log);
-			} else
-				return null;
-		}
-
-		public static function load_aux_model() {
-			$file = __DIR__.'/../app/aux.model.php';
-			if (file_exists($file)) {
-				require_once $file;
-				return new AUX_MODEL;
 			} else
 				return null;
 		}

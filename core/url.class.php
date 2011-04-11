@@ -4,7 +4,7 @@
 
 	class URL {
 
-		public function create(array $param, $html = true) {
+		public static function create(array $param, $html = true) {
 			global $_INFINITY_CFG;
 			parse_str($_SERVER['QUERY_STRING'], $query);
 			foreach ($param as $key => $value)

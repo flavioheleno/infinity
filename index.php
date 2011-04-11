@@ -1,11 +1,14 @@
 <?php
 
 	require_once __DIR__.'/core/autoload.class.php';
-	require_once __DIR__.'/core/log.class.php';
-	require_once __DIR__.'/core/msg.class.php';
 	require_once __DIR__.'/cfg/core/framework.config.php';
 
 	global $_INFINITY_CFG;
+
+	if ($_INFINITY_CFG['benchmark'])
+		register_shutdown_function(function($start) {
+			echo '<!-- benchmark '.round(((microtime(true) - $start) * 1000), 2).'ms -->';
+		}, microtime(true));
 
 	//creates log object
 	$log = LOG::singleton('infinity.log');

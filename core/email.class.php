@@ -1,27 +1,20 @@
 <?php
 
+	require_once 'Swift.php';
 	require_once __DIR__.'/../cfg/core/framework.config.php';
 
 	class EMAIL {
-		//holds configuration for email connection
-		private $cfg = array();
-
-		//class constructor
-		public function __construct() {
-			global $_INFINITY_CFG;
-			$this->cfg = $_INFINITY_CFG['email'];
-		}
 
 		//sends the email
-		public function send($acc, array $to, $subject, $body, &$failures = array(), $attachment = '') {
-			if (isset($this->cfg['accs'][$acc]))
+		public static function send($acc, array $to, $subject, $body, &$failures = array(), $attachment = '') {
+			if (isset($_INFINITY_CFG['email']['accs'][$acc]))
 				try {
-					if (isset($this->cfg['accs'][$acc]['host']))
-						$smtp = new Swift_SmtpTransport($this->cfg['accs'][$acc]['host'], $this->cfg['accs'][$acc]['port']);
+					if (isset($_INFINITY_CFG['email']['accs'][$acc]['host']))
+						$smtp = new Swift_SmtpTransport($_INFINITY_CFG['email']['accs'][$acc]['host'], $_INFINITY_CFG['email']['accs'][$acc]['port']);
 					else
-						$smtp = new Swift_SmtpTransport($this->cfg['host'], $this->cfg['port']);
-					$smtp->setUsername($this->cfg['accs'][$acc]['user']);
-					$smtp->setpassword($this->cfg['accs'][$acc]['pass']);
+						$smtp = new Swift_SmtpTransport($_INFINITY_CFG['email']['host'], $_INFINITY_CFG['email']['port']);
+					$smtp->setUsername($_INFINITY_CFG['email']['accs'][$acc]['user']);
+					$smtp->setpassword($_INFINITY_CFG['email']['accs'][$acc]['pass']);
 
 					$message = new Swift_Message();
 					$message->setPriority(1);
@@ -30,12 +23,12 @@
 					$message->setSubject($subject);
 					$message->setBody($body, 'text/html');
 					$message->addPart(utf8_encode(html_entity_decode(strip_tags($body))), 'text/plain');
-					$message->setFrom(array($this->cfg['accs'][$acc]['user'] => $this->cfg['accs'][$acc]['name']));
+					$message->setFrom(array($_INFINITY_CFG['email']['accs'][$acc]['user'] => $_INFINITY_CFG['email']['accs'][$acc]['name']));
 					$message->setTo($to);
-					if (isset($this->cfg['accs'][$acc]['reply']))
-						$message->setReplyTo($this->cfg['accs'][$acc]['reply']);
+					if (isset($_INFINITY_CFG['email']['accs'][$acc]['reply']))
+						$message->setReplyTo($_INFINITY_CFG['email']['accs'][$acc]['reply']);
 					else
-						$message->setReplyTo(array($this->cfg['accs'][$acc]['user'] => $this->cfg['accs'][$acc]['name']));
+						$message->setReplyTo(array($_INFINITY_CFG['email']['accs'][$acc]['user'] => $_INFINITY_CFG['email']['accs'][$acc]['name']));
 					if ($attachment != '')
 						$message->attach(Swift_Attachment::fromPath($attachment));
 					$mailer = new Swift_Mailer($smtp);

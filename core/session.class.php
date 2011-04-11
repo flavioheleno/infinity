@@ -9,7 +9,7 @@
 		private $domain = '';
 		//holds the session name
 		private $name = '';
-		//sets when the session cooki is valid in subdomain
+		//sets when the session cookie is valid in subdomain
 		private $subdomain = false;
 		//holds timeout state of session
 		private $timeout = false;

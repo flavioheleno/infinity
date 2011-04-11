@@ -1,10 +1,5 @@
 <?php
 
-	require_once __DIR__.'/autoload.class.php';
-	require_once __DIR__.'/data.class.php';
-	require_once __DIR__.'/session.class.php';
-	require_once __DIR__.'/email.class.php';
-	require_once __DIR__.'/privilege.class.php';
 	require_once __DIR__.'/../cfg/core/framework.config.php';
 
 	class CONTROLLER {
@@ -16,12 +11,8 @@
 		protected $view = null;
 		//instance of model class
 		protected $model = null;
-		//instance of auxiliar class
-		protected $aux = null;
 		//instance of session class
 		protected $session = null;
-		//instance of email class
-		protected $email = null;
 		//instance of log class
 		protected $log = null;
 		//web path
@@ -46,15 +37,9 @@
 			//creates model object
 			if (in_array('model', $this->uses))
 				$this->model = AUTOLOAD::load_model($name, $log);
-			//creates controller's auxiliar object
-			if (in_array('aux', $this->uses))
-				$this->aux = AUTOLOAD::load_aux_controller();
 			//creates session helper
 			if (in_array('session', $this->uses))
 				$this->session = SESSION::singleton(true);
-			//creates email object
-			if (in_array('email', $this->uses))
-				$this->email = new EMAIL;
 		}
 
 		//changes an alias for a given action

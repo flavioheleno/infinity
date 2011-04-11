@@ -3,14 +3,14 @@
 	class FORM {
 
 		//returns the css files needed by form
-		public function css() {
+		public static function css() {
 			return array(
 				'css/core/form.css'
 			);
 		}
 
 		//returns the js files needed by validation script
-		public function js() {
+		public static function js() {
 			return array(
 				'js/core/jquery.js',
 				'js/core/jquery.form.js',
@@ -23,7 +23,7 @@
 		}
 
 		//creates a new form
-		public function create($title, $id, $action, $method = 'post', $enctype = 'application/x-www-form-urlencoded') {
+		public static function create($title, $id, $action, $method = 'post', $enctype = 'application/x-www-form-urlencoded') {
 			return array(
 				'header' => array(
 					'title' => $title,
@@ -37,7 +37,7 @@
 		}
 
 		//adds an input field to given handle
-		public function input(&$handler, $type, $label, $name, $value = '', array $properties = array(), array $rules = array(), array $messages = array()) {
+		public static function input(&$handler, $type, $label, $name, $value = '', array $properties = array(), array $rules = array(), array $messages = array()) {
 			$handler['input'][] = array(
 				'type' => $type,
 				'label' => $label,
@@ -50,7 +50,7 @@
 		}
 
 		//adds a command button to given handle
-		public function command(&$handler, $name, $value, array $properties = array()) {
+		public static function command(&$handler, $name, $value, array $properties = array()) {
 			$handler['command'][] = array(
 				'name' => $name,
 				'value' => $value,
@@ -59,7 +59,7 @@
 		}
 
 		//adds a cancel button to given handle
-		public function cancel(&$handler, $name, $value, array $properties = array()) {
+		public static function cancel(&$handler, $name, $value, array $properties = array()) {
 			$handler['cancel'][] = array(
 				'name' => $name,
 				'value' => $value,
@@ -68,27 +68,27 @@
 		}
 
 		//adds a text item to given handle
-		public function text(&$handler, $text) {
+		public static function text(&$handler, $text) {
 			$handler['text'][] = $text;
 		}
 
 		//javascript that will be executed before submitting the form
-		public function before_submit(&$handler, $js) {
+		public static function before_submit(&$handler, $js) {
 			$handler['submit']['pre'] = $js;
 		}
 
 		//javascript that will be executed after submitting the form
-		public function after_submit(&$handler, $js) {
+		public static function after_submit(&$handler, $js) {
 			$handler['submit']['pos'] = $js;
 		}
 
 		//adds javascript functions to validation code
-		public function add_script(&$handler, $js) {
+		public static function add_script(&$handler, $js) {
 			$handler['script'][] = $js;
 		}
 
 		//renders the form
-		public function render($handler, $validation = true, array $message = array()) {
+		public static function render($handler, $validation = true, array $message = array()) {
 			$bfr = '<div id="form">'."\n";
 			$bfr .= '	<fieldset>'."\n";
 			$bfr .= '		<legend>'.$handler['header']['title'].'</legend>'."\n";
