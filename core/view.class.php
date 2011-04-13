@@ -9,6 +9,8 @@
 		protected $tpl = null;
 		//instance of xhtml class
 		protected $xhtml = null;
+		//instance of form class
+		protected $form = null;
 		//instance of cache class
 		protected $cache = null;
 		//instance of log class
@@ -27,6 +29,9 @@
 			//creates xhtml object
 			if (in_array('xhtml', $this->uses))
 				$this->xhtml = new XHTML;
+			//creates form object
+			if (in_array('form', $this->uses))
+				$this->form = new FORM($name);
 			//creates cache object
 			if (in_array('cache', $this->uses))
 				$this->cache = new CACHE($name);

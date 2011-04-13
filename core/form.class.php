@@ -1,6 +1,14 @@
 <?php
 
 	class FORM {
+		//holds the basename for the calling class
+		private $name = '';
+		//holds the form handler
+		private $handler = array();
+
+		public function __construct($name) {
+			$this->name = strtolower($name);
+		}
 
 		//returns the css files needed by form
 		public static function css() {
@@ -23,12 +31,12 @@
 		}
 
 		//creates a new form
-		public static function create($title, $id, $action, $method = 'post', $enctype = 'application/x-www-form-urlencoded') {
-			return array(
+		public function create($title, $id, $action, $method = 'post', $enctype = 'application/x-www-form-urlencoded') {
+			$this->handler = array(
 				'header' => array(
-					'title' => $title,
-					'id' => 'form_'.$id,
-					'action' => $action,
+					'title' => htmlentities($title),
+					'id' => 'form_'.strtolower($id),
+					'action' => htmlentities($action),
 					'method' => $method,
 					'enctype' => $enctype
 				),
@@ -36,13 +44,64 @@
 			);
 		}
 
+		//cleans form structure
+		public function clean() {
+			$this->handler = array();
+		}
+
+		//loads a form structure from an ini file
+		public function load($file) {
+			if ((file_exists(__DIR__.'/../cfg/app/'.$this->name.'_'.$file.'.form.ini')) && (is_file(__DIR__.'/../cfg/app/'.$this->name.'_'.$file.'.form.ini'))) {
+				$form = parse_ini_file(__DIR__.'/../cfg/app/'.$this->name.'_'.$file.'.form.ini', true, INI_SCANNER_RAW);
+				if (isset($form['config'])) {
+					$method = 'post';
+					if (isset($form['config']['method']))
+						$method = $form['config']['method'];
+					$enctype = 'application/x-www-form-urlencoded';
+					if (isset($form['config']['enctype']))
+						$enctype = $form['config']['enctype'];
+					$this->create($form['config']['title'], $form['config']['id'], $form['config']['action'], $method, $enctype);
+				}
+				foreach ($form['field'] as $field => $type) {
+					if ($type == 'submit')
+						$this->command($field, (isset($form['label'][$field]) ? $form['label'][$field] : $field));
+					else if ($type == 'reset')
+						$this->cancel($field, (isset($form['label'][$field]) ? $form['label'][$field] : $field));
+					else {
+						$label = $field;
+						if (isset($form['label'][$field]))
+							$label = $form['label'][$field];
+						$value = '';
+						if (isset($form['value'][$field]))
+							$value = $form['value'][$field];
+						$extra = array();
+						if ((isset($form['extra'][$field])) && (preg_match_all('/([a-z]+)="([^"]+)",?/i', $form['extra'][$field], $matches) !== false)) {
+							foreach ($matches[1] as $k => $v)
+								$extra[$v] = $matches[2][$k];
+						}
+						$rules = array();
+						if ((isset($form['rules'][$field])) && (preg_match_all('/([a-z]+),?/i', $form['rules'][$field], $matches) !== false)) {
+							foreach ($matches[1] as $item)
+								$rules[$item] = true;
+						}
+						$alert = array();
+						if ((isset($form['alert'][$field])) && (preg_match_all('/([a-z]+)="([^"]+)",?/i', $form['alert'][$field], $matches) !== false)) {
+							foreach ($matches[1] as $k => $v)
+								$alert[$v] = $matches[2][$k];
+						}
+						$this->input($type, $label, $field, $value, $extra, $rules, $alert);
+					}
+				}
+			}
+		}
+
 		//adds an input field to given handle
-		public static function input(&$handler, $type, $label, $name, $value = '', array $properties = array(), array $rules = array(), array $messages = array()) {
-			$handler['input'][] = array(
-				'type' => $type,
-				'label' => $label,
-				'name' => $name,
-				'value' => $value,
+		public function input($type, $label, $name, $value = '', array $properties = array(), array $rules = array(), array $messages = array()) {
+			$this->handler['input'][] = array(
+				'type' => strtolower($type),
+				'label' => htmlentities($label),
+				'name' => strtolower($name),
+				'value' => htmlentities($value),
 				'properties' => $properties,
 				'rules' => $rules,
 				'messages' => $messages
@@ -50,53 +109,53 @@
 		}
 
 		//adds a command button to given handle
-		public static function command(&$handler, $name, $value, array $properties = array()) {
-			$handler['command'][] = array(
-				'name' => $name,
-				'value' => $value,
+		public function command($name, $value, array $properties = array()) {
+			$this->handler['command'][] = array(
+				'name' => strtolower($name),
+				'value' => htmlentities($value),
 				'properties' => $properties
 			);
 		}
 
 		//adds a cancel button to given handle
-		public static function cancel(&$handler, $name, $value, array $properties = array()) {
-			$handler['cancel'][] = array(
-				'name' => $name,
-				'value' => $value,
+		public function cancel($name, $value, array $properties = array()) {
+			$this->handler['cancel'][] = array(
+				'name' => strtolower($name),
+				'value' => htmlentities($value),
 				'properties' => $properties
 			);
 		}
 
 		//adds a text item to given handle
-		public static function text(&$handler, $text) {
-			$handler['text'][] = $text;
+		public function text($text) {
+			$this->handler['text'][] = $text;
 		}
 
 		//javascript that will be executed before submitting the form
-		public static function before_submit(&$handler, $js) {
-			$handler['submit']['pre'] = $js;
+		public function before_submit($js) {
+			$this->handler['submit']['pre'] = $js;
 		}
 
 		//javascript that will be executed after submitting the form
-		public static function after_submit(&$handler, $js) {
-			$handler['submit']['pos'] = $js;
+		public function after_submit($js) {
+			$this->handler['submit']['pos'] = $js;
 		}
 
 		//adds javascript functions to validation code
-		public static function add_script(&$handler, $js) {
-			$handler['script'][] = $js;
+		public function add_script($js) {
+			$this->handler['script'][] = $js;
 		}
 
 		//renders the form
-		public static function render($handler, $validation = true, array $message = array()) {
+		public function render($validation = true, array $message = array()) {
 			$bfr = '<div id="form">'."\n";
 			$bfr .= '	<fieldset>'."\n";
-			$bfr .= '		<legend>'.$handler['header']['title'].'</legend>'."\n";
+			$bfr .= '		<legend>'.$this->handler['header']['title'].'</legend>'."\n";
 			$bfr .= '		<form';
-			foreach ($handler['header'] as $key => $value)
+			foreach ($this->handler['header'] as $key => $value)
 				$bfr .= ' '.$key.'="'.$value.'"';
 			$bfr .= '>'."\n";
-			foreach ($handler['input'] as $item)
+			foreach ($this->handler['input'] as $item)
 				switch ($item['type']) {
 					case 'text':
 					case 'password':
@@ -180,23 +239,23 @@
 						$bfr .= '			<p><strong>Unsupported type: '.$item['type'].'</strong></p>'."\n";
 				}
 			$bfr .= '			<div id="fbb">'."\n";
-			if (isset($handler['command']))
-				foreach ($handler['command'] as $item) {
+			if (isset($this->handler['command']))
+				foreach ($this->handler['command'] as $item) {
 					$bfr .= '				<input type="submit" id="submit_'.$item['name'].'" name="submit_'.$item['name'].'" value="'.$item['value'].'"';
 					foreach ($item['properties'] as $key => $value)
 						$bfr .= ' '.$key.'="'.$value.'"';
 					$bfr .= ' />'."\n";
 				}
-			if (isset($handler['cancel']))
-				foreach ($handler['cancel'] as $item) {
+			if (isset($this->handler['cancel']))
+				foreach ($this->handler['cancel'] as $item) {
 					$bfr .= '				<input type="reset" id="reset_'.$item['name'].'" name="reset_'.$item['name'].'" value="'.$item['value'].'"';
 					foreach ($item['properties'] as $key => $value)
 						$bfr .= ' '.$key.'="'.$value.'"';
 					$bfr .= ' />'."\n";
 				}
 			$bfr .= '			</div>'."\n";
-			if (isset($handler['text']))
-				foreach ($handler['text'] as $item) {
+			if (isset($this->handler['text']))
+				foreach ($this->handler['text'] as $item) {
 					$bfr .= '			<div class="fbc">'."\n";
 					$bfr .= '				'.$item."\n";
 					$bfr .= '			</div>'."\n";
@@ -214,14 +273,14 @@
 			if ($validation) {
 				$bfr .= '<script type="text/javascript">'."\n";
 				$bfr .= '	$(document).ready(function() {'."\n";
-				if (isset($handler['script']))
-					foreach ($handler['script'] as $script)
+				if (isset($this->handler['script']))
+					foreach ($this->handler['script'] as $script)
 						$bfr .= '		'.$script."\n";
 				$bfr .= '		$(\'[id^=error_]\').hide();'."\n";
 				$bfr .= '	});'."\n";
-				$bfr .= '	$("#'.$handler['header']['id'].'").validate({'."\n";
+				$bfr .= '	$("#'.$this->handler['header']['id'].'").validate({'."\n";
 				$r = array();
-				foreach ($handler['input'] as $item) {
+				foreach ($this->handler['input'] as $item) {
 					if (count($item['rules'])) {
 						$line = '			'.$item['type'].'_'.$item['name'].': {'."\n";
 						$tmp = array();
@@ -243,12 +302,12 @@
 					$bfr .= '		},'."\n";
 				}
 				$m = array();
-				foreach ($handler['input'] as $item) {
+				foreach ($this->handler['input'] as $item) {
 					if (count($item['messages'])) {
 						$line = '			'.$item['type'].'_'.$item['name'].': {'."\n";
 						$tmp = array();
 						foreach ($item['messages'] as $key => $value)
-							$tmp[] = '				'.$key.': \''.$value.'\'';
+							$tmp[] = '				'.$key.': \''.htmlentities($value).'\'';
 						$line .= implode(', '."\n", $tmp)."\n";
 						$line .= '			}'."\n";
 						$m[] = $line;
@@ -281,15 +340,15 @@
 				$bfr .= '				$(form).ajaxSubmit({'."\n";
 				$bfr .= '					clearForm: true,'."\n";
 				$bfr .= '					dataType: \'json\','."\n";
-				if (isset($handler['submit'])) {
-					if (isset($handler['submit']['pre'])) {
+				if (isset($this->handler['submit'])) {
+					if (isset($this->handler['submit']['pre'])) {
 						$bfr .= '					beforeSubmit: function() {'."\n";
-						$bfr .=	'						'.$handler['submit']['pre']."\n";
+						$bfr .=	'						'.$this->handler['submit']['pre']."\n";
 						$bfr .= '					},'."\n";
 					}
-					if (isset($handler['submit']['pos'])) {
+					if (isset($this->handler['submit']['pos'])) {
 						$bfr .= '					success: function (data) {'."\n";
-						$bfr .= '						'.$handler['submit']['pos']."\n";
+						$bfr .= '						'.$this->handler['submit']['pos']."\n";
 						$bfr .= '					}'."\n";
 					}
 				}

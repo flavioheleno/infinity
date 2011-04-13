@@ -5,17 +5,22 @@
 		private $control = array();
 
 		public function __construct($name = '') {
+			//base name for cache control
 			$this->name = strtolower($name);
 			//ensure that cache dir exists and has the right permissions
 			if (!file_exists(__DIR__.'/../cache/')) {
 				@mkdir(__DIR__.'/../cache/');
 				@chmod(__DIR__.'/../cache/', 777);
 			}
+			//if cache control is found, loads it, else, cleans cache dir
 			if ((file_exists(__DIR__.'/../cache/control.cache')) && (is_file(__DIR__.'/../cache/control.cache')))
 				$this->control = unserialize(file_get_contents(__DIR__.'/../cache/control.cache'));
+			else
+				CACHE::clean();
 		}
 
 		public function __destruct() {
+			//saves cache control
 			file_put_contents(__DIR__.'/../cache/control.cache', serialize($this->control));
 		}
 
@@ -53,11 +58,11 @@
 		public function get($id) {
 			if ((file_exists(__DIR__.'/../cache/'.$this->name.'_'.$id.'.html')) && (is_file(__DIR__.'/../cache/'.$this->name.'_'.$id.'.html')))
 				if ((isset($this->control[$this->name][$id])) && ($this->control[$this->name][$id] > time()))
-					echo file_get_contents(__DIR__.'/../cache/'.$this->name.'_'.$id.'.html');
+					return file_get_contents(__DIR__.'/../cache/'.$this->name.'_'.$id.'.html');
 				else
-					echo '';
+					return null;
 			else
-				echo '';
+				return null;
 		}
 
 	}
