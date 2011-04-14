@@ -34,7 +34,7 @@
 		public function create($title, $id, $action, $method = 'post', $enctype = 'application/x-www-form-urlencoded') {
 			$this->handler = array(
 				'header' => array(
-					'title' => htmlentities($title),
+					'title' => htmlentities(utf8_decode($title)),
 					'id' => 'form_'.strtolower($id),
 					'action' => htmlentities($action),
 					'method' => $method,
@@ -100,9 +100,9 @@
 		public function input($type, $label, $name, $value = '', array $properties = array(), array $rules = array(), array $messages = array()) {
 			$this->handler['input'][] = array(
 				'type' => strtolower($type),
-				'label' => htmlentities($label),
+				'label' => htmlentities(utf8_decode($label)),
 				'name' => strtolower($name),
-				'value' => htmlentities($value),
+				'value' => htmlentities(utf8_decode($value)),
 				'properties' => $properties,
 				'rules' => $rules,
 				'messages' => $messages
@@ -113,7 +113,7 @@
 		public function command($name, $value, array $properties = array()) {
 			$this->handler['command'][] = array(
 				'name' => strtolower($name),
-				'value' => htmlentities($value),
+				'value' => htmlentities(utf8_decode($value)),
 				'properties' => $properties
 			);
 		}
@@ -122,7 +122,7 @@
 		public function cancel($name, $value, array $properties = array()) {
 			$this->handler['cancel'][] = array(
 				'name' => strtolower($name),
-				'value' => htmlentities($value),
+				'value' => htmlentities(utf8_decode($value)),
 				'properties' => $properties
 			);
 		}
@@ -302,13 +302,13 @@
 							else
 								$tmp[] = '				'.$key.': \''.$value.'\'';
 						$line .= implode(', '."\n", $tmp)."\n";
-						$line .= '			}'."\n";
+						$line .= '			}';
 						$r[] = $line;
 					}
 				}
 				if (count($r)) {
 					$bfr .= '		rules: {'."\n";
-					$bfr .= implode(', '."\n", $r);
+					$bfr .= implode(', '."\n", $r)."\n";
 					$bfr .= '		},'."\n";
 				}
 				$m = array();
@@ -317,15 +317,15 @@
 						$line = '			'.$item['type'].'_'.$item['name'].': {'."\n";
 						$tmp = array();
 						foreach ($item['messages'] as $key => $value)
-							$tmp[] = '				'.$key.': \''.htmlentities($value).'\'';
+							$tmp[] = '				'.$key.': \''.htmlentities(utf8_decode($value)).'\'';
 						$line .= implode(', '."\n", $tmp)."\n";
-						$line .= '			}'."\n";
+						$line .= '			}';
 						$m[] = $line;
 					}
 				}
 				if (count($m)) {
 					$bfr .= '		messages: {'."\n";
-					$bfr .= implode(', '."\n", $m);
+					$bfr .= implode(', '."\n", $m)."\n";
 					$bfr .= '		},'."\n";
 				}
 				$bfr .= '		highlight: function(element, errorClass, validClass) {'."\n";
