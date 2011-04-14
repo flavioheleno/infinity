@@ -49,47 +49,48 @@
 			$this->handler = array();
 		}
 
-		//loads a form structure from an ini file
-		public function load($file) {
-			if ((file_exists(__DIR__.'/../cfg/app/'.$this->name.'_'.$file.'.form.ini')) && (is_file(__DIR__.'/../cfg/app/'.$this->name.'_'.$file.'.form.ini'))) {
-				$form = parse_ini_file(__DIR__.'/../cfg/app/'.$this->name.'_'.$file.'.form.ini', true, INI_SCANNER_RAW);
-				if (isset($form['config'])) {
-					$method = 'post';
-					if (isset($form['config']['method']))
-						$method = $form['config']['method'];
-					$enctype = 'application/x-www-form-urlencoded';
-					if (isset($form['config']['enctype']))
-						$enctype = $form['config']['enctype'];
-					$this->create($form['config']['title'], $form['config']['id'], $form['config']['action'], $method, $enctype);
-				}
-				foreach ($form['field'] as $field => $type) {
-					if ($type == 'submit')
-						$this->command($field, (isset($form['label'][$field]) ? $form['label'][$field] : $field));
-					else if ($type == 'reset')
-						$this->cancel($field, (isset($form['label'][$field]) ? $form['label'][$field] : $field));
-					else {
+		//loads a form structure from an json file
+		public function load($id) {
+			$file = __DIR__.'/../cfg/form/'.$this->name.'_'.$id.'.json';
+			if ((file_exists($file)) && (is_file($file))) {
+				$src = file_get_contents($file);
+				$json = json_decode($src, true);
+				if (!is_null($json)) {
+					if (isset($json['config'])) {
+						$method = 'post';
+						if (isset($json['config']['method']))
+							$method = $json['config']['method'];
+						$enctype = 'application/x-www-form-urlencoded';
+						if (isset($json['config']['enctype']))
+							$enctype = $json['config']['enctype'];
+						$this->create($json['config']['title'], $json['config']['id'], $json['config']['action'], $method, $enctype);
+					}
+					foreach ($json['fields'] as $field => $properties) {
 						$label = $field;
-						if (isset($form['label'][$field]))
-							$label = $form['label'][$field];
+						if (isset($properties['label']))
+							$label = $properties['label'];
 						$value = '';
-						if (isset($form['value'][$field]))
-							$value = $form['value'][$field];
+						if (isset($properties['value']))
+							$value = $properties['value'];
 						$extra = array();
-						if ((isset($form['extra'][$field])) && (preg_match_all('/([a-z]+)="([^"]+)",?/i', $form['extra'][$field], $matches) !== false)) {
-							foreach ($matches[1] as $k => $v)
-								$extra[$v] = $matches[2][$k];
-						}
+						if (isset($properties['extra']))
+							$extra = $properties['extra'];
 						$rules = array();
-						if ((isset($form['rules'][$field])) && (preg_match_all('/([a-z]+),?/i', $form['rules'][$field], $matches) !== false)) {
-							foreach ($matches[1] as $item)
-								$rules[$item] = true;
-						}
+						if (isset($properties['rules']))
+							$rules = $properties['rules'];
 						$alert = array();
-						if ((isset($form['alert'][$field])) && (preg_match_all('/([a-z]+)="([^"]+)",?/i', $form['alert'][$field], $matches) !== false)) {
-							foreach ($matches[1] as $k => $v)
-								$alert[$v] = $matches[2][$k];
+						if (isset($properties['alert']))
+							$alert = $properties['alert'];
+						switch ($properties['type']) {
+							case 'submit':
+								$this->command($field, $label, $extra);
+								break;
+							case 'reset':
+								$this->cancel($field, $label, $extra);
+								break;
+							default:
+								$this->input($properties['type'], $label, $field, $value, $extra, $rules, $alert);
 						}
-						$this->input($type, $label, $field, $value, $extra, $rules, $alert);
 					}
 				}
 			}
@@ -289,6 +290,15 @@
 								$tmp[] = '				'.$key.': '.($value ? 'true' : 'false');
 							else if (is_numeric($value))
 								$tmp[] = '				'.$key.': '.intval($value);
+							else if (is_array($value)) {
+								if (is_numeric(current($value)))
+									$tmp[] = '				'.key($value).': '.intval(current($value));
+								else if (is_array(current($value)))
+									$tmp[] = '				'.key($value).': ['.implode(',', current($value)).']';
+								else
+									$tmp[] = '				'.key($value).': "'.current($value).'"';
+							} else if (is_numeric($key))
+								$tmp[] = '				'.$value.': true';
 							else
 								$tmp[] = '				'.$key.': \''.$value.'\'';
 						$line .= implode(', '."\n", $tmp)."\n";
