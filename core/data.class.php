@@ -23,8 +23,7 @@
 		public function __get($index) {
 			if (isset($this->data[$index]))
 				return $this->data[$index];
-			else
-				return false;
+			return false;
 		}
 
 		//checks if data item is set

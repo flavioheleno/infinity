@@ -17,7 +17,6 @@
 		public function __construct(array $cfg) {
 			if (count($cfg)) {
 				$this->initialize($cfg);
-
 				$this->log = LOG::singleton('db.log');
 				$this->log->add('construct('.$this->username.', '.$this->password.', '.$this->database.', '.$this->hostname.')');
 			} else {
@@ -125,23 +124,21 @@
 					if (@mysql_set_charset('utf8', $this->db)) {
 						$this->online = true;
 						return true;
-					} else {
-						if ($this->debug)
-							$this->log->add('error: '.$this->LastError());
-						$this->disconnect();
-						return false;
 					}
+					if ($this->debug)
+						$this->log->add('error: '.$this->LastError());
+					$this->disconnect();
+					return false;
 				} else {
 					if ($this->debug)
 						$this->log->add('error: '.$this->LastError());
 					$this->disconnect();
 					return false;
 				}
-			} else {
-				if ($this->debug)
-					$this->log->add('error: '.$this->LastError());
-				return false;
 			}
+			if ($this->debug)
+				$this->log->add('error: '.$this->LastError());
+			return false;
 		}
 		
 		public function last_error() {
@@ -149,8 +146,7 @@
 				$this->log->add('last_error()');
 				if ($this->mysqli)
 					return @$this->db->error;
-				else
-					return @mysql_error($this->db);
+				return @mysql_error($this->db);
 			}
 		}
 
@@ -163,16 +159,14 @@
 				$this->log->add('query: '.$query);
 				if ($q)
 					return $q;
-				else {
-					if ($this->debug) 
-						if ($this->mysqli)
-							$this->log->add('error: '.@$this->db->error);
-						else
-							$this->log->add('error: '.@mysql_error($this->db));
-					return false;
-				}
-			} else
+				if ($this->debug) 
+					if ($this->mysqli)
+						$this->log->add('error: '.@$this->db->error);
+					else
+						$this->log->add('error: '.@mysql_error($this->db));
 				return false;
+			}
+			return false;
 		}
 
 		public function seek($resource, $count) {
@@ -191,11 +185,9 @@
 				$this->log->add('last_insert_id()');
 				if ($this->mysqli)
 					return $this->db->insert_id;
-				else {
-					$q = $this->query('SELECT LAST_INSERT_ID()');
-					$d = $this->fetch_assoc($q);
-					return $d['LAST_INSERT_ID()'];
-				}
+				$q = $this->query('SELECT LAST_INSERT_ID()');
+				$d = $this->fetch_assoc($q);
+				return $d['LAST_INSERT_ID()'];
 			}
 		}
 
@@ -218,44 +210,38 @@
 					$ret = @mysql_affected_rows($this->db);
 				$this->log->add('affected_rows: '.$ret);
 				return $ret;
-			} else
-				return false;
+			}
+			return false;
 		}
 
 		public function fetch_row($resource) {
 			$this->log->add('fetch_row()');
 			if ($this->mysqli)
 				return @$resource->fetch_row();
-			else
-				return @mysql_fetch_row($resource);
+			return @mysql_fetch_row($resource);
 		}
 
 		public function fetch_assoc($resource) {
 			$this->log->add('fetch_assoc()');
 			if ($this->mysqli)
 				return @$resource->fetch_assoc();
-			else
-				return @mysql_fetch_assoc($resource);
+			return @mysql_fetch_assoc($resource);
 		}
 
 		public function free($resource) {
 			$this->log->add('free()');
 			if ($this->mysqli)
 				@$resource->free();
-			else
-				@mysql_free_result($resource);
+			@mysql_free_result($resource);
 		}
 
 		public function quote($data) {
 			$this->log->add('quote: '.$data);
 			if ($data == 'NULL')
 				return $data;
-			else {
-				if ($this->mysqli)
-					return $this->db->real_escape_string(trim($data));
-				else
-					return mysql_real_escape_string(trim($data), $this->db);
-			}
+			if ($this->mysqli)
+				return $this->db->real_escape_string(trim($data));
+			return mysql_real_escape_string(trim($data), $this->db);
 		}
 
 		public function disconnect() {

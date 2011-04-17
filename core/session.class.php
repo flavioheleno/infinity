@@ -73,8 +73,7 @@
 		public function check_auth($name) {
 			if (isset($_SESSION[$name]))
 				return !is_null($_SESSION[$name]);
-			else
-				return false;
+			return false;
 		}
 
 		//checks session timeout

@@ -7,14 +7,14 @@
 		protected $name = '';
 		//instance of data class
 		protected $data = null;
-		//instance of sql class
-		protected $db = null;
+		//instance of query class
+		protected $query = null;
 		//instance of log class
 		protected $log = null;
 		//validation rules for data used in this model
-		public $rules = array();
+		protected $rules = array();
 		//database fields used in this model
-		public $fields = array();
+		protected $fields = array();
 		//sets the helpers needed by class
 		protected $uses = array();
 
@@ -32,20 +32,41 @@
 				'mysqli' => db_mysqli,
 				'debug' => db_debug
 			);
-			$this->db = new SQL($cfg);
+			$this->query = new QUERY($cfg);
+		}
+
+		public function load($id, $fullid = false) {
+			if ($fullid)
+				$file = __DIR__.'/../cfg/form/'.$id.'.json';
+			else
+				$file = __DIR__.'/../cfg/form/'.$this->name.'_'.$id.'.json';
+			if ((file_exists($file)) && (is_file($file))) {
+				$src = file_get_contents($file);
+				$json = json_decode($src, true);
+				if (!is_null($json))
+					foreach ($json['fields'] as $field => $properties) {
+						$this->rules[$field] = $properties['rules'];
+						$this->fields[$field] = $properties['type'].'_'.$field;
+					}
+			}
+		}
+
+		public function unload() {
+			$this->rules = array();
+			$this->fields = array();
 		}
 
 		public function sanitize() {
 			foreach ($this->fields as $key => $value)
 				if (isset($this->rules[$key]))
-					VALIDATOR::sanitize($value, $this->rules[$key]);
+					VALIDATOR::sanitize($_REQUEST[$value], $this->rules[$key]);
 		}
 
 		public function validate() {
 			$valid = true;
 			foreach ($this->fields as $key => $value)
 				if (isset($this->rules[$key]))
-					$valid &= VALIDATOR::check($value, $this->rules[$key]);
+					$valid &= VALIDATOR::check($_REQUEST[$value], $this->rules[$key]);
 			return $valid;
 		}
 

@@ -73,10 +73,10 @@
 				} else if (is_callable(array($this->view, 'error'))) {
 					$this->view->error($arguments);
 					return true;
-				} else
-					return false;
-			} else
+				}
 				return false;
+			}
+			return false;
 		}
 
 	}

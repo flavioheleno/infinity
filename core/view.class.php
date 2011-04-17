@@ -44,8 +44,8 @@
 				$this->xhtml->set_keywords($keywords);
 				$this->xhtml->append_content($this->tpl->get());
 				return $this->xhtml->render();
-			} else
-				return null;
+			}
+			return null;
 		}
 
 	}

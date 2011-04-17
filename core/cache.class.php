@@ -37,10 +37,9 @@
 			if ((file_exists(__DIR__.'/../cache/'.$this->name.'_'.$id.'.html')) && (is_file(__DIR__.'/../cache/'.$this->name.'_'.$id.'.html'))) {
 				if ((isset($this->control[$this->name][$id])) && ($this->control[$this->name][$id] > time()))
 					return true;
-				else
-					return false;
-			} else
 				return false;
+			}
+			return false;
 		}
 
 		public function add($id, $data, $timeout = 3600) {
@@ -56,13 +55,12 @@
 		}
 
 		public function get($id) {
-			if ((file_exists(__DIR__.'/../cache/'.$this->name.'_'.$id.'.html')) && (is_file(__DIR__.'/../cache/'.$this->name.'_'.$id.'.html')))
+			if ((file_exists(__DIR__.'/../cache/'.$this->name.'_'.$id.'.html')) && (is_file(__DIR__.'/../cache/'.$this->name.'_'.$id.'.html'))) {
 				if ((isset($this->control[$this->name][$id])) && ($this->control[$this->name][$id] > time()))
 					return file_get_contents(__DIR__.'/../cache/'.$this->name.'_'.$id.'.html');
-				else
-					return null;
-			else
 				return null;
+			}
+			return null;
 		}
 
 	}

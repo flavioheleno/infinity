@@ -126,7 +126,7 @@
 			$bfr = '';
 			for ($i = 0; $i < $count; $i++) {
 				$tmp[$i] = trim($tmp[$i]);	
-				if ((preg_match('/^<[^>]+\/>$/', $tmp[$i])) || (preg_match('/<[^>]+>.*?<\/[^>]+>$/', $tmp[$i])))
+				if ((preg_match('/^<[^>]+\/>$/', $tmp[$i])) || (preg_match('/<[^>]+>.*?<\/[^>]+>$/', $tmp[$i])) || (preg_match('/^<!--.*?-->/', $tmp[$i])))
 					$bfr .= str_repeat("\t", $indent).$tmp[$i]."\n";
 				else if ((preg_match('/^<\/[^>]+>$/', $tmp[$i])) || (preg_match('/^\}/', $tmp[$i]))) {
 					$indent--;

@@ -50,8 +50,11 @@
 		}
 
 		//loads a form structure from an json file
-		public function load($id) {
-			$file = __DIR__.'/../cfg/form/'.$this->name.'_'.$id.'.json';
+		public function load($id, $fullid = false) {
+			if ($fullid)
+				$file = __DIR__.'/../cfg/form/'.$id.'.json';
+			else
+				$file = __DIR__.'/../cfg/form/'.$this->name.'_'.$id.'.json';
 			if ((file_exists($file)) && (is_file($file))) {
 				$src = file_get_contents($file);
 				$json = json_decode($src, true);
@@ -148,7 +151,7 @@
 		}
 
 		//renders the form
-		public function render($validation = true, array $message = array()) {
+		public function render($validation = true, $ajaxsubmit = true, array $message = array()) {
 			$bfr = '<div id="form">'."\n";
 			$bfr .= '	<fieldset>'."\n";
 			$bfr .= '		<legend>'.$this->handler['header']['title'].'</legend>'."\n";
@@ -346,23 +349,26 @@
 				$bfr .= '		},'."\n";
 				$bfr .= '		submitHandler: function(form) {'."\n";
 				$bfr .= '			if ($(form).valid()) {'."\n";
-				$bfr .= '				$(\'#form_result\').html(\'Enviando dados, aguarde..\');'."\n";
-				$bfr .= '				$(form).ajaxSubmit({'."\n";
-				$bfr .= '					clearForm: true,'."\n";
-				$bfr .= '					dataType: \'json\','."\n";
-				if (isset($this->handler['submit'])) {
-					if (isset($this->handler['submit']['pre'])) {
-						$bfr .= '					beforeSubmit: function() {'."\n";
-						$bfr .=	'						'.$this->handler['submit']['pre']."\n";
-						$bfr .= '					},'."\n";
+				if ($ajaxsubmit) {
+					$bfr .= '				$(\'#form_result\').html(\'Enviando dados, aguarde..\');'."\n";
+					$bfr .= '				$(form).ajaxSubmit({'."\n";
+					$bfr .= '					clearForm: true,'."\n";
+					$bfr .= '					dataType: \'json\','."\n";
+					if (isset($this->handler['submit'])) {
+						if (isset($this->handler['submit']['pre'])) {
+							$bfr .= '					beforeSubmit: function() {'."\n";
+							$bfr .=	'						'.$this->handler['submit']['pre']."\n";
+							$bfr .= '					},'."\n";
+						}
+						if (isset($this->handler['submit']['pos'])) {
+							$bfr .= '					success: function (data) {'."\n";
+							$bfr .= '						'.$this->handler['submit']['pos']."\n";
+							$bfr .= '					}'."\n";
+						}
 					}
-					if (isset($this->handler['submit']['pos'])) {
-						$bfr .= '					success: function (data) {'."\n";
-						$bfr .= '						'.$this->handler['submit']['pos']."\n";
-						$bfr .= '					}'."\n";
-					}
-				}
-				$bfr .= '				});'."\n";
+					$bfr .= '				});'."\n";
+				} else
+					$bfr .= '				return true;'."\n";
 				$bfr .= '			}'."\n";
 				$bfr .= '			return false;'."\n";
 				$bfr .= '		}'."\n";

@@ -21,10 +21,9 @@
 				$name = strtoupper($name);
 				$module = $name.'_CONTROLLER';
 				return new $module($name, $log);
-			} else {
-				require_once __DIR__.'/controller.class.php';
-				return new CONTROLLER(strtoupper($name), $log);
-			}
+			} else
+			require_once __DIR__.'/controller.class.php';
+			return new CONTROLLER(strtoupper($name), $log);
 		}
 
 		public static function load_view($name, &$log) {
@@ -34,8 +33,8 @@
 				$name = strtoupper($name);
 				$module = $name.'_VIEW';
 				return new $module($name, $log);
-			} else
-				return null;
+			}
+			return null;
 		}
 
 		public static function load_model($name, &$log) {
@@ -45,8 +44,8 @@
 				$name = strtoupper($name);
 				$module = $name.'_MODEL';
 				return new $module($name, $log);
-			} else
-				return null;
+			}
+			return null;
 		}
 
 	}
