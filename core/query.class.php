@@ -45,9 +45,8 @@
 					return '`'.$this->prefix.$tmp[0].'`.*';
 				else
 					return '`'.$this->prefix.$tmp[0].'`.`'.$tmp[1].'`';
-			} else
-				return '`'.$word.'`';
-			return $word;
+			}
+			return '`'.$word.'`';
 		}
 
 		private function protect_value($value) {
@@ -66,8 +65,7 @@
 					return intval($value);
 			}
 			$value = filter_var(trim($value), FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW);
-			//return '\''.$this->db->quote($data).'\'';
-			return '\''.$value.'\'';
+			return '\''.$this->db->quote($data).'\'';
 		}
 
 		private function field($field, $escape = false) {

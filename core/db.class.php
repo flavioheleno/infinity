@@ -34,9 +34,8 @@
 			$options = array('username' => '', 'password' => '', 'hostname' => '', 'database' => '', 'mysqli' => false, 'debug' => false);
 			
 			foreach ($options as $option => $default) {
-				if (isset($cfg[$option])) {
-					if (!is_null($cfg[$option]) && ($cfg[$option] != ''))
-						$this->$option = $cfg[$option];
+				if ((isset($cfg[$option])) && (!is_null($cfg[$option])) && ($cfg[$option] != ''))
+					$this->$option = $cfg[$option];
 				} else
 					$this->$option = $default;
 			}
@@ -55,61 +54,62 @@
 		}
 
 		public function block_begin() {
-			if ($this->db) {
-				$this->log->add('block_begin()');
-				if ($this->mysqli)
-					$this->db->autocommit(false);
-				else
-					$this->query('BEGIN');
-			}
+			if ((is_null($this->db)) || ($this->db === false))
+				return false;
+			$this->log->add('block_begin()');
+			if ($this->mysqli)
+				$this->db->autocommit(false);
+			else
+				$this->query('BEGIN');
+			return true;
 		}
 
 		public function block_cancel() {
-			if ($this->db) {
-				$this->log->add('block_cancel()');
-				if ($this->mysqli) {
-					$this->db->rollback();
-					$this->db->autocommit(true);
-				} else
-					$this->query('ROLLBACK');
-			}
+			if ((is_null($this->db)) || ($this->db === false))
+				return false;
+			$this->log->add('block_cancel()');
+			if ($this->mysqli) {
+				$this->db->rollback();
+				$this->db->autocommit(true);
+			} else
+				$this->query('ROLLBACK');
+			return true;
 		}
 
 		public function block_end() {
-			if ($this->db) {
-				$this->log->add('block_end()');
-				if ($this->mysqli) {
-					$this->db->commit();
-					$this->db->autocommit(true);
-				} else
-					$this->query('COMMIT');
-			}
+			if ((is_null($this->db)) || ($this->db === false))
+				return false;
+			$this->log->add('block_end()');
+			if ($this->mysqli) {
+				$this->db->commit();
+				$this->db->autocommit(true);
+			} else
+				$this->query('COMMIT');
+			return true;
 		}
 
 		public function connect() {
 			$this->log->add('connect('.$this->hostname.', '.$this->username.', '.$this->password.', '.$this->database.')');
 			if ($this->mysqli)
-				$this->connect_mysqli();
+				return $this->connect_mysqli();
 			else
-				$this->connect_mysql();
+				return $this->connect_mysql();
 		}
 
 		private function connect_mysqli() {
 			$this->db = new mysqli($this->hostname, $this->username, $this->password, $this->database);
-			if (!$this->db->connect_error) {
-				$this->log->add('set-charset: utf8');
-				if (@$this->db->set_charset('utf8')) {
-					$this->online = true;
-					return true;
-				} else {
-					if ($this->debug)
-						$this->log->add('error: '.$this->LastError());
-					$this->disconnect();
-					return false;
-				}
+			if ($this->db->connect_error) {
+				if ($this->debug)
+					$this->log->add('error: '.$this->last_error());
+				return false;
+			}
+			$this->log->add('set-charset: utf8');
+			if (@$this->db->set_charset('utf8')) {
+				$this->online = true;
+				return true;
 			} else {
 				if ($this->debug)
-					$this->log->add('error: '.$this->LastError());
+					$this->log->add('error: '.$this->last_error());
 				$this->disconnect();
 				return false;
 			}
@@ -117,104 +117,103 @@
 		
 		private function connect_mysql() {
 			$this->db = @mysql_connect($this->hostname, $this->username, $this->password, TRUE, MYSQL_CLIENT_COMPRESS);
-			if ($this->db) {
-				$this->log->add('select: '.$this->database);
-				if (@mysql_select_db($this->database, $this->db)) {
-					$this->log->add('set-charset: utf8');
-					if (@mysql_set_charset('utf8', $this->db)) {
-						$this->online = true;
-						return true;
-					}
-					if ($this->debug)
-						$this->log->add('error: '.$this->LastError());
-					$this->disconnect();
-					return false;
-				} else {
-					if ($this->debug)
-						$this->log->add('error: '.$this->LastError());
-					$this->disconnect();
-					return false;
+			if ($this->db === false) {
+				if ($this->debug)
+					$this->log->add('error: '.$this->last_error());
+				return false;
+			}
+			$this->log->add('select: '.$this->database);
+			if (@mysql_select_db($this->database, $this->db)) {
+				$this->log->add('set-charset: utf8');
+				if (@mysql_set_charset('utf8', $this->db)) {
+					$this->online = true;
+					return true;
 				}
+				if ($this->debug)
+					$this->log->add('error: '.$this->last_error());
+				$this->disconnect();
+				return false;
 			}
 			if ($this->debug)
-				$this->log->add('error: '.$this->LastError());
+				$this->log->add('error: '.$this->last_error());
+			$this->disconnect();
 			return false;
 		}
 		
 		public function last_error() {
-			if ($this->db) {
-				$this->log->add('last_error()');
-				if ($this->mysqli)
-					return @$this->db->error;
-				return @mysql_error($this->db);
-			}
+			if ((is_null($this->db)) || ($this->db === false))
+				return false;
+			$this->log->add('last_error()');
+			if ($this->mysqli)
+				return @$this->db->error;
+			return @mysql_error($this->db);
 		}
 
 		public function query($query) {
-			if ($this->db) {
-				if ($this->mysqli)
-					$q = @$this->db->query($query);
-				else
-					$q = @mysql_query($query, $this->db);
-				$this->log->add('query: '.$query);
-				if ($q)
-					return $q;
-				if ($this->debug) 
-					if ($this->mysqli)
-						$this->log->add('error: '.@$this->db->error);
-					else
-						$this->log->add('error: '.@mysql_error($this->db));
+			if ((is_null($this->db)) || ($this->db === false))
 				return false;
-			}
+			if ($this->mysqli)
+				$q = @$this->db->query($query);
+			else
+				$q = @mysql_query($query, $this->db);
+			$this->log->add('query: '.$query);
+			if ($q)
+				return $q;
+			if ($this->debug) 
+				if ($this->mysqli)
+					$this->log->add('error: '.@$this->db->error);
+				else
+					$this->log->add('error: '.@mysql_error($this->db));
 			return false;
 		}
 
 		public function seek($resource, $count) {
-			if ($this->db) {
-				if ($this->mysqli)
-					$rete = @$resource->data_seek($count);
-				else
-					$ret = @mysql_data_seek($resource, $count);
-				$this->log->add('seek: '.$ret);
-				return $ret;
-			}
+			if ((is_null($this->db)) || ($this->db === false))
+				return false;
+			if ($this->mysqli)
+				$rete = @$resource->data_seek($count);
+			else
+				$ret = @mysql_data_seek($resource, $count);
+			$this->log->add('seek: '.$ret);
+			return $ret;
 		}
 
 		public function last_insert_id() {
-			if ($this->db) {
-				$this->log->add('last_insert_id()');
-				if ($this->mysqli)
-					return $this->db->insert_id;
-				$q = $this->query('SELECT LAST_INSERT_ID()');
-				$d = $this->fetch_assoc($q);
-				return $d['LAST_INSERT_ID()'];
-			}
+			if ((is_null($this->db)) || ($this->db === false))
+				return false;
+			$this->log->add('last_insert_id()');
+			if ($this->mysqli)
+				return $this->db->insert_id;
+			$q = $this->query('SELECT LAST_INSERT_ID()');
+			$d = $this->fetch_assoc($q);
+			return $d['LAST_INSERT_ID()'];
 		}
 
 		public function num_rows($resource) {
-			if ($this->db) {
-				if ($this->mysqli)
-					$ret = @$resource->num_rows;
-				else
-					$ret = @mysql_num_rows($resource);
-				$this->log->add('num_rows: '.$ret);
-				return $ret;
-			}
+			if ((is_null($this->db)) || ($this->db === false))
+				return false;
+			if ($this->mysqli)
+				$ret = @$resource->num_rows;
+			else
+				$ret = @mysql_num_rows($resource);
+			$this->log->add('num_rows: '.$ret);
+			return $ret;
 		}
 
 		public function affected_rows() {
-			if ($this->db) {
-				if ($this->mysqli)
-					$ret = @$this->db->affected_rows;
-				else
-					$ret = @mysql_affected_rows($this->db);
-				$this->log->add('affected_rows: '.$ret);
-				return $ret;
-			}
-			return false;
+			if ((is_null($this->db)) || ($this->db === false))
+				return false;
+			if ($this->mysqli)
+				$ret = @$this->db->affected_rows;
+			else
+				$ret = @mysql_affected_rows($this->db);
+			$this->log->add('affected_rows: '.$ret);
+			return $ret;
 		}
 
 		public function fetch_row($resource) {
+			if ((is_null($this->db)) || ($this->db === false))
+				return false;
 			$this->log->add('fetch_row()');
 			if ($this->mysqli)
 				return @$resource->fetch_row();
@@ -222,6 +221,8 @@
 		}
 
 		public function fetch_assoc($resource) {
+			if ((is_null($this->db)) || ($this->db === false))
+				return false;
 			$this->log->add('fetch_assoc()');
 			if ($this->mysqli)
 				return @$resource->fetch_assoc();
@@ -229,6 +230,8 @@
 		}
 
 		public function free($resource) {
+			if ((is_null($this->db)) || ($this->db === false))
+				return false;
 			$this->log->add('free()');
 			if ($this->mysqli)
 				@$resource->free();
@@ -236,6 +239,8 @@
 		}
 
 		public function quote($data) {
+			if ((is_null($this->db)) || ($this->db === false))
+				return false;
 			$this->log->add('quote: '.$data);
 			if ($data == 'NULL')
 				return $data;
@@ -245,15 +250,15 @@
 		}
 
 		public function disconnect() {
-			if ($this->db) {
-				$this->log->add('disconnect()');
-				$this->online = false;
-				if ($this->mysqli)
-					@$this->db->close();
-				else
-					@mysql_close($this->db);
-				$this->db = null;
-			}
+			if ((is_null($this->db)) || ($this->db === false))
+				return false;
+			$this->log->add('disconnect()');
+			$this->online = false;
+			if ($this->mysqli)
+				@$this->db->close();
+			else
+				@mysql_close($this->db);
+			$this->db = null;
 		}
 	}
 
