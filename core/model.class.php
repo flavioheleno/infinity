@@ -13,8 +13,8 @@
 		protected $log = null;
 		//validation rules for data used in this model
 		protected $rules = array();
-		//database fields used in this model
-		protected $fields = array();
+		//field values used in this model
+		protected $field = array();
 		//sets the helpers needed by class
 		protected $uses = array();
 
@@ -39,34 +39,35 @@
 			if ($fullid)
 				$file = __DIR__.'/../cfg/form/'.$id.'.json';
 			else
-				$file = __DIR__.'/../cfg/form/'.$this->name.'_'.$id.'.json';
+				$file = __DIR__.'/../cfg/form/'.strtolower($this->name).'_'.$id.'.json';
 			if ((file_exists($file)) && (is_file($file))) {
 				$src = file_get_contents($file);
 				$json = json_decode($src, true);
 				if (!is_null($json))
 					foreach ($json['fields'] as $field => $properties) {
-						$this->rules[$field] = $properties['rules'];
-						$this->fields[$field] = $properties['type'].'_'.$field;
+						if (isset($properties['rules']))
+							$this->rules[$field] = $properties['rules'];
+						$this->field[$field] = $_REQUEST[$properties['type'].'_'.$field];
 					}
 			}
 		}
 
 		public function unload() {
 			$this->rules = array();
-			$this->fields = array();
+			$this->field = array();
 		}
 
 		public function sanitize() {
-			foreach ($this->fields as $key => $value)
-				if (isset($this->rules[$key]))
-					VALIDATOR::sanitize($_REQUEST[$value], $this->rules[$key]);
+			foreach ($this->field as $field => &$value)
+				if (isset($this->rules[$field]))
+					VALIDATOR::sanitize($value, $this->rules[$field]);
 		}
 
 		public function validate() {
 			$valid = true;
-			foreach ($this->fields as $key => $value)
-				if (isset($this->rules[$key]))
-					$valid &= VALIDATOR::check($_REQUEST[$value], $this->rules[$key]);
+			foreach ($this->field as $field => $value)
+				if (isset($this->rules[$field]))
+					$valid &= VALIDATOR::check($value, $this->rules[$field]);
 			return $valid;
 		}
 

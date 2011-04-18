@@ -176,8 +176,10 @@
 						$bfr .= ' />'."\n";
 						$bfr .= '				</div>'."\n";
 						$bfr .= '			</div>'."\n";
-						$bfr .= '			<div id="error_'.$item['type'].'_'.$item['name'].'" class="error_container">'."\n";
-						$bfr .='			</div>'."\n";
+						if ($validation) {
+							$bfr .= '			<div id="error_'.$item['type'].'_'.$item['name'].'" class="error_container">'."\n";
+							$bfr .='			</div>'."\n";
+						}
 						break;
 					case 'textarea':
 						$bfr .= '			<div class="fb">'."\n";
@@ -194,8 +196,10 @@
 						$bfr .= '					</textarea>'."\n";
 						$bfr .= '				</div>'."\n";
 						$bfr .= '			</div>'."\n";
-						$bfr .= '			<div id="error_'.$item['type'].'_'.$item['name'].'" class="error_container">'."\n";
-						$bfr .='			</div>'."\n";
+						if ($validation) {
+							$bfr .= '			<div id="error_'.$item['type'].'_'.$item['name'].'" class="error_container">'."\n";
+							$bfr .='			</div>'."\n";
+						}
 						break;
 					case 'checkbox':
 					case 'radio':
@@ -212,8 +216,10 @@
 						$bfr .= '					<label id="label_'.$item['name'].'" for="'.$item['type'].'_'.$item['name'].'">'.$item['label'].'</label>'."\n";
 						$bfr .= '				</div>'."\n";
 						$bfr .= '			</div>'."\n";
-						$bfr .= '			<div id="error_'.$item['type'].'_'.$item['name'].'" class="error_container">'."\n";
-						$bfr .='			</div>'."\n";
+						if ($validation) {
+							$bfr .= '			<div id="error_'.$item['type'].'_'.$item['name'].'" class="error_container">'."\n";
+							$bfr .='			</div>'."\n";
+						}
 						break;
 					case 'select':
 						$bfr .= '			<div class="fb">'."\n";
@@ -233,8 +239,10 @@
 						$bfr .= '					</select>'."\n";
 						$bfr .= '				</div>'."\n";
 						$bfr .= '			</div>'."\n";
-						$bfr .= '			<div id="error_'.$item['type'].'_'.$item['name'].'" class="error_container">'."\n";
-						$bfr .='			</div>'."\n";
+						if ($validation) {
+							$bfr .= '			<div id="error_'.$item['type'].'_'.$item['name'].'" class="error_container">'."\n";
+							$bfr .='			</div>'."\n";
+						}
 						break;
 					case 'hidden':
 						$bfr .= '			<input type="hidden" id="hidden_'.$item['name'].'" name="hidden_'.$item['name'].'" value="'.$item['value'].'" />'."\n";

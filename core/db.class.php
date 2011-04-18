@@ -36,7 +36,7 @@
 			foreach ($options as $option => $default) {
 				if ((isset($cfg[$option])) && (!is_null($cfg[$option])) && ($cfg[$option] != ''))
 					$this->$option = $cfg[$option];
-				} else
+				else
 					$this->$option = $default;
 			}
 		}

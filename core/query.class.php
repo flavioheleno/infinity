@@ -65,7 +65,7 @@
 					return intval($value);
 			}
 			$value = filter_var(trim($value), FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW);
-			return '\''.$this->db->quote($data).'\'';
+			return '\''.$this->db->quote($value).'\'';
 		}
 
 		private function field($field, $escape = false) {
@@ -508,7 +508,7 @@
 				else
 					$v[] = $properties[0];
 			}
-			$sql_duplicate = $this->sql_duplicate($values, $duplicate);
+			$sql_duplicate = $this->sql_duplicate();
 
 			$sql = 'INSERT INTO `'.$this->prefix.$table.'` ';
 			$sql .= '('.implode(', ', $f).')';
