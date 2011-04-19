@@ -28,6 +28,7 @@ Helpers disponíveis
 MODEL
 	query:			abstração para acesso ao mysql
 	validator:		validação de dados baseado em regras
+	secure:			criptografia e decriptografia de dados
 
 VIEW
 	xhtml:			gera arquivos xhtml válidos
@@ -40,7 +41,6 @@ VIEW
 CONTROLLER
 	session:		controle total sobre a sessão do usuário
 	email:			envio de e-mails via smtp
-	secure:			criptografia e decriptografia de dados
 	privilege:		controle de privilégio
 
 SISTEMA

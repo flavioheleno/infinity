@@ -9,6 +9,8 @@
 		protected $data = null;
 		//instance of query class
 		protected $query = null;
+		//instance of secure class;
+		protected $secure = null;
 		//instance of log class
 		protected $log = null;
 		//validation rules for data used in this model
@@ -33,6 +35,9 @@
 				'debug' => db_debug
 			);
 			$this->query = new QUERY($cfg);
+			//creates secure object
+			if (in_array('secure', $this->uses))
+				$this->secure = new SECURE;
 		}
 
 		public function load($id, $fullid = false) {
