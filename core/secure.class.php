@@ -50,9 +50,4 @@
 
 	}
 
-	$s = new SECURE;
-	$e = $s->encrypt('minha senha legal', 'meu texto é muuuito legal huaehauehuaehuaehuaehuae :D');
-	echo '\''.$e.'\''."\n";
-	echo '\''.$s->decrypt('minha senha legal', $e).'\''."\n";
-
 ?>
