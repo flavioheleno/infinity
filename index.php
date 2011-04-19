@@ -1,5 +1,8 @@
 <?php
 
+	if (!defined('__DIR__'))
+		define('__DIR__', dirname(__FILE__));
+
 	require_once __DIR__.'/core/autoload.class.php';
 	require_once __DIR__.'/cfg/core/framework.config.php';
 
