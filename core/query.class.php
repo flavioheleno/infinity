@@ -296,37 +296,37 @@
 				case 'clear':
 					if (isset($pieces[1]))
 						switch ($pieces[1]) {
-							case 'field'
+							case 'field':
 								$this->field = array();
 								break;
-							case 'alias'
+							case 'alias':
 								$this->alias = array();
 								break;
-							case 'join'
+							case 'join':
 								$this->join = array();
 								break;
-							case 'where'
+							case 'where':
 								$this->where = array();
 								break;
-							case 'group'
+							case 'group':
 								$this->group = array();
 								break;
-							case 'having'
+							case 'having':
 								$this->having = array();
 								break;
-							case 'order'
+							case 'order':
 								$this->order = array();
 								break;
-							case 'limit'
+							case 'limit':
 								$this->limit = array();
 								break;
-							case 'value'
+							case 'value':
 								$this->value = array();
 								break;
-							case 'duplicate'
+							case 'duplicate':
 								$this->duplicate = array();
 								break;
-							case 'distinct'
+							case 'distinct':
 								$this->distinct = false;
 								break;
 						}
