@@ -293,6 +293,56 @@
 			else
 				$pieces = array($function);
 			switch ($pieces[0]) {
+				case 'clear':
+					if (isset($pieces[1]))
+						switch ($pieces[1]) {
+							case 'field'
+								$this->field = array();
+								break;
+							case 'alias'
+								$this->alias = array();
+								break;
+							case 'join'
+								$this->join = array();
+								break;
+							case 'where'
+								$this->where = array();
+								break;
+							case 'group'
+								$this->group = array();
+								break;
+							case 'having'
+								$this->having = array();
+								break;
+							case 'order'
+								$this->order = array();
+								break;
+							case 'limit'
+								$this->limit = array();
+								break;
+							case 'value'
+								$this->value = array();
+								break;
+							case 'duplicate'
+								$this->duplicate = array();
+								break;
+							case 'distinct'
+								$this->distinct = false;
+								break;
+						}
+					else {
+						$this->field = array();
+						$this->alias = array();
+						$this->join = array();
+						$this->where = array();
+						$this->group = array();
+						$this->having = array();
+						$this->order = array();
+						$this->limit = array();
+						$this->value = array();
+						$this->duplicate = array();
+						$this->distinct = false;
+					}
 				case 'field':
 					foreach ($args as $arg)
 						if (is_array($arg))
