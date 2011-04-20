@@ -7,8 +7,8 @@
 
 		public function __construct() {
 			global $_INFINITY_CFG;
-			if (isset($_INFINITY_CFG['secure_seed']))
-				$this->seed = $_INFINITY_CFG['secure_seed'];
+			if (isset($_INFINITY_CFG['secure']['seed']))
+				$this->seed = $_INFINITY_CFG['secure']['seed'];
 		}
 
 		public function md5($data) {

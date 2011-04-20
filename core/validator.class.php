@@ -19,7 +19,7 @@
 					$k = $rule;
 				switch ($k) {
 					case 'alphanumeric':
-						$value = filter_var($value, FILTER_SANITIZE_STRING, (FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH));
+						$value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
 						break;
 					case 'number':
 					case 'min':

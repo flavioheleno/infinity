@@ -436,17 +436,17 @@
 		}
 
 		public function transaction_open() {
-			if (!$this->status)
+			if ($this->status)
 				$this->db->block_begin();
 		}
 
 		public function transaction_close() {
-			if (!$this->status)
+			if ($this->status)
 				$this->db->block_end();
 		}
 
 		public function transaction_cancel() {
-			if (!$this->status)
+			if ($this->status)
 				$this->db->block_cancel();
 		}
 
@@ -455,13 +455,13 @@
 		}
 
 		public function last_error() {
-			if (!$this->status)
+			if ($this->status)
 				return $this->db->last_error();
 			return false;
 		}
 
 		public function last_id() {
-			if (!$this->status)
+			if ($this->status)
 				return $this->db->last_insert_id();
 			return false;
 		}
