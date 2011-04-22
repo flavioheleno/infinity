@@ -1,5 +1,5 @@
-$(document).ready(function () {
-	function showMessage(title, text, type) {
+(function ($) {
+	showMessage = function(title, text, type) {
 		var footer = '<a href="javascript:history.back(-1);">Volte para a p&aacute;gina anterior</a> ou <a href="#" id="aClose">feche esta mensagem</a>.';
 		showDialog(title, text, footer, type);
 		$('#aClose').click(function () {
@@ -7,7 +7,7 @@ $(document).ready(function () {
 		});
 	}
 	
-	function showConfirmation(title, text, yes, no, action, hidden) {
+	showConfirmation = function(title, text, yes, no, action, hidden) {
 		var footer = '					<form action="'+action+'" method="post" enctype="application/x-www-form-urlencoded" id="frmConfirmation">'+"\n";
 		footer += '						<input type="submit" id="btnYes" name="btnYes" value="'+yes+'" /\>'+"\n";
 		footer += '						<input type="button" id="btnNo" name="btnNo" value="'+no+'" /\>'+"\n";
@@ -21,7 +21,7 @@ $(document).ready(function () {
 		});
 	}
 	
-	function showDialog(title, text, footer, type) {
+	showDialog = function(title, text, footer, type) {
 		var v = '		<div id="mcontainer">'+"\n";
 		v += '			<div id="mcontent" class="'+type+'">'+"\n";
 		v += '				<div id="mtitle">'+"\n";
@@ -38,8 +38,8 @@ $(document).ready(function () {
 		$(v).appendTo('body');
 	}
 	
-	function hideDialog() {
+	hideDialog = function() {
 		if ($('#mcontainer').length)
 			$('#mcontainer').remove();
 	}
-});
+})(jQuery);

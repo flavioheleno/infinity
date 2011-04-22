@@ -52,17 +52,60 @@
 		if ((preg_match('/^[a-z_][a-z0-9_-]+$/i', $action)) && (substr($action, 0, 2) != '__')) {
 			//checks if there is an alias for the given module->action and updates it
 			$controller->check_alias($action);
+			//creates an instance of cache class
+			$cache = new CACHE($module, $action);
 			//checks if action exists
 			if (method_exists($controller, $action)) {
-				//calls the controller's action
-				$controller->$action();
+				//checks if action is cacheable
+				if ($controller->cacheable($action)) {
+					//checks if cache has cached version of action
+					if ($cache->has())
+						//dispatches cached version
+						DISPATCH::plain_response($cache->get());
+					else {
+						//starts output buffering
+						if (!ob_start('ob_gzhandler'))
+							ob_start();
+						//calls the controller's action
+						$controller->$action();
+						//updates cache content
+						$cache->set(ob_get_contents());
+						//flushed output buffer
+						ob_end_flush();
+					}
+				} else
+					//calls the controller's action
+					$controller->$action();
 				//prevents default page to be shown
 				exit;
 			} else {
-				//tries to call the controller's action
-				if ($controller->$action())
-					//prevents default page to be shown
-					exit;
+				//checks if action is cacheable
+				if ($controller->cacheable($action)) {
+					//checks if cache has cached version of action
+					if ($cache->has()) {
+						//dispatches cached version
+						DISPATCH::plain_response($cache->get());
+						//prevents default page to be shown
+						exit;
+					} else {
+						//starts output buffering
+						if (!ob_start('ob_gzhandler'))
+							ob_start();
+						//calls the controller's action
+						if ($controller->$action()) {
+							//updates cache content
+							$cache->set(ob_get_contents());
+							//flushed output buffer
+							ob_end_flush();
+							//prevents default page to be shown
+							exit;
+						}
+					}
+				} else
+					//tries to call the controller's action
+					if ($controller->$action())
+						//prevents default page to be shown
+						exit;
 			}
 		}
 	}

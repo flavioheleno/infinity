@@ -11,12 +11,12 @@
 		protected $xhtml = null;
 		//instance of form class
 		protected $form = null;
-		//instance of cache class
-		protected $cache = null;
 		//instance of log class
 		protected $log = null;
 		//sets the helpers needed by class
 		protected $uses = array();
+		//sets the actions that can be cached
+		protected $cacheable = array();
 
 		//class constructor
 		public function __construct($name, &$log) {
@@ -32,9 +32,10 @@
 			//creates form object
 			if (in_array('form', $this->uses))
 				$this->form = new FORM($name);
-			//creates cache object
-			if (in_array('cache', $this->uses))
-				$this->cache = new CACHE($name);
+		}
+
+		public function cacheable($action) {
+			return in_array($action, $this->cacheable);
 		}
 
 		protected function display($title, $description = '', $keywords = '') {

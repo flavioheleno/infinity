@@ -4,36 +4,39 @@ form {
 }
 
 input {
-	border: 1px solid #999999;
+	border: 1px solid #999;
 	font: inherit;
 	vertical-align: middle;
+}
+
+input[type=text], input[type=password] {
 	color: #969696;
 }
 
-input:focus {
-	border: 1px solid darkred;
+input[type=text]:focus, input[type=password]:focus {
+	border: 1px solid #000;
 	color: #000;
 }
 
 label {
 	vertical-align: middle;
-	color: #000000;
+	color: #000;
 }
 
 textarea {
-	border: 1px solid #999999;
+	border: 1px solid #999;
 	font: inherit;
-	color: #000000;
+	color: #000;
 }
 
 textarea:focus {
-	border: 1px solid darkred;
+	border: 1px solid #000;
 }
 
 select {
-	border: 1px solid #999999;
+	border: 1px solid #999;
 	font: inherit;
-	color: #000000;
+	color: #000;
 }
 
 #form {
@@ -95,30 +98,30 @@ select {
 	margin: auto;
 	margin-top: 20px;
 	text-align: center;
-	border-top: 1px solid #c0c0c0;
+	border-top: 1px solid #C0C0C0;
 }
 
 .valid_label {
-	color: #000000;
+	color: #000;
 }
 
 .valid_field {
-	border: 1px solid #999999;
+	border: 1px solid #999;
 }
 
 .invalid_label {
-	color: #FF0000;
+	color: #F00;
 	font-weight: bold;
 }
 
 .invalid_field {
-	border: 1px solid #FF0000;
+	border: 1px solid #F00;
 }
 
 .error_container {
 	padding: 5px;
 	margin-top: 25px;
 	clear: both;
-	border: 1px solid red;
+	border: 1px solid #F00;
 	text-align: center;
 }

@@ -50,7 +50,7 @@
 		}
 
 		private function protect_value($value) {
-			if (is_null($value))
+			if ((is_null($value)) || ($value == 'NULL'))
 				return 'NULL';
 			if (is_array($value)) {
 				$r = array();
@@ -109,13 +109,13 @@
 			return implode(' ', $r);
 		}
 
-		private function where($field, $comparison, $value, $or = false, $escape = false) {
+		private function where($field, $comparison, $value, $or = false, $escape = false, $command = false) {
 			if (count($this->where))
 				if ($or)
 					$this->where[] = 'OR';
 				else
 					$this->where[] = 'AND';
-			$this->where[] = array($field, $comparison, $value, $escape);
+			$this->where[] = array($field, $comparison, $value, $escape, $command);
 		}
 
 		private function sql_where() {
@@ -124,7 +124,9 @@
 			$r = array();
 			foreach ($this->where as $item) {
 				if (is_array($item)) {
-					$item[0] = $this->protect_keyword($item[0]);
+					if (!$item[4])
+						$item[0] = $this->protect_keyword($item[0]);
+					unset($item[4]);
 					if ($item[3])
 						$item[2] = $this->protect_value($item[2]);
 					unset($item[3]);
@@ -283,6 +285,11 @@
 				$not = true;
 				$function = str_replace('_not', '', $function);
 			}
+			$command = false;
+			if (strpos($function, '_command')) {
+				$command = true;
+				$function = str_replace('_command', '', $function);
+			}
 			$escape = true;
 			if (preg_match('/_unescaped$/', $function)) {
 				$escape = false;
@@ -371,28 +378,31 @@
 				case 'where':
 					if (count($pieces) == 1) {
 						if (count($args) == 2)
-							$this->where($args[0], ($not ? '!=' : '='), $args[1], $or, $escape);
+							$this->where($args[0], ($not ? '!=' : '='), $args[1], $or, $escape, $command);
 						else
-							$this->where($args[0], $args[1], $args[2], $or, $escape);
+							$this->where($args[0], $args[1], $args[2], $or, $escape, $command);
 					} else
 						switch ($pieces[1]) {
 							case 'lt':
-								$this->where($args[0], ($not ? '>=' : '<'), $args[1], $or, $escape);
+								$this->where($args[0], ($not ? '>=' : '<'), $args[1], $or, $escape, $command);
 								break;
 							case 'le':
-								$this->where($args[0], ($not ? '>' : '<='), $args[1], $or, $escape);
+								$this->where($args[0], ($not ? '>' : '<='), $args[1], $or, $escape, $command);
 								break;
 							case 'gt':
-								$this->where($args[0], ($not ? '<=' : '>'), $args[1], $or, $escape);
+								$this->where($args[0], ($not ? '<=' : '>'), $args[1], $or, $escape, $command);
 								break;
 							case 'ge':
-								$this->where($args[0], ($not ? '<' : '>='), $args[1], $or, $escape);
+								$this->where($args[0], ($not ? '<' : '>='), $args[1], $or, $escape, $command);
 								break;
 							case 'in':
-								$this->where($args[0], ($not ? 'NOT IN' :'IN'), $args[1], $or, $escape);
+								$this->where($args[0], ($not ? 'NOT IN' :'IN'), $args[1], $or, $escape, $command);
 								break;
 							case 'like':
-								$this->where($args[0], ($not ? 'NOT LIKE' : 'LIKE'), $args[1], $or, $escape);
+								$this->where($args[0], ($not ? 'NOT LIKE' : 'LIKE'), $args[1], $or, $escape, $command);
+								break;
+							case 'isnull':
+								$this->where($args[0], ($not ? 'IS NOT' : 'IS'), 'NULL', $or, $escape, $command);
 								break;
 						}
 					break;
@@ -609,8 +619,8 @@
 			$sql = 'UPDATE `'.$this->prefix.$table.'`';
 			$sql .= ' SET ';
 			$sql .= $sql_value;
-			if ($sql_condition)
-				$sql .= ' WHERE '.$sql_condition;
+			if ($sql_where)
+				$sql .= ' WHERE '.$sql_where;
 			if ($sql_limit)
 				$sql .= ' LIMIT '.$sql_limit;
 			if (!is_null($raw))

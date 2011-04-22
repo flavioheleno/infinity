@@ -8,10 +8,18 @@
 			$class = strtolower($class);
 			if (preg_match('/^aux_/i', $class)) {
 				$class = str_replace('_', '.', $class);
-				if ((file_exists(__DIR__.'/../app/'.$class.'.php')) && (is_file(__DIR__.'/../app/'.$class.'.php')))
-					require_once __DIR__.'/../app/'.$class.'.php';
+				$file = __DIR__.'/../app/'.$class.'.php';
+				if ((file_exists($file)) && (is_file($file)))
+					require_once $file;
 			} else if ((file_exists(__DIR__.'/'.$class.'.class.php')) && (is_file(__DIR__.'/'.$class.'.class.php')))
 				require_once __DIR__.'/'.$class.'.class.php';
+		}
+
+		public static function load_plugin($name) {
+			$name = strtolower($name);
+			$file = __DIR__.'/../plugin/'.$name.'.class.php';
+			if ((file_exists($file)) && (is_file($file)))
+				require_once $file;
 		}
 
 		public static function load_controller($name, &$log) {

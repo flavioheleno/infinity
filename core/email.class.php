@@ -5,6 +5,17 @@
 
 	class EMAIL {
 
+		public static function load($file, array $replace) {
+			$file = __DIR__.'/../mail/'.$file;
+			if ((file_exists($file)) && (is_file($file))) {
+				$src = file_get_contents($file);
+				foreach ($replace as $key => $value)
+					$src = str_replace('%'.strtoupper($key).'%', $value, $src);
+				return $src;
+			}
+			return false;
+		}
+
 		//sends the email
 		public static function send($acc, array $to, $subject, $body, &$failures = array(), $attachment = null) {
 			global $_INFINITY_CFG;
@@ -17,7 +28,6 @@
 					$smtp->setUsername($_INFINITY_CFG['email']['accs'][$acc]['user']);
 					if (isset($_INFINITY_CFG['email']['accs'][$acc]['pass']))
 						$smtp->setpassword($_INFINITY_CFG['email']['accs'][$acc]['pass']);
-var_dump($smtp);
 					$message = new Swift_Message();
 					$message->setPriority(1);
 					$message->getHeaders()->addTextHeader('X-Mailer', 'infinity-framework');
@@ -38,30 +48,24 @@ var_dump($smtp);
 						else
 							$message->attach(Swift_Attachment::fromPath($attachment));
 					}
-var_dump($message);
 					$mailer = new Swift_Mailer($smtp);
-var_dump($mailer);
 					if (count($to) > 1) {
 						//$mailer->registerPlugin(new Swift_Plugins_AntiFloodPlugin(60, 30));
 						//$mailer->registerPlugin(new Swift_Plugins_ThrottlerPlugin(1, Swift_Plugins_ThrottlerPlugin::MESSAGES_PER_MINUTE));
 						try {
 							return $mailer->batchSend($message, $failures);
 						} catch (Exception $e) {
-							echo $e->getMessage();
 							return false;
 						}
 					} else
 						try {
 							return $mailer->send($message, $failures);
 						} catch (Exception $e) {
-							echo $e->getMessage();
 							return false;
 						}
 				} catch (Exception $e) {
-					echo $e->getMessage();
 					return false;
 				}
-			echo 'aqui manhe!';
 			return false;
 		}
 

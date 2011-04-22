@@ -91,6 +91,9 @@
 							case 'reset':
 								$this->cancel($field, $label, $extra);
 								break;
+							case 'hidden':
+								$this->hidden($field, $value);
+								break;
 							default:
 								$this->input($properties['type'], $label, $field, $value, $extra, $rules, $alert);
 						}
@@ -99,7 +102,7 @@
 			}
 		}
 
-		//adds an input field to given handle
+		//adds an input field to the form
 		public function input($type, $label, $name, $value = '', array $properties = array(), array $rules = array(), array $messages = array()) {
 			$this->handler['input'][] = array(
 				'type' => strtolower($type),
@@ -112,7 +115,15 @@
 			);
 		}
 
-		//adds a command button to given handle
+		//adds a hidden input field to the form
+		public function hidden($name, $value = '') {
+			$this->handler['hidden'][] = array(
+				'name' => strtolower($name),
+				'value' => htmlentities(utf8_decode($value))
+			);
+		}
+
+		//adds a command button to the form
 		public function command($name, $value, array $properties = array()) {
 			$this->handler['command'][] = array(
 				'name' => strtolower($name),
@@ -121,7 +132,7 @@
 			);
 		}
 
-		//adds a cancel button to given handle
+		//adds a cancel button to the form
 		public function cancel($name, $value, array $properties = array()) {
 			$this->handler['cancel'][] = array(
 				'name' => strtolower($name),
@@ -130,19 +141,24 @@
 			);
 		}
 
-		//adds a text item to given handle
+		//adds a text item to the form
 		public function text($text) {
 			$this->handler['text'][] = $text;
 		}
 
 		//javascript that will be executed before submitting the form
 		public function before_submit($js) {
-			$this->handler['submit']['pre'] = $js;
+			$this->handler['submit']['pre'][] = $js;
+		}
+
+		//javascript that will be executed on form submit
+		public function on_submit($js) {
+			$this->handler['submit']['on'][] = $js;
 		}
 
 		//javascript that will be executed after submitting the form
 		public function after_submit($js) {
-			$this->handler['submit']['pos'] = $js;
+			$this->handler['submit']['pos'][] = $js;
 		}
 
 		//adds javascript functions to validation code
@@ -244,9 +260,6 @@
 							$bfr .='			</div>'."\n";
 						}
 						break;
-					case 'hidden':
-						$bfr .= '			<input type="hidden" id="hidden_'.$item['name'].'" name="hidden_'.$item['name'].'" value="'.$item['value'].'" />'."\n";
-						break;
 					default:
 						$bfr .= '			<p><strong>Unsupported type: '.$item['type'].'</strong></p>'."\n";
 				}
@@ -272,6 +285,9 @@
 					$bfr .= '				'.$item."\n";
 					$bfr .= '			</div>'."\n";
 				}
+			if (isset($this->handler['hidden']))
+				foreach ($this->handler['hidden'] as $item)
+					$bfr .= '			<input type="hidden" id="hidden_'.$item['name'].'" name="hidden_'.$item['name'].'" value="'.$item['value'].'" />'."\n";
 			$bfr .= '		</form>'."\n";
 			if (count($message)) {
 				$bfr .= '		<legend>Observa&ccedil;&atilde;o</legend>'."\n";
@@ -358,25 +374,33 @@
 				$bfr .= '		submitHandler: function(form) {'."\n";
 				$bfr .= '			if ($(form).valid()) {'."\n";
 				if ($ajaxsubmit) {
-					$bfr .= '				$(\'#form_result\').html(\'Enviando dados, aguarde..\');'."\n";
+					if (isset($this->handler['submit']))
+						if (isset($this->handler['submit']['on'])) {
+							foreach ($this->handler['submit']['on'] as $line)
+								$bfr .=	'					'.$line."\n";
+						}
 					$bfr .= '				$(form).ajaxSubmit({'."\n";
-					$bfr .= '					clearForm: true,'."\n";
+					$bfr .= '					resetForm: true,'."\n";
 					$bfr .= '					dataType: \'json\','."\n";
 					if (isset($this->handler['submit'])) {
 						if (isset($this->handler['submit']['pre'])) {
-							$bfr .= '					beforeSubmit: function() {'."\n";
-							$bfr .=	'						'.$this->handler['submit']['pre']."\n";
+							$bfr .= '					beforeSubmit: function(form_data, jq_form, options) {'."\n";
+							foreach ($this->handler['submit']['pre'] as $line)
+								$bfr .=	'						'.$line."\n";
 							$bfr .= '					},'."\n";
 						}
 						if (isset($this->handler['submit']['pos'])) {
-							$bfr .= '					success: function (data) {'."\n";
-							$bfr .= '						'.$this->handler['submit']['pos']."\n";
+							$bfr .= '					success: function (response, status, xhr, jq_form) {'."\n";
+							foreach ($this->handler['submit']['pos'] as $line)
+								$bfr .=	'						'.$line."\n";
 							$bfr .= '					}'."\n";
 						}
 					}
 					$bfr .= '				});'."\n";
-				} else
+				} else {
+					$bfr .= '				form.submit();'."\n";
 					$bfr .= '				return true;'."\n";
+				}
 				$bfr .= '			}'."\n";
 				$bfr .= '			return false;'."\n";
 				$bfr .= '		}'."\n";

@@ -20,6 +20,8 @@ Estrutura de diretórios
 ./js:				pasta que armazena os arquivos de javascript
 ./js/app:			arquivos de javascript da aplicação do usuário
 ./js/core:			arquivos de javascript do framework (não edite a não ser que saiba o que está fazendo)
+./mail:				arquivos de template para email
+./plugin:			classes criadas pelo usuário, disponíveis para toda a aplicação
 ./tpl:				pasta que armazena os templates da aplicação
 ./tpl/cache:		pasta que armazena os arquivos de cachê dos templates
 

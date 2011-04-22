@@ -64,17 +64,22 @@
 					unset($_REQUEST[$key]);
 		}
 
+		public function cacheable($action) {
+			if (is_null($this->view))
+				return false;
+			return $this->view->cacheable($action);
+		}
+
 		//direct calls view function
 		public function __call($function, $arguments) {
-			if (!is_null($this->view)) {
-				if (is_callable(array($this->view, $function))) {
-					$this->view->$function($arguments);
-					return true;
-				} else if (is_callable(array($this->view, 'error'))) {
-					$this->view->error($arguments);
-					return true;
-				}
+			if (is_null($this->view))
 				return false;
+			if (is_callable(array($this->view, $function))) {
+				$this->view->$function($arguments);
+				return true;
+			} else if (is_callable(array($this->view, 'error'))) {
+				$this->view->error($arguments);
+				return true;
 			}
 			return false;
 		}

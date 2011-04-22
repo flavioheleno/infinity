@@ -3,14 +3,16 @@
 	require_once __DIR__.'/../cfg/core/framework.config.php';
 
 	class CACHE {
-		private $name = '';
+		private $module = '';
+		private $action = '';
 		private $control = array();
 		private $enabled = false;
 
-		public function __construct($name = '') {
+		public function __construct($module = '', $action = '') {
 			global $_INFINITY_CFG;
 			//base name for cache control
-			$this->name = strtolower($name);
+			$this->module = strtolower($module);
+			$this->action = strtolower($action);
 			if (isset($_INFINITY_CFG['cache']['enabled']))
 				$this->enabled = $_INFINITY_CFG['cache']['enabled'];
 			if ($this->enabled) {
@@ -20,8 +22,9 @@
 					@chmod(__DIR__.'/../cache/', 777);
 				}
 				//if cache control is found, loads it, else, cleans cache dir
-				if ((file_exists(__DIR__.'/../cache/control.cache')) && (is_file(__DIR__.'/../cache/control.cache')))
-					$this->control = unserialize(file_get_contents(__DIR__.'/../cache/control.cache'));
+				$file = __DIR__.'/../cache/control.cache';
+				if ((file_exists($file)) && (is_file($file)))
+					$this->control = unserialize(file_get_contents($file));
 				else
 					CACHE::clean();
 			}
@@ -42,37 +45,41 @@
 			}
 		}
 
-		public function has($id) {
-			if ($this->enabled)
-				if ((file_exists(__DIR__.'/../cache/'.$this->name.'_'.$id.'.html')) && (is_file(__DIR__.'/../cache/'.$this->name.'_'.$id.'.html'))) {
-					if ((isset($this->control[$this->name][$id])) && ($this->control[$this->name][$id] > time()))
+		public function has() {
+			if ($this->enabled) {
+				$file = __DIR__.'/../cache/'.$this->module.'_'.$this->action.'.html';
+				if ((file_exists($file)) && (is_file($file))) {
+					if ((isset($this->control[$this->module][$this->action])) && ($this->control[$this->module][$this->action] > time()))
 						return true;
 					return false;
 				}
+			}
 			return false;
 		}
 
-		public function add($id, $data, $timeout = 3600) {
+		public function set($data, $timeout = 3600) {
 			if ($this->enabled) {
-				$this->control[$this->name][$id] = (time() + $timeout);
-				file_put_contents(__DIR__.'/../cache/'.$this->name.'_'.$id.'.html', $data);
+				$this->control[$this->module][$this->action] = (time() + $timeout);
+				file_put_contents(__DIR__.'/../cache/'.$this->module.'_'.$this->action.'.html', $data);
 			}
 		}
 
-		public function del($id) {
+		public function del() {
 			if ($this->enabled) {
-				if (isset($this->control[$this->name][$id]))
-					unset($this->control[$this->name][$id]);
-				if ((file_exists(__DIR__.'/../cache/'.$this->name.'_'.$id.'.html')) && (is_file(__DIR__.'/../cache/'.$this->name.'_'.$id.'.html')))
-					@unlink(__DIR__.'/../cache/'.$this->name.'_'.$id.'.html');
+				if (isset($this->control[$this->module][$this->action]))
+					unset($this->control[$this->module][$this->action]);
+				$file = __DIR__.'/../cache/'.$this->module.'_'.$this->action.'.html';
+				if ((file_exists($file)) && (is_file($file)))
+					@unlink($file);
 			}
 		}
 
-		public function get($id) {
+		public function get() {
 			if ($this->enabled)
-				if ((file_exists(__DIR__.'/../cache/'.$this->name.'_'.$id.'.html')) && (is_file(__DIR__.'/../cache/'.$this->name.'_'.$id.'.html'))) {
-					if ((isset($this->control[$this->name][$id])) && ($this->control[$this->name][$id] > time()))
-						return file_get_contents(__DIR__.'/../cache/'.$this->name.'_'.$id.'.html');
+				$file = __DIR__.'/../cache/'.$this->module.'_'.$this->action.'.html';
+				if ((file_exists($file)) && (is_file($file))) {
+					if ((isset($this->control[$this->module][$this->action])) && ($this->control[$this->module][$this->action] > time()))
+						return file_get_contents($file);
 					return null;
 				}
 			return null;
