@@ -42,4 +42,5 @@
 		if ($('#mcontainer').length)
 			$('#mcontainer').remove();
 	}
+
 })(jQuery);

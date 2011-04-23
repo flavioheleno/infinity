@@ -302,9 +302,20 @@
 				$bfr .= '<script type="text/javascript">'."\n";
 				$bfr .= '	$(document).ready(function() {'."\n";
 				if (isset($this->handler['script']))
-					foreach ($this->handler['script'] as $script)
-						$bfr .= '		'.$script."\n";
+					foreach ($this->handler['script'] as $line)
+						$bfr .= '		'.$line."\n";
 				$bfr .= '		$(\'[id^=error_]\').hide();'."\n";
+				$bfr .= '		$(\'input:text, input:password\').each(function() {'."\n";
+				$bfr .= '			var defval = this.value;'."\n";
+				$bfr .= '			$(this).focus(function() {'."\n";
+				$bfr .= '				if (this.value == defval)'."\n";
+				$bfr .= '					this.value = \'\';'."\n";
+				$bfr .= '			});'."\n";
+				$bfr .= '			$(this).blur(function() {'."\n";
+				$bfr .= '				if (this.value == \'\')'."\n";
+				$bfr .= '					this.value = defval;'."\n";
+				$bfr .= '			});'."\n";
+				$bfr .= '		});'."\n";
 				$bfr .= '	});'."\n";
 				$bfr .= '	$("#'.$this->handler['header']['id'].'").validate({'."\n";
 				$r = array();

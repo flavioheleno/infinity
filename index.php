@@ -57,7 +57,11 @@
 			//checks if action exists
 			if (method_exists($controller, $action)) {
 				//checks if action is cacheable
-				if ($controller->cacheable($action)) {
+				$cacheable = $controller->cacheable($action);
+				if ($cacheable === false)
+					//calls the controller's action
+					$controller->$action();
+				else {
 					//checks if cache has cached version of action
 					if ($cache->has())
 						//dispatches cached version
@@ -69,18 +73,25 @@
 						//calls the controller's action
 						$controller->$action();
 						//updates cache content
-						$cache->set(ob_get_contents());
+						if ($cacheable === true)
+							$cache->set(ob_get_contents());
+						else
+							$cache->set(ob_get_contents(), $cacheable);
 						//flushed output buffer
 						ob_end_flush();
 					}
-				} else
-					//calls the controller's action
-					$controller->$action();
+				}
 				//prevents default page to be shown
 				exit;
 			} else {
 				//checks if action is cacheable
-				if ($controller->cacheable($action)) {
+				$cacheable = $controller->cacheable($action);
+				if ($cacheable === false) {
+					//tries to call the controller's action
+					if ($controller->$action())
+						//prevents default page to be shown
+						exit;
+				} else {
 					//checks if cache has cached version of action
 					if ($cache->has()) {
 						//dispatches cached version
@@ -94,18 +105,17 @@
 						//calls the controller's action
 						if ($controller->$action()) {
 							//updates cache content
-							$cache->set(ob_get_contents());
+							if ($cacheable === true)
+								$cache->set(ob_get_contents());
+							else
+								$cache->set(ob_get_contents(), $cacheable);
 							//flushed output buffer
 							ob_end_flush();
 							//prevents default page to be shown
 							exit;
 						}
 					}
-				} else
-					//tries to call the controller's action
-					if ($controller->$action())
-						//prevents default page to be shown
-						exit;
+				}
 			}
 		}
 	}

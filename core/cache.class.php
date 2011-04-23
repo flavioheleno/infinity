@@ -7,14 +7,16 @@
 		private $action = '';
 		private $control = array();
 		private $enabled = false;
+		private $signature = true;
 
-		public function __construct($module = '', $action = '') {
+		public function __construct($module = '', $action = '', $signature = true) {
 			global $_INFINITY_CFG;
 			//base name for cache control
 			$this->module = strtolower($module);
 			$this->action = strtolower($action);
 			if (isset($_INFINITY_CFG['cache']['enabled']))
 				$this->enabled = $_INFINITY_CFG['cache']['enabled'];
+			$this->signature = $signature;
 			if ($this->enabled) {
 				//ensure that cache dir exists and has the right permissions
 				if (!file_exists(__DIR__.'/../cache/')) {
@@ -60,6 +62,10 @@
 		public function set($data, $timeout = 3600) {
 			if ($this->enabled) {
 				$this->control[$this->module][$this->action] = (time() + $timeout);
+				if ($this->signature) {
+					$data .= "\n";
+					$data .= '<!-- cached at '.date('H:i:s d/m/Y').' -->';
+				}
 				file_put_contents(__DIR__.'/../cache/'.$this->module.'_'.$this->action.'.html', $data);
 			}
 		}

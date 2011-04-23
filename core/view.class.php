@@ -35,7 +35,12 @@
 		}
 
 		public function cacheable($action) {
-			return in_array($action, $this->cacheable);
+			//if action is just cacheable, with no timeout defined
+			if (in_array($action, $this->cacheable))
+				return true;
+			//if action is cacheable, but has a defined timeout
+			if (isset($this->cacheable[$action]))
+				return $this->cacheable[$action];
 		}
 
 		protected function display($title, $description = '', $keywords = '') {
