@@ -1,6 +1,6 @@
 <?php
 
-	require_once __DIR__.'/../cfg/core/db.config.php';
+	AUTOLOAD::require_core_config('db');
 
 	abstract class MODEL {
 		//module name
@@ -42,19 +42,25 @@
 
 		public function load($id, $fullid = false) {
 			if ($fullid)
-				$file = __DIR__.'/../cfg/form/'.$id.'.json';
+				$file = __DIR__.'/../cfg/form/'.strtolower($id).'.json';
 			else
 				$file = __DIR__.'/../cfg/form/'.strtolower($this->name).'_'.$id.'.json';
 			if ((file_exists($file)) && (is_file($file))) {
 				$src = file_get_contents($file);
 				$json = json_decode($src, true);
-				if (!is_null($json))
+				if (!is_null($json)) {
 					foreach ($json['fields'] as $field => $properties) {
 						if (isset($properties['rules']))
 							$this->rules[$field] = $properties['rules'];
-						$this->field[$field] = $_REQUEST[$properties['type'].'_'.$field];
+						if (isset($_REQUEST[$properties['type'].'_'.$field]))
+							$this->field[$field] = $_REQUEST[$properties['type'].'_'.$field];
+						else
+							$this->field[$field] = false;
 					}
+					return true;
+				}
 			}
+			return false;
 		}
 
 		public function unload() {

@@ -92,19 +92,24 @@
 			return implode(', ', $r);
 		}
 
-		public function join($table, $condition) {
-			$this->join[trim($table)] = trim($condition);
+		private function join($table, array $condition, $type = '') {
+			$this->join[trim($table)] = array(
+				'type' => $type,
+				'condition' => $condition
+			);
 		}
 
 		private function sql_join() {
 			if (count($this->join) == 0)
 				return false;
 			$r = array();
-			foreach ($this->join as $table => $condition) {
-				$tmp = explode('=', $condition);
-				$tmp[0] = $this->protect_keyword($tmp[0]);
-				$tmp[1] = $this->protect_keyword($tmp[1]);
-				$r[] = 'JOIN '.$table.' ON ('.implode(' = ', $tmp).')';
+			foreach ($this->join as $table => $info) {
+				$info['condition'][0] = $this->protect_keyword($info['condition'][0]);
+				$info['condition'][1] = $this->protect_keyword($info['condition'][1]);
+				if ($info['type'] != '')
+					$r[] = strtoupper($info['type']).' JOIN '.$table.' ON ('.implode(' = ', $info['condition']).')';
+				else
+					$r[] = 'JOIN '.$table.' ON ('.implode(' = ', $info['condition']).')';
 			}
 			return implode(' ', $r);
 		}
@@ -434,6 +439,16 @@
 								break;
 						}	
 					break;
+				case 'left':
+				case 'right':
+				case 'inner':
+				case 'outer':
+					if ((isset($pieces[1])) && ($pieces[1] == 'join'))
+						$this->join($args[0], $args[1], $pieces[0]);
+					break;
+				case 'join':
+					$this->join($args[0], $args[1]);
+					break;
 			}
 		}
 
@@ -480,9 +495,9 @@
 			if (!$this->status)
 				return false;
 			if ($this->select) {
-				if ($resource !== false)
-					return $this->db->num_rows($resource);
-				return false;
+				if ($resource === false)
+					return false;
+				return $this->db->num_rows($resource);
 			}
 			return $this->db->affected_rows();
 		}

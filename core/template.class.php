@@ -7,6 +7,32 @@
 
 		public function __construct($path, $cache) {
 			$this->sigma = new HTML_Template_Sigma($path, $cache);
+			$this->sigma->setCallbackFunction('url_create', function () {
+				if (func_num_args() > 0) {
+					$par = array();
+					foreach (func_get_args() as $arg)
+						if (strpos($arg, '=') !== false) {
+							$tmp = explode('=', $arg);
+							$par[$tmp[0]] = $tmp[1];
+						} else
+							$par[] = $arg;
+					return URL::create($par, true);
+				}
+				return '';
+			});
+			$this->sigma->setCallbackFunction('url_create_raw', function () {
+				if (func_num_args() > 0) {
+					$par = array();
+					foreach (func_get_args() as $arg)
+						if (strpos($arg, '=') !== false) {
+							$tmp = explode('=', $arg);
+							$par[$tmp[0]] = $tmp[1];
+						} else
+							$par[] = $arg;
+					return URL::create($par, false);
+				}
+				return '';
+			});
 		}
 
 		public function load_file_template($template) {

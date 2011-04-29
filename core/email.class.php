@@ -1,7 +1,7 @@
 <?php
 
 	require_once 'swift_required.php';
-	require_once __DIR__.'/../cfg/core/framework.config.php';
+	AUTOLOAD::require_core_config('framework');
 
 	class EMAIL {
 

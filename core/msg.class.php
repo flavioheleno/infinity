@@ -1,6 +1,6 @@
 <?php
 
-	require_once __DIR__.'/../cfg/core/msg.config.php';
+	AUTOLOAD::require_core_config('msg');
 
 	class MSG {
 		const ERR = 0x01;

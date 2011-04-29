@@ -1,6 +1,6 @@
 <?php
 
-	require_once __DIR__.'/../cfg/core/framework.config.php';
+	AUTOLOAD::require_core_config('framework');
 
 	class CACHE {
 		private $module = '';
@@ -85,10 +85,8 @@
 				$file = __DIR__.'/../cache/'.$this->module.'_'.$this->action.'.html';
 				if ((file_exists($file)) && (is_file($file))) {
 					if ((isset($this->control[$this->module][$this->action])) && ($this->control[$this->module][$this->action] > time()))
-						return file_get_contents($file);
-					return null;
+						echo file_get_contents($file);
 				}
-			return null;
 		}
 
 	}

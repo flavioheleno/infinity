@@ -24,7 +24,7 @@
 
 		public static function load_controller($name, &$log) {
 			$file = __DIR__.'/../app/'.strtolower($name).'.controller.php';
-			if (file_exists($file)) {
+			if ((file_exists($file)) && (is_file($file))) {
 				require_once $file;
 				$name = strtoupper($name);
 				$module = $name.'_CONTROLLER';
@@ -36,7 +36,7 @@
 
 		public static function load_view($name, &$log) {
 			$file = __DIR__.'/../app/'.strtolower($name).'.view.php';
-			if (file_exists($file)) {
+			if ((file_exists($file)) && (is_file($file))) {
 				require_once $file;
 				$name = strtoupper($name);
 				$module = $name.'_VIEW';
@@ -47,13 +47,25 @@
 
 		public static function load_model($name, &$log) {
 			$file = __DIR__.'/../app/'.strtolower($name).'.model.php';
-			if (file_exists($file)) {
+			if ((file_exists($file)) && (is_file($file))) {
 				require_once $file;
 				$name = strtoupper($name);
 				$module = $name.'_MODEL';
 				return new $module($name, $log);
 			}
 			return null;
+		}
+
+		public static function require_core_config($id) {
+			$file = __DIR__.'/../cfg/core/'.strtolower($id).'.config.php';
+			if ((file_exists($file)) && (is_file($file)))
+				require_once $file;
+		}
+
+		public static function require_app_config($id) {
+			$file = __DIR__.'/../cfg/app/'.strtolower($id).'.config.php';
+			if ((file_exists($file)) && (is_file($file)))
+				require_once $file;
 		}
 
 	}

@@ -17,6 +17,8 @@
 		protected $uses = array();
 		//sets the actions that can be cached
 		protected $cacheable = array();
+		//sets the response content
+		protected $response = null;
 
 		//class constructor
 		public function __construct($name, &$log) {
@@ -43,15 +45,23 @@
 				return $this->cacheable[$action];
 		}
 
-		protected function display($title, $description = '', $keywords = '') {
+		protected function render($title, $description = '', $keywords = '') {
 			if ((!is_null($this->tpl)) && (!is_null($this->xhtml))) {
 				$this->xhtml->set_title($title);
 				$this->xhtml->set_description($description);
 				$this->xhtml->set_keywords($keywords);
 				$this->xhtml->append_content($this->tpl->get());
-				return $this->xhtml->render();
+				$this->response = $this->xhtml->render();
 			}
-			return null;
+		}
+
+		//dispatches the response
+		protected function dispatch() {
+			if (!is_null($this->response))
+				if (is_array($this->response))
+					echo json_encode($this->response);
+				else
+					echo $this->response;
 		}
 
 	}

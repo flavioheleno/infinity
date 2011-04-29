@@ -1,6 +1,6 @@
 <?php
 
-	require_once __DIR__.'/../cfg/core/framework.config.php';
+	AUTOLOAD::require_core_config('framework');
 
 	class CONTROLLER {
 		//module name
@@ -13,6 +13,8 @@
 		protected $model = null;
 		//instance of session class
 		protected $session = null;
+		//instance of cookie class
+		protected $cookie = null;
 		//instance of log class
 		protected $log = null;
 		//web path
@@ -21,6 +23,8 @@
 		protected $alias = array();
 		//sets the helpers needed by class
 		protected $uses = array('view');
+		//sets the response content
+		protected $response = null;
 		//sets the controller's default action
 		public $default_action = 'index';
 
@@ -40,6 +44,9 @@
 			//creates session helper
 			if (in_array('session', $this->uses))
 				$this->session = SESSION::singleton(true);
+			//creates cookie helper
+			if (in_array('cookie', $this->uses))
+				$this->cookie = COOKIE::singleton();
 		}
 
 		//changes an alias for a given action
@@ -49,7 +56,7 @@
 		}
 
 		//creates a 302 HTTP redirect
-		public function redirect($url = '') {
+		protected function redirect($url = '') {
 			if (($url != '') && (strtolower(substr($url, 0, 7)) == 'http://'))
 				header('Location: '.$url);
 			else
@@ -70,8 +77,20 @@
 			return $this->view->cacheable($action);
 		}
 
-		//direct calls view function
+		//dispatches the response
+		protected function dispatch() {
+			if (!is_null($this->response))
+				if (is_array($this->response))
+					echo json_encode($this->response);
+				else
+					echo $this->response;
+		}
+
+		//direct calls view function and calls pre/pos action
 		public function __call($function, $arguments) {
+			if (($function == 'pre_action') || ($function == 'pos_action'))
+				if ((method_exists($this, $function)) && (is_callable(array($this, $function))))
+					$this->$function();
 			if (is_null($this->view))
 				return false;
 			if (is_callable(array($this->view, $function))) {

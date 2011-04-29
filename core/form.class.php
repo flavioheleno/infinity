@@ -13,20 +13,20 @@
 		//returns the css files needed by form
 		public static function css() {
 			return array(
-				'css/core/form.css'
+				'/css/core/form.css'
 			);
 		}
 
 		//returns the js files needed by validation script
 		public static function js() {
 			return array(
-				'js/core/jquery.js',
-				'js/core/jquery.form.js',
-				'js/core/jquery.maskedinput.js',
-				'js/core/jquery.validate.js',
-				'js/core/jquery.validate.additional-methods.js',
-				'js/core/jquery.validate.messages_ptbr.js',
-				'js/core/jquery.infinity.js'
+				'/js/core/jquery.js',
+				'/js/core/jquery.form.js',
+				'/js/core/jquery.maskedinput.js',
+				'/js/core/jquery.validate.js',
+				'/js/core/jquery.validate.additional-methods.js',
+				'/js/core/jquery.validate.messages_ptbr.js',
+				'/js/core/jquery.infinity.js'
 			);
 		}
 
@@ -58,48 +58,50 @@
 			if ((file_exists($file)) && (is_file($file))) {
 				$src = file_get_contents($file);
 				$json = json_decode($src, true);
-				if (!is_null($json)) {
-					if (isset($json['config'])) {
-						$method = 'post';
-						if (isset($json['config']['method']))
-							$method = $json['config']['method'];
-						$enctype = 'application/x-www-form-urlencoded';
-						if (isset($json['config']['enctype']))
-							$enctype = $json['config']['enctype'];
-						$this->create($json['config']['title'], $json['config']['id'], $json['config']['action'], $method, $enctype);
-					}
-					foreach ($json['fields'] as $field => $properties) {
-						$label = $field;
-						if (isset($properties['label']))
-							$label = $properties['label'];
-						$value = '';
-						if (isset($properties['value']))
-							$value = $properties['value'];
-						$extra = array();
-						if (isset($properties['extra']))
-							$extra = $properties['extra'];
-						$rules = array();
-						if (isset($properties['rules']))
-							$rules = $properties['rules'];
-						$alert = array();
-						if (isset($properties['alert']))
-							$alert = $properties['alert'];
-						switch ($properties['type']) {
-							case 'submit':
-								$this->command($field, $label, $extra);
-								break;
-							case 'reset':
-								$this->cancel($field, $label, $extra);
-								break;
-							case 'hidden':
-								$this->hidden($field, $value);
-								break;
-							default:
-								$this->input($properties['type'], $label, $field, $value, $extra, $rules, $alert);
-						}
+				if (is_null($json))
+					return false;
+				if (isset($json['config'])) {
+					$method = 'post';
+					if (isset($json['config']['method']))
+						$method = $json['config']['method'];
+					$enctype = 'application/x-www-form-urlencoded';
+					if (isset($json['config']['enctype']))
+						$enctype = $json['config']['enctype'];
+					$this->create($json['config']['title'], $json['config']['id'], $json['config']['action'], $method, $enctype);
+				}
+				foreach ($json['fields'] as $field => $properties) {
+					$label = $field;
+					if (isset($properties['label']))
+						$label = $properties['label'];
+					$value = '';
+					if (isset($properties['value']))
+						$value = $properties['value'];
+					$extra = array();
+					if (isset($properties['extra']))
+						$extra = $properties['extra'];
+					$rules = array();
+					if (isset($properties['rules']))
+						$rules = $properties['rules'];
+					$alert = array();
+					if (isset($properties['alert']))
+						$alert = $properties['alert'];
+					switch ($properties['type']) {
+						case 'submit':
+							$this->command($field, $label, $extra);
+							break;
+						case 'reset':
+							$this->cancel($field, $label, $extra);
+							break;
+						case 'hidden':
+							$this->hidden($field, $value);
+							break;
+						default:
+							$this->input($properties['type'], $label, $field, $value, $extra, $rules, $alert);
 					}
 				}
+				return true;
 			}
+			return false;
 		}
 
 		//adds an input field to the form
@@ -115,12 +117,39 @@
 			);
 		}
 
+		//sets an input field value
+		public function set_input($type, $name, $value) {				
+			foreach ($this->handler['input'] as &$item)
+				if (($item['type'] == $type) && ($item['name'] == $name)) {
+					$item['value'] = $value;
+					break;
+				}
+		}
+
+		public function update_input($type, $name, array $properties = array()) {
+			foreach ($this->handler['input'] as &$item)
+				if (($item['type'] == $type) && ($item['name'] == $name)) {
+					foreach ($properties as $propertie => $value)
+						$item['properties'][$propertie] = $value;
+					break;
+				}
+		}
+
 		//adds a hidden input field to the form
 		public function hidden($name, $value = '') {
 			$this->handler['hidden'][] = array(
 				'name' => strtolower($name),
 				'value' => htmlentities(utf8_decode($value))
 			);
+		}
+
+		//sets a hidden field value
+		public function set_hidden($name, $value) {
+			foreach ($this->handler['hidden'] as &$item)
+				if ($item['name'] == $name) {
+					$item['value'] = $value;
+					break;
+				}
 		}
 
 		//adds a command button to the form
@@ -168,6 +197,8 @@
 
 		//renders the form
 		public function render($validation = true, $ajaxsubmit = true, array $message = array()) {
+			if (!isset($this->handler['header']))
+				return false;
 			$bfr = '<div id="form">'."\n";
 			$bfr .= '	<fieldset>'."\n";
 			$bfr .= '		<legend>'.$this->handler['header']['title'].'</legend>'."\n";
@@ -206,10 +237,10 @@
 						$bfr .= '					<textarea id="'.$item['type'].'_'.$item['name'].'" name="'.$item['type'].'_'.$item['name'].'"';
 						foreach ($item['properties'] as $key => $value)
 							$bfr .= ' '.$key.'="'.$value.'"';
-						$bfr .= '>'."\n";
+						$bfr .= '>';
 						if ((isset($item['value'])) && ($item['value'] != ''))
-							$bfr .= '					'.$item['value']."\n";
-						$bfr .= '					</textarea>'."\n";
+							$bfr .= $item['value'];
+						$bfr .= '</textarea>'."\n";
 						$bfr .= '				</div>'."\n";
 						$bfr .= '			</div>'."\n";
 						if ($validation) {
@@ -385,27 +416,23 @@
 				$bfr .= '		submitHandler: function(form) {'."\n";
 				$bfr .= '			if ($(form).valid()) {'."\n";
 				if ($ajaxsubmit) {
-					if (isset($this->handler['submit']))
-						if (isset($this->handler['submit']['on'])) {
-							foreach ($this->handler['submit']['on'] as $line)
-								$bfr .=	'					'.$line."\n";
-						}
+					if (isset($this->handler['submit']['on']))
+						foreach ($this->handler['submit']['on'] as $line)
+							$bfr .=	'					'.$line."\n";
 					$bfr .= '				$(form).ajaxSubmit({'."\n";
 					$bfr .= '					resetForm: true,'."\n";
 					$bfr .= '					dataType: \'json\','."\n";
-					if (isset($this->handler['submit'])) {
-						if (isset($this->handler['submit']['pre'])) {
-							$bfr .= '					beforeSubmit: function(form_data, jq_form, options) {'."\n";
-							foreach ($this->handler['submit']['pre'] as $line)
-								$bfr .=	'						'.$line."\n";
-							$bfr .= '					},'."\n";
-						}
-						if (isset($this->handler['submit']['pos'])) {
-							$bfr .= '					success: function (response, status, xhr, jq_form) {'."\n";
-							foreach ($this->handler['submit']['pos'] as $line)
-								$bfr .=	'						'.$line."\n";
-							$bfr .= '					}'."\n";
-						}
+					if (isset($this->handler['submit']['pre'])) {
+						$bfr .= '					beforeSubmit: function(form_data, jq_form, options) {'."\n";
+						foreach ($this->handler['submit']['pre'] as $line)
+							$bfr .=	'						'.$line."\n";
+						$bfr .= '					},'."\n";
+					}
+					if (isset($this->handler['submit']['pos'])) {
+						$bfr .= '					success: function (response, status, xhr, jq_form) {'."\n";
+						foreach ($this->handler['submit']['pos'] as $line)
+							$bfr .=	'						'.$line."\n";
+						$bfr .= '					}'."\n";
 					}
 					$bfr .= '				});'."\n";
 				} else {
