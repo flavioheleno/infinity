@@ -27,13 +27,13 @@
 			$this->data = DATA::singleton();
 			//creates template object
 			if (in_array('template', $this->uses))
-				$this->tpl = new TEMPLATE(__DIR__.'/../tpl', __DIR__.'/../tpl/cache');
+				$this->tpl = new TEMPLATE($log, __DIR__.'/../tpl', __DIR__.'/../tpl/cache');
 			//creates xhtml object
 			if (in_array('xhtml', $this->uses))
 				$this->xhtml = new XHTML;
 			//creates form object
 			if (in_array('form', $this->uses))
-				$this->form = new FORM($name);
+				$this->form = new FORM($log, $name);
 		}
 
 		public function cacheable($action) {
@@ -43,6 +43,8 @@
 			//if action is cacheable, but has a defined timeout
 			if (isset($this->cacheable[$action]))
 				return $this->cacheable[$action];
+			//action isn't cacheable
+			return false;
 		}
 
 		protected function render($title, $description = '', $keywords = '') {
@@ -52,7 +54,10 @@
 				$this->xhtml->set_keywords($keywords);
 				$this->xhtml->append_content($this->tpl->get());
 				$this->response = $this->xhtml->render();
+				return true;
 			}
+			$this->log->add('Trying to render view without Template or XHTML objects');
+			return false;
 		}
 
 		//dispatches the response

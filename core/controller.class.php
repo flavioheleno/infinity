@@ -57,6 +57,7 @@
 
 		//creates a 302 HTTP redirect
 		protected function redirect($url = '') {
+			$this->log->add('Redirecting to '.$url);
 			if (($url != '') && (strtolower(substr($url, 0, 7)) == 'http://'))
 				header('Location: '.$url);
 			else
@@ -89,8 +90,10 @@
 		//direct calls view function and calls pre/pos action
 		public function __call($function, $arguments) {
 			if (($function == 'pre_action') || ($function == 'pos_action'))
-				if ((method_exists($this, $function)) && (is_callable(array($this, $function))))
+				if ((method_exists($this, $function)) && (is_callable(array($this, $function)))) {
+					$this->log->add('Calling '.$function);
 					$this->$function();
+				}
 			if (is_null($this->view))
 				return false;
 			if (is_callable(array($this->view, $function))) {

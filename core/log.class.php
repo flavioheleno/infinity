@@ -27,15 +27,27 @@
 				if (!mkdir($path))
 					exit(__CLASS__.': can\'t create path ('.$path.')');
 
+			//creates log history
+			if ((file_exists($path.'/'.$filename)) && (is_file($path.'/'.$filename))) {
+				$ctime = filectime($path.'/'.$filename);
+				if (($ctime !== false) && ((date('d') > date('d', $ctime)) || (date('m') > date('m', $ctime)) || (date('Y') > date('Y', $ctime))))
+					@rename($path.'/'.$filename, $path.'/'.date('Ymd', $ctime).$filename);
+			}
+
 			//open log file
 			$this->handler = fopen($path.'/'.$filename, 'a');
+			if ($this->handler === false)
+				exit(__CLASS__.': can\'t open log file ('.$filename.')');
+			$this->add('Log start');
 		}
 
 		//class destructor
 		public function __destruct() {
 			//if log file was oppened, close it
-			if ($this->handler)
+			if ($this->handler !== false) {
+				$this->add('Log end');
 				fclose($this->handler);
+			}
 		}
 
 		//singleton method - avoids the creation of more than one instance per log file
@@ -64,14 +76,14 @@
 		//add method - adds text to log file
 		public function add($text) {
 			//if log is enabled and log file was oppened, prints text to it
-			if (($this->enabled) && ($this->handler))
+			if (($this->enabled) && ($this->handler !== false))
 				fwrite($this->handler, date('[d/m/Y - H:i:s] ').$text."\n");
 		}
 
 		//clean method - truncates log file
 		public function clean() {
 			//if log file was oppened, truncate it
-			if ($this->handler)
+			if ($this->handler !== false)
 				ftruncate($this->handler, 0);
 		}
 

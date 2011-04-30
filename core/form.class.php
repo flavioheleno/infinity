@@ -1,12 +1,15 @@
 <?php
 
 	class FORM {
+		//holds the instance of log class
+		private $log = null;
 		//holds the basename for the calling class
 		private $name = '';
 		//holds the form handler
 		private $handler = array();
 
-		public function __construct($name) {
+		public function __construct(&$log, $name) {
+			$this->log = $log;
 			$this->name = strtolower($name);
 		}
 
@@ -58,8 +61,10 @@
 			if ((file_exists($file)) && (is_file($file))) {
 				$src = file_get_contents($file);
 				$json = json_decode($src, true);
-				if (is_null($json))
+				if (is_null($json)) {
+					$this->log->add('Invalid JSON file ('.$id.')');
 					return false;
+				}
 				if (isset($json['config'])) {
 					$method = 'post';
 					if (isset($json['config']['method']))
@@ -101,6 +106,7 @@
 				}
 				return true;
 			}
+			$this->log->add('File not found: '.$file);
 			return false;
 		}
 
@@ -118,38 +124,42 @@
 		}
 
 		//sets an input field value
-		public function set_input($type, $name, $value) {				
-			foreach ($this->handler['input'] as &$item)
-				if (($item['type'] == $type) && ($item['name'] == $name)) {
-					$item['value'] = $value;
-					break;
-				}
+		public function set_input($type, $name, $value) {
+			if (isset($this->handler['input']))
+				foreach ($this->handler['input'] as &$item)
+					if (($item['type'] == $type) && ($item['name'] == $name)) {
+						$item['value'] = $value;
+						break;
+					}
 		}
 
 		public function update_input($type, $name, array $properties = array()) {
-			foreach ($this->handler['input'] as &$item)
-				if (($item['type'] == $type) && ($item['name'] == $name)) {
-					foreach ($properties as $propertie => $value)
-						$item['properties'][$propertie] = $value;
-					break;
-				}
+			if (isset($this->handler['input']))
+				foreach ($this->handler['input'] as &$item)
+					if (($item['type'] == $type) && ($item['name'] == $name)) {
+						foreach ($properties as $propertie => $value)
+							$item['properties'][$propertie] = $value;
+						break;
+					}
 		}
 
 		//adds a hidden input field to the form
 		public function hidden($name, $value = '') {
-			$this->handler['hidden'][] = array(
-				'name' => strtolower($name),
-				'value' => htmlentities(utf8_decode($value))
-			);
+			if (isset($this->handler['hidden']))
+				$this->handler['hidden'][] = array(
+					'name' => strtolower($name),
+					'value' => htmlentities(utf8_decode($value))
+				);
 		}
 
 		//sets a hidden field value
 		public function set_hidden($name, $value) {
-			foreach ($this->handler['hidden'] as &$item)
-				if ($item['name'] == $name) {
-					$item['value'] = $value;
-					break;
-				}
+			if (isset($this->handler['hidden']))
+				foreach ($this->handler['hidden'] as &$item)
+					if ($item['name'] == $name) {
+						$item['value'] = $value;
+						break;
+					}
 		}
 
 		//adds a command button to the form
@@ -197,8 +207,10 @@
 
 		//renders the form
 		public function render($validation = true, $ajaxsubmit = true, array $message = array()) {
-			if (!isset($this->handler['header']))
+			if (!isset($this->handler['header'])) {
+				$this->log->add('Trying to render an empty form');
 				return false;
+			}
 			$bfr = '<div id="form">'."\n";
 			$bfr .= '	<fieldset>'."\n";
 			$bfr .= '		<legend>'.$this->handler['header']['title'].'</legend>'."\n";

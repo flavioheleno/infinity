@@ -3,14 +3,16 @@
 	AUTOLOAD::require_core_config('framework');
 
 	class CACHE {
+		private $log = null;
 		private $module = '';
 		private $action = '';
 		private $control = array();
 		private $enabled = false;
 		private $signature = true;
 
-		public function __construct($module = '', $action = '', $signature = true) {
+		public function __construct(&$log, $module = '', $action = '', $signature = true) {
 			global $_INFINITY_CFG;
+			$this->log = $log;
 			//base name for cache control
 			$this->module = strtolower($module);
 			$this->action = strtolower($action);
@@ -18,6 +20,7 @@
 				$this->enabled = $_INFINITY_CFG['cache']['enabled'];
 			$this->signature = $signature;
 			if ($this->enabled) {
+				$this->log->add('Cache is enabled');
 				//ensure that cache dir exists and has the right permissions
 				if (!file_exists(__DIR__.'/../cache/')) {
 					@mkdir(__DIR__.'/../cache/');
@@ -55,6 +58,7 @@
 						return true;
 					return false;
 				}
+				$this->log->add('Cache not found for '.$this->module.'->'.$this->action);
 			}
 			return false;
 		}
@@ -67,6 +71,7 @@
 					$data .= '<!-- cached at '.date('H:i:s d/m/Y').' -->';
 				}
 				file_put_contents(__DIR__.'/../cache/'.$this->module.'_'.$this->action.'.html', $data);
+				$this->log->add('Creating cache for '.$this->module.'->'.$this->action);
 			}
 		}
 
@@ -77,6 +82,7 @@
 				$file = __DIR__.'/../cache/'.$this->module.'_'.$this->action.'.html';
 				if ((file_exists($file)) && (is_file($file)))
 					@unlink($file);
+				$this->log->add('Removing cache for '.$this->module.'->'.$this->action);
 			}
 		}
 
@@ -87,6 +93,7 @@
 					if ((isset($this->control[$this->module][$this->action])) && ($this->control[$this->module][$this->action] > time()))
 						echo file_get_contents($file);
 				}
+				$this->log->add('Getting cache for '.$this->module.'->'.$this->action);
 		}
 
 	}

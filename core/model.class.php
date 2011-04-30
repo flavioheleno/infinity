@@ -48,18 +48,21 @@
 			if ((file_exists($file)) && (is_file($file))) {
 				$src = file_get_contents($file);
 				$json = json_decode($src, true);
-				if (!is_null($json)) {
-					foreach ($json['fields'] as $field => $properties) {
-						if (isset($properties['rules']))
-							$this->rules[$field] = $properties['rules'];
-						if (isset($_REQUEST[$properties['type'].'_'.$field]))
-							$this->field[$field] = $_REQUEST[$properties['type'].'_'.$field];
-						else
-							$this->field[$field] = false;
-					}
-					return true;
+				if (is_null($json)) {
+					$this->log->add('Invalid JSON file ('.$id.')');
+					return false;
 				}
+				foreach ($json['fields'] as $field => $properties) {
+					if (isset($properties['rules']))
+						$this->rules[$field] = $properties['rules'];
+					if (isset($_REQUEST[$properties['type'].'_'.$field]))
+						$this->field[$field] = $_REQUEST[$properties['type'].'_'.$field];
+					else
+						$this->field[$field] = false;
+				}
+				return true;
 			}
+			$this->log->add('File not found: '.$file);
 			return false;
 		}
 

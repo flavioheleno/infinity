@@ -18,6 +18,7 @@
 		}, $log, microtime(true));
 
 	if ($_INFINITY_CFG['route']) {
+		$log->add('Using routing');
 		require_once __DIR__.'/cfg/core/route.config.php';
 		global $_INFINITY_ROUTE;
 		$qs = trim($_SERVER['QUERY_STRING']);
@@ -42,6 +43,7 @@
 			}
 		}
 	} else {
+		$log->add('Using query string');
 		//defines the module
 		if (isset($_REQUEST['m']))
 			$module = strtolower($_REQUEST['m']);
@@ -82,10 +84,12 @@
 		if ((preg_match('/^[a-z_][a-z0-9_-]+$/i', $action)) && (substr($action, 0, 2) != '__')) {
 			//checks if there is an alias for the given module->action and updates it
 			$controller->check_alias($action);
+			$log->add('Action alias: '.$action);
 			//creates an instance of cache class
-			$cache = new CACHE($module, $action);
+			$cache = new CACHE($log, $module, $action);
 			//checks if action exists
 			if ((method_exists($controller, $action)) && (is_callable(array($controller, $action)))) {
+				$log->add('Controller has the action');
 				//calls pre-action function
 				$controller->pre_action();
 				//checks if action is cacheable
@@ -94,11 +98,13 @@
 					//calls the controller's action
 					$controller->$action();
 				else {
+					$log->add('Action is cacheable');
 					//checks if cache has cached version of action
 					if ($cache->has())
 						//dispatches cached version
 						$cache->get();
 					else {
+						$log->add('Cache not found or expired');
 						//starts output buffering
 						ob_start();
 						//calls the controller's action
@@ -117,6 +123,7 @@
 				//prevents default page to be shown
 				exit;
 			} else {
+				$log->add('Trying to call view\'s action');
 				//calls pre-action function
 				$controller->pre_action();
 				//checks if action is cacheable
@@ -127,6 +134,7 @@
 						//prevents default page to be shown
 						exit;
 				} else {
+					$log->add('Action is cacheable');
 					//checks if cache has cached version of action
 					if ($cache->has()) {
 						//dispatches cached version
@@ -134,6 +142,7 @@
 						//prevents default page to be shown
 						exit;
 					} else {
+						$log->add('Cache not found or expired');
 						//starts output buffering
 						ob_start();
 						//calls the controller's action

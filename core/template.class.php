@@ -3,9 +3,11 @@
 	require_once 'HTML/Template/Sigma.php';
 
 	class TEMPLATE {
+		private $log = null;
 		private $sigma = null;
 
-		public function __construct($path, $cache) {
+		public function __construct(&$log, $path, $cache) {
+			$this->log = $log;
 			$this->sigma = new HTML_Template_Sigma($path, $cache);
 			$this->sigma->setCallbackFunction('url_create', function () {
 				if (func_num_args() > 0) {
@@ -35,8 +37,12 @@
 			});
 		}
 
-		public function load_file_template($template) {
-			$this->sigma->loadTemplateFile($template.'.html', true, true);
+		public function load_template($template) {
+			$res = $this->sigma->loadTemplateFile($template.'.html', true, true);
+			if ($res == SIGMA_OK)
+				return true;
+			$this->log->add($res->getMessage());
+			return false;
 		}
 
 		public function set($index, $value) {
@@ -44,23 +50,45 @@
 		}
 
 		public function add($block, $file) {
-			$this->sigma->addBlockFile($block, $block, $file.'.html');
+			$res = $this->sigma->addBlockFile($block, $block, $file.'.html');
+			if ($res == SIGMA_OK)
+				return true;
+			$this->log->add($res->getMessage());
+			return false;
 		}
 
 		public function hide($block) {
-			$this->sigma->hideBlock($block);
+			$res = $this->sigma->hideBlock($block);
+			if ($res == SIGMA_OK)
+				return true;
+			$this->log->add($res->getMessage());
+			return false;
 		}
 
 		public function show($block) {
-			$this->sigma->touchBlock($block);
+			$res = $this->sigma->touchBlock($block);
+			if ($res == SIGMA_OK)
+				return true;
+			$this->log->add($res->getMessage());
+			return false;
 		}
 
 		public function parse($block) {
-			$this->sigma->parse($block);
+			try {
+				$this->sigma->parse($block);
+				return true;
+			} catch (Exception $e) {
+				$this->log->add($e->getMessage());
+				return false;
+			}
 		}
 
 		public function get() {
-			return $this->sigma->get();
+			try {
+				return $this->sigma->get();
+			} catch (Exception $e) {
+				return $e->getMessage();
+			}
 		}
 
 	}
