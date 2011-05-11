@@ -7,6 +7,12 @@
 		private $name = '';
 		//holds the form handler
 		private $handler = array();
+		//validation control
+		public $validation = true;
+		//autoclean control
+		public $autoclean = true;
+		//ajaxsubmit control
+		public $ajaxsubmit = true;
 
 		public function __construct(&$log, $name) {
 			$this->log = $log;
@@ -145,11 +151,10 @@
 
 		//adds a hidden input field to the form
 		public function hidden($name, $value = '') {
-			if (isset($this->handler['hidden']))
-				$this->handler['hidden'][] = array(
-					'name' => strtolower($name),
-					'value' => htmlentities(utf8_decode($value))
-				);
+			$this->handler['hidden'][] = array(
+				'name' => strtolower($name),
+				'value' => htmlentities(utf8_decode($value))
+			);
 		}
 
 		//sets a hidden field value
@@ -206,7 +211,7 @@
 		}
 
 		//renders the form
-		public function render($validation = true, $ajaxsubmit = true, array $message = array()) {
+		public function render(array $message = array()) {
 			if (!isset($this->handler['header'])) {
 				$this->log->add('Trying to render an empty form');
 				return false;
@@ -235,7 +240,7 @@
 						$bfr .= ' />'."\n";
 						$bfr .= '				</div>'."\n";
 						$bfr .= '			</div>'."\n";
-						if ($validation) {
+						if ($this->validation) {
 							$bfr .= '			<div id="error_'.$item['type'].'_'.$item['name'].'" class="error_container">'."\n";
 							$bfr .='			</div>'."\n";
 						}
@@ -255,7 +260,7 @@
 						$bfr .= '</textarea>'."\n";
 						$bfr .= '				</div>'."\n";
 						$bfr .= '			</div>'."\n";
-						if ($validation) {
+						if ($this->validation) {
 							$bfr .= '			<div id="error_'.$item['type'].'_'.$item['name'].'" class="error_container">'."\n";
 							$bfr .='			</div>'."\n";
 						}
@@ -275,7 +280,7 @@
 						$bfr .= '					<label id="label_'.$item['name'].'" for="'.$item['type'].'_'.$item['name'].'">'.$item['label'].'</label>'."\n";
 						$bfr .= '				</div>'."\n";
 						$bfr .= '			</div>'."\n";
-						if ($validation) {
+						if ($this->validation) {
 							$bfr .= '			<div id="error_'.$item['type'].'_'.$item['name'].'" class="error_container">'."\n";
 							$bfr .='			</div>'."\n";
 						}
@@ -298,7 +303,7 @@
 						$bfr .= '					</select>'."\n";
 						$bfr .= '				</div>'."\n";
 						$bfr .= '			</div>'."\n";
-						if ($validation) {
+						if ($this->validation) {
 							$bfr .= '			<div id="error_'.$item['type'].'_'.$item['name'].'" class="error_container">'."\n";
 							$bfr .='			</div>'."\n";
 						}
@@ -341,24 +346,26 @@
 			}
 			$bfr .= '	</fieldset>'."\n";
 			$bfr .= '</div>'."\n";
-			if ($validation) {
+			if ($this->validation) {
 				$bfr .= '<script type="text/javascript">'."\n";
 				$bfr .= '	$(document).ready(function() {'."\n";
 				if (isset($this->handler['script']))
 					foreach ($this->handler['script'] as $line)
 						$bfr .= '		'.$line."\n";
 				$bfr .= '		$(\'[id^=error_]\').hide();'."\n";
-				$bfr .= '		$(\'input:text, input:password\').each(function() {'."\n";
-				$bfr .= '			var defval = this.value;'."\n";
-				$bfr .= '			$(this).focus(function() {'."\n";
-				$bfr .= '				if (this.value == defval)'."\n";
-				$bfr .= '					this.value = \'\';'."\n";
-				$bfr .= '			});'."\n";
-				$bfr .= '			$(this).blur(function() {'."\n";
-				$bfr .= '				if (this.value == \'\')'."\n";
-				$bfr .= '					this.value = defval;'."\n";
-				$bfr .= '			});'."\n";
-				$bfr .= '		});'."\n";
+				if ($this->autoclean) {
+					$bfr .= '		$(\'input:text, input:password\').each(function() {'."\n";
+					$bfr .= '			var defval = this.value;'."\n";
+					$bfr .= '			$(this).focus(function() {'."\n";
+					$bfr .= '				if (this.value == defval)'."\n";
+					$bfr .= '					this.value = \'\';'."\n";
+					$bfr .= '			});'."\n";
+					$bfr .= '			$(this).blur(function() {'."\n";
+					$bfr .= '				if (this.value == \'\')'."\n";
+					$bfr .= '					this.value = defval;'."\n";
+					$bfr .= '			});'."\n";
+					$bfr .= '		});'."\n";
+				}
 				$bfr .= '	});'."\n";
 				$bfr .= '	$("#'.$this->handler['header']['id'].'").validate({'."\n";
 				$r = array();
@@ -427,7 +434,7 @@
 				$bfr .= '		},'."\n";
 				$bfr .= '		submitHandler: function(form) {'."\n";
 				$bfr .= '			if ($(form).valid()) {'."\n";
-				if ($ajaxsubmit) {
+				if ($this->ajaxsubmit) {
 					if (isset($this->handler['submit']['on']))
 						foreach ($this->handler['submit']['on'] as $line)
 							$bfr .=	'					'.$line."\n";

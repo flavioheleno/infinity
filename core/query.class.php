@@ -50,8 +50,13 @@
 		}
 
 		private function protect_value($value) {
-			if ((is_null($value)) || ($value == 'NULL'))
+			if ((is_null($value)) || ($value === 'NULL'))
 				return 'NULL';
+			if (is_bool($value)) {
+				if ($value === true)
+					return 1;
+				return 0;
+			}
 			if (is_array($value)) {
 				$r = array();
 				foreach ($value as $item)
@@ -61,8 +66,7 @@
 			if (is_numeric($value)) {
 				if (is_float($value))
 					return floatval($value);
-				else
-					return intval($value);
+				return intval($value);
 			}
 			$value = filter_var(trim($value), FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW);
 			return '\''.$this->db->quote($value).'\'';
@@ -129,10 +133,10 @@
 			$r = array();
 			foreach ($this->where as $item) {
 				if (is_array($item)) {
-					if (!$item[4])
+					if ($item[4] === false)
 						$item[0] = $this->protect_keyword($item[0]);
 					unset($item[4]);
-					if ($item[3])
+					if ($item[3] === true)
 						$item[2] = $this->protect_value($item[2]);
 					unset($item[3]);
 					$r[] = implode(' ', $item);
