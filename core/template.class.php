@@ -3,10 +3,12 @@
 	require_once 'HTML/Template/Sigma.php';
 
 	class TEMPLATE {
+		private $name = '';
 		private $log = null;
 		private $sigma = null;
 
-		public function __construct(&$log, $path, $cache) {
+		public function __construct(&$log, $name, $path, $cache) {
+			$this->name = strtolower($name);
 			$this->log = $log;
 			$this->sigma = new HTML_Template_Sigma($path, $cache);
 			$this->sigma->setCallbackFunction('url_create', function () {
@@ -37,8 +39,11 @@
 			});
 		}
 
-		public function load_template($template) {
-			$res = $this->sigma->loadTemplateFile($template.'.html', true, true);
+		public function load_template($id, $fullid = false) {
+			if ($fullid)
+				$res = $this->sigma->loadTemplateFile($id.'.html', true, true);
+			else
+				$res = $this->sigma->loadTemplateFile($this->name.'_'.$id.'.html', true, true);
 			if ($res == SIGMA_OK)
 				return true;
 			$this->log->add($res->getMessage());

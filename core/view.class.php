@@ -27,7 +27,7 @@
 			$this->data = DATA::singleton();
 			//creates template object
 			if (in_array('template', $this->uses))
-				$this->tpl = new TEMPLATE($log, __DIR__.'/../tpl', __DIR__.'/../tpl/cache');
+				$this->tpl = new TEMPLATE($log, $name, __DIR__.'/../tpl', __DIR__.'/../tpl/cache');
 			//creates xhtml object
 			if (in_array('xhtml', $this->uses))
 				$this->xhtml = new XHTML;
