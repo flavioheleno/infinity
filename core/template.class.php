@@ -54,8 +54,11 @@
 			$this->sigma->setVariable($index, $value);
 		}
 
-		public function add($block, $file) {
-			$res = $this->sigma->addBlockFile($block, $block, $file.'.html');
+		public function add($block, $id, $fullid = false) {
+			if ($fullid)
+				$res = $this->sigma->addBlockFile($block, $block, $id.'.html');
+			else
+				$res = $this->sigma->addBlockFile($block, $block, $this->name.'_'.$id.'.html');
 			if ($res == SIGMA_OK)
 				return true;
 			$this->log->add($res->getMessage());
