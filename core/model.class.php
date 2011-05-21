@@ -42,23 +42,33 @@
 
 		public function load($id, $fullid = false) {
 			if ($fullid)
-				$file = __DIR__.'/../cfg/form/'.strtolower($id).'.json';
+				$file = __DIR__.'/../cfg/form/'.strtolower($id).'.xml';
 			else
-				$file = __DIR__.'/../cfg/form/'.strtolower($this->name).'_'.$id.'.json';
+				$file = __DIR__.'/../cfg/form/'.strtolower($this->name).'_'.$id.'.xml';
 			if ((file_exists($file)) && (is_file($file))) {
 				$src = file_get_contents($file);
-				$json = json_decode($src, true);
-				if (is_null($json)) {
-					$this->log->add('Invalid JSON file ('.$id.')');
+				$xml = new SimpleXMLElement($src);
+				if ($xml === false) {
+					$this->log->add('Invalid XML file ('.$file.')');
 					return false;
 				}
-				foreach ($json['fields'] as $field => $properties) {
-					if (isset($properties['rules']))
-						$this->rules[$field] = $properties['rules'];
-					if (isset($_REQUEST[$properties['type'].'_'.$field]))
-						$this->field[$field] = $_REQUEST[$properties['type'].'_'.$field];
+				foreach ($xml->fields->field as $item) {
+					if (isset($item->rule)) {
+						$this->rules[(string)$item['id']] = array();
+						foreach ($item->rule as $rule) {
+							if (isset($rule['id'])) {
+								if (isset($rule['value']))
+									$this->rules[(string)$item['id']][(string)$rule['id']] = (string)$rule['value'];
+								else
+									$this->rules[(string)$item['id']][] = (string)$rule['id'];
+							}
+						}
+					}
+					$key = (string)$item['type'].'_'.(string)$item['id'];
+					if (isset($_REQUEST[$key]))
+						$this->field[(string)$item['id']] = $_REQUEST[$key];
 					else
-						$this->field[$field] = false;
+						$this->field[(string)$item['id']] = false;
 				}
 				return true;
 			}

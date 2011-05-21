@@ -13,7 +13,7 @@
 		private $js = array();
 		private $content = array();
 
-		public function __construct($lang = 'pt-br', $enc = 'iso-8859-1', array $http = array(), array $meta = array()) {
+		public function __construct($lang = 'pt-br', $enc = 'utf-8', array $http = array(), array $meta = array()) {
 			$this->lang = $lang;
 			$this->enc = $enc;
 			$this->http = array(
@@ -141,7 +141,7 @@
 		}
 
 		public function render() {
-			$bfr = '<?xml version="1.0" encoding="'.$this->enc.'"?>'."\n";
+			$bfr = '<?xml version="1.0" encoding="'.$this->enc.'" ?>'."\n";
 			$bfr .= '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'."\n";
 			$bfr .= '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="'.$this->lang.'" lang="'.$this->lang.'">'."\n";
 			$bfr .= '	<head>'."\n";

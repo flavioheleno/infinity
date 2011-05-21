@@ -58,57 +58,88 @@
 			$this->handler = array();
 		}
 
-		//loads a form structure from an json file
+		//loads a form structure from an xml file
 		public function load($id, $fullid = false) {
 			if ($fullid)
-				$file = __DIR__.'/../cfg/form/'.$id.'.json';
+				$file = __DIR__.'/../cfg/form/'.$id.'.xml';
 			else
-				$file = __DIR__.'/../cfg/form/'.$this->name.'_'.$id.'.json';
+				$file = __DIR__.'/../cfg/form/'.$this->name.'_'.$id.'.xml';
 			if ((file_exists($file)) && (is_file($file))) {
 				$src = file_get_contents($file);
-				$json = json_decode($src, true);
-				if (is_null($json)) {
-					$this->log->add('Invalid JSON file ('.$id.')');
+				$xml = new SimpleXMLElement($src);
+				if ($xml === false) {
+					$this->log->add('Invalid XML file ('.$file.')');
 					return false;
 				}
-				if (isset($json['config'])) {
-					$method = 'post';
-					if (isset($json['config']['method']))
-						$method = $json['config']['method'];
-					$enctype = 'application/x-www-form-urlencoded';
-					if (isset($json['config']['enctype']))
-						$enctype = $json['config']['enctype'];
-					$this->create($json['config']['title'], $json['config']['id'], $json['config']['action'], $method, $enctype);
-				}
-				foreach ($json['fields'] as $field => $properties) {
-					$label = $field;
-					if (isset($properties['label']))
-						$label = $properties['label'];
-					$value = '';
-					if (isset($properties['value']))
-						$value = $properties['value'];
-					$extra = array();
-					if (isset($properties['extra']))
-						$extra = $properties['extra'];
-					$rules = array();
-					if (isset($properties['rules']))
-						$rules = $properties['rules'];
-					$alert = array();
-					if (isset($properties['alert']))
-						$alert = $properties['alert'];
-					switch ($properties['type']) {
-						case 'submit':
-							$this->command($field, $label, $extra);
-							break;
-						case 'reset':
-							$this->cancel($field, $label, $extra);
-							break;
-						case 'hidden':
-							$this->hidden($field, $value);
-							break;
-						default:
-							$this->input($properties['type'], $label, $field, $value, $extra, $rules, $alert);
+				$form['title'] = '';
+				if (isset($xml['title']))
+					$form['title'] = $xml['title'];
+				$form['id'] = '';
+				if (isset($xml['id']))
+					$form['id'] = $xml['id'];
+				$form['action'] = '';
+				if (isset($xml['action']))
+					$form['action'] = $xml['action'];
+				$form['method'] = 'post';
+				if (isset($xml['method']))
+					$form['method'] = $xml['method'];
+				$form['enctype'] = 'application/x-www-form-urlencoded';
+				if (isset($xml['enctype']))
+					$form['enctype'] = $xml['enctype'];
+				$this->create($form['title'], $form['id'], $form['action'], $form['method'], $form['enctype']);
+				foreach ($xml->fields->field as $item) {
+					if ((isset($item['type'])) && (isset($item['id']))) {
+						$field['label'] = (string)$item['id'];
+						if (isset($item['label']))
+							$field['label'] = (string)$item['label'];
+						$field['value'] = '';
+						if (isset($item['value']))
+							$field['value'] = (string)$item['value'];
+						$field['extra'] = array();
+						if (isset($item->extra)) {
+							foreach ($item->extra as $extra)
+								if ((isset($extra['id'])) && (isset($extra['value'])))
+									$field['extra'][(string)$extra['id']] = (string)$extra['value'];
+						}
+						$field['rules'] = array();
+						if (isset($item->rule)) {
+							foreach ($item->rule as $rule) {
+								if (isset($rule['id'])) {
+									if (isset($rule['value']))
+										$field['rules'][(string)$rule['id']] = (string)$rule['value'];
+									else
+										$field['rules'][] = (string)$rule['id'];
+								}
+							}
+						}
+						$field['alert'] = array();
+						if (isset($item->alert)) {
+							foreach ($item->alert as $alert)
+								if ((isset($alert['id'])) && (isset($alert['value'])))
+									$field['alert'][(string)$alert['id']] = (string)$alert['value'];
+						}
+						switch ($item['type']) {
+							case 'submit':
+								$this->command($item['id'], $field['label'], $field['extra']);
+								break;
+							case 'reset':
+								$this->cancel($item['id'], $field['label'], $field['extra']);
+								break;
+							case 'hidden':
+								$this->hidden($item['id'], $field['value']);
+								break;
+							default:
+								$this->input($item['type'], $field['label'], $item['id'], $field['value'], $field['extra'], $field['rules'], $field['alert']);
+						}
 					}
+				}
+				if (isset($xml->submit)) {
+					if (isset($xml->submit->before))
+						$this->before_submit((string)$xml->submit->before);
+					if (isset($xml->submit->on))
+						$this->on_submit((string)$xml->submit->on);
+					if (isset($xml->submit->after))
+						$this->after_submit((string)$xml->submit->after);
 				}
 				return true;
 			}
@@ -437,20 +468,20 @@
 				if ($this->ajaxsubmit) {
 					if (isset($this->handler['submit']['on']))
 						foreach ($this->handler['submit']['on'] as $line)
-							$bfr .=	'					'.$line."\n";
+							$bfr .=	'					'.trim($line)."\n";
 					$bfr .= '				$(form).ajaxSubmit({'."\n";
 					$bfr .= '					resetForm: true,'."\n";
 					$bfr .= '					dataType: \'json\','."\n";
 					if (isset($this->handler['submit']['pre'])) {
 						$bfr .= '					beforeSubmit: function(form_data, jq_form, options) {'."\n";
 						foreach ($this->handler['submit']['pre'] as $line)
-							$bfr .=	'						'.$line."\n";
+							$bfr .=	'						'.trim($line)."\n";
 						$bfr .= '					},'."\n";
 					}
 					if (isset($this->handler['submit']['pos'])) {
 						$bfr .= '					success: function (response, status, xhr, jq_form) {'."\n";
 						foreach ($this->handler['submit']['pos'] as $line)
-							$bfr .=	'						'.$line."\n";
+							$bfr .=	'						'.trim($line)."\n";
 						$bfr .= '					}'."\n";
 					}
 					$bfr .= '				});'."\n";
