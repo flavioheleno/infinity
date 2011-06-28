@@ -362,8 +362,14 @@
 				case 'field':
 					foreach ($args as $arg)
 						if (is_array($arg))
-							foreach ($arg as $item)
-								$this->field($item, $escape);
+							foreach ($arg as $key => $value) {
+								if (is_numeric($key))
+									$this->field($value, $escape);
+								else {
+									$this->field($key, $escape);
+									$this->alias($key, $value);
+								}
+							}
 						else {
 							if (strpos($arg, ',')) {
 								foreach (explode(',', $arg) as $item)

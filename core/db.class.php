@@ -12,12 +12,14 @@
 		private $prefix;
 		private $mysqli;
 		private $debug;
-		private $log;
+		private $log = null;
 
 		public function __construct(array $cfg) {
 			if (count($cfg)) {
 				$this->initialize($cfg);
 				$this->log = LOG::singleton('db.log');
+				if (!$this->debug)
+					$this->log->disable();
 				$this->log->add('construct('.$this->username.', '.$this->password.', '.$this->database.', '.$this->hostname.')');
 			} else {
 				$this->log->add(__CLASS__.': config array is empty');
