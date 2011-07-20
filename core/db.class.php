@@ -29,7 +29,14 @@
 		}
 
 		private function initialize($cfg) {
-			$options = array('username' => '', 'password' => '', 'hostname' => '', 'database' => '', 'mysqli' => false, 'debug' => false);
+			$options = array(
+				'username' => '',
+				'password' => '',
+				'hostname' => '',
+				'database' => '',
+				'mysqli' => false,
+				'debug' => false
+			);
 			foreach ($options as $option => $default)
 				if ((isset($cfg[$option])) && (!is_null($cfg[$option])) && ($cfg[$option] != ''))
 					$this->$option = $cfg[$option];

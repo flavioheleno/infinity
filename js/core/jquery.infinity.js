@@ -1,6 +1,9 @@
 (function ($) {
-	showMessage = function(title, text, type) {
-		var footer = '<a href="javascript:history.back(-1);">Volte para a p&aacute;gina anterior</a> ou <a href="#" id="aClose">feche esta mensagem</a>.';
+	showMessage = function(title, text, type, back) {
+		if (back == 1)
+			var footer = '<a href="javascript:history.back(-1);">volte para a p&aacute;gina anterior</a> ou <a href="#" id="aClose">feche esta mensagem</a>.';
+		else
+			var footer = '<a href="#" id="aClose">feche esta mensagem</a>';
 		showDialog(title, text, footer, type);
 		$('#aClose').click(function () {
 			hideDialog();

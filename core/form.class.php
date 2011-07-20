@@ -22,20 +22,20 @@
 		//returns the css files needed by form
 		public static function css() {
 			return array(
-				'/css/core/form.css'
+				'css/core/form.css'
 			);
 		}
 
 		//returns the js files needed by validation script
 		public static function js() {
 			return array(
-				'/js/core/jquery.js',
-				'/js/core/jquery.form.js',
-				'/js/core/jquery.maskedinput.js',
-				'/js/core/jquery.validate.js',
-				'/js/core/jquery.validate.additional-methods.js',
-				'/js/core/jquery.validate.messages_ptbr.js',
-				'/js/core/jquery.infinity.js'
+				'js/core/jquery.js',
+				'js/core/jquery.form.js',
+				'js/core/jquery.maskedinput.js',
+				'js/core/jquery.validate.js',
+				'js/core/jquery.validate.additional-methods.js',
+				'js/core/jquery.validate.messages_ptbr.js',
+				'js/core/jquery.infinity.js'
 			);
 		}
 
@@ -249,7 +249,8 @@
 			}
 			$bfr = '<div id="form">'."\n";
 			$bfr .= '	<fieldset>'."\n";
-			$bfr .= '		<legend>'.$this->handler['header']['title'].'</legend>'."\n";
+			if ($this->handler['header']['title'] != '')
+				$bfr .= '		<legend>'.$this->handler['header']['title'].'</legend>'."\n";
 			$bfr .= '		<form';
 			foreach ($this->handler['header'] as $key => $value)
 				$bfr .= ' '.$key.'="'.$value.'"';

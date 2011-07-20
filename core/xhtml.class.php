@@ -3,6 +3,7 @@
 	class XHTML {
 		private $lang = null;
 		private $enc = null;
+		private $base = null;
 		private $title = null;
 		private $description = null;
 		private $keywords = null;
@@ -30,6 +31,10 @@
 			);
 			foreach ($meta as $key => $value)
 				$this->meta[$key] = $value;
+		}
+
+		public function set_base($value) {
+			$this->base = $value;
 		}
 
 		public function set_title($value) {
@@ -157,6 +162,8 @@
 				$bfr .= '		<meta name="keywords" content="'.$this->keywords.'" xml:lang="'.$this->lang.'" lang="'.$this->lang.'" />'."\n";
 			if ((!is_null($this->title)) && ($this->title))
 				$bfr .= '		<title>'.$this->title.'</title>'."\n";
+			if ((!is_null($this->base)) && ($this->base))
+				$bfr .= '		<base href="'.$this->base.'" />'."\n";
 			if ((!is_null($this->favicon)) && ($this->favicon))
 				$bfr .= '		<link rel="shortcut icon" type="image/x-icon" href="'.$this->favicon.'" />'."\n";
 			$this->css = array_unique($this->css);
