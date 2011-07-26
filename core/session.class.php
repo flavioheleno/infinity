@@ -20,7 +20,7 @@
 		public function __construct($subdomain = false, $idletime = 1800) {
 			global $_INFINITY_CFG;
 			if ($_INFINITY_CFG['domain'] != '') {
-				$this->name = substr($_INFINITY_CFG['domain'], 0, strpos($_INFINITY_CFG['domain'], '.'));
+				$this->name = str_replace('.', '', $_INFINITY_CFG['domain']);
 				session_name($this->name);
 			}
 			$this->domain = $_INFINITY_CFG['domain'];
@@ -53,7 +53,7 @@
 
 		//regenerates session id
 		public function regenerate() {
-			session_regenerate_id();
+			session_regenerate_id(true);
 		}
 
 		//destroys entire session information

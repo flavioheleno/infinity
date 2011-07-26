@@ -7,6 +7,12 @@
 		showDialog(title, text, footer, type);
 		$('#aClose').click(function () {
 			hideDialog();
+			return false;
+		});
+		$(document).keyup(function(e) {
+			var code = (e.keyCode ? e.keyCode : e.which);
+			if (code == 27)
+				$('#aClose').click();
 		});
 	}
 	
@@ -21,6 +27,12 @@
 		showDialog(title, text, footer, 'alert');
 		$('#btnNo').click(function () {
 			hideDialog();
+			return false;
+		});
+		$(document).keyup(function(e) {
+			var code = (e.keyCode ? e.keyCode : e.which);
+			if (code == 27)
+				$('#btnNo').click();
 		});
 	}
 	

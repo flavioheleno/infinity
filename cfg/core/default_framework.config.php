@@ -3,7 +3,8 @@
 	$_INFINITY_CFG = array(
 		'benchmark' => true,
 		'default_module' => 'main', //module that will be used when no module is provided
-		'domain' => 'localhost',
+		'domain' => 'localhost', //defines the domain name
+		'subdomain' => true, //defines if cookies must be valid for subdomains
 		'base_path' => '/', //defines the web path to scripts
 		'route' => false, //defines the routing status
 		'secure' => array( //defines secure system configuration

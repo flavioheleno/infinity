@@ -43,7 +43,7 @@
 				$this->model = AUTOLOAD::load_model($name, $log);
 			//creates session helper
 			if (in_array('session', $this->uses))
-				$this->session = SESSION::singleton(true);
+				$this->session = SESSION::singleton($_INFINITY_CFG['subdomain']);
 			//creates cookie helper
 			if (in_array('cookie', $this->uses))
 				$this->cookie = COOKIE::singleton();
@@ -76,6 +76,14 @@
 			if (is_null($this->view))
 				return false;
 			return $this->view->cacheable($action);
+		}
+
+		//checks if request comes from expected referer
+		protected function check_referer() {
+			global $_INFINITY_CFG;
+			if ((isset($_SERVER['HTTP_REFERER'])) && (!preg_match('/^http:\/\/'.$_INFINITY_CFG['domain'].'/', $_SERVER['HTTP_REFERER'])))
+				return false;
+			return true;
 		}
 
 		//dispatches the response
