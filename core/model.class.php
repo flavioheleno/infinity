@@ -1,7 +1,5 @@
 <?php
 
-	AUTOLOAD::require_core_config('db');
-
 	abstract class MODEL {
 		//module name
 		protected $name = '';
@@ -21,20 +19,13 @@
 		protected $uses = array();
 
 		//class constructor
-		public function __construct($name, &$log) {
+		public function __construct($name) {
 			$this->name = $name;
-			$this->log = $log;
+			$this->log = LOG::singleton('infinity.log');
 			$this->data = DATA::singleton();
-			$cfg = array(
-				'hostname' => db_hostname,
-				'database' => db_database,
-				'username' => db_username,
-				'password' => db_password,
-				'prefix' => db_prefix,
-				'mysqli' => db_mysqli,
-				'debug' => db_debug
-			);
-			$this->query = new QUERY($cfg);
+			$config = CONFIGURATION::singleton();
+			$config->load_core('db');
+			$this->query = new QUERY($config->db);
 			//creates secure object
 			if (in_array('secure', $this->uses))
 				$this->secure = new SECURE;

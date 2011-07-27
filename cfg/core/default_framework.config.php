@@ -1,10 +1,11 @@
 <?php
 
-	$_INFINITY_CFG = array(
+	$_infinity = array(
 		'benchmark' => true,
 		'default_module' => 'main', //module that will be used when no module is provided
 		'domain' => 'localhost', //defines the domain name
 		'subdomain' => true, //defines if cookies must be valid for subdomains
+		'idletime' => 1800, //defines max idle time of session until logout
 		'base_path' => '/', //defines the web path to scripts
 		'route' => false, //defines the routing status
 		'secure' => array( //defines secure system configuration
@@ -13,21 +14,6 @@
 		'cache' => array( //defines system's cache configuration
 			'enabled' => true, //defines cache work state
 		),
-		'email' => array( //defines email system configuration
-			'host' => 'localhost',
-			'port' => 25,
-			'accs' => array(
-				'system' => array(
-					'name' => '',
-					'user' => '',
-					'pass' => '',
-					'reply' => array(
-						'name' => '',
-						'mail' => ''
-					)
-				)
-			)
-		)
 	);
 
 ?>

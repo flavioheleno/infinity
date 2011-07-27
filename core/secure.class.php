@@ -1,14 +1,12 @@
 <?php
 
-	AUTOLOAD::require_core_config('framework');
-
 	class SECURE {
 		private $seed = '';
 
 		public function __construct() {
-			global $_INFINITY_CFG;
-			if (isset($_INFINITY_CFG['secure']['seed']))
-				$this->seed = $_INFINITY_CFG['secure']['seed'];
+			$config = CONFIGURATION::singleton();
+			if (isset($config->framework['secure']['seed']))
+				$this->seed = $config->framework['secure']['seed'];
 		}
 
 		public function md5($data) {

@@ -1,7 +1,5 @@
 <?php
 
-	AUTOLOAD::require_core_config('framework');
-
 	class SESSION {
 		//holds class instance for singleton
 		private static $instance = null;
@@ -13,28 +11,25 @@
 		private $subdomain = false;
 		//holds timeout state of session
 		private $timeout = false;
-		//holds the limit idle time
-		private $idletime = 0;
 
 		//class constructor
-		public function __construct($subdomain = false, $idletime = 1800) {
-			global $_INFINITY_CFG;
-			if ($_INFINITY_CFG['domain'] != '') {
-				$this->name = str_replace('.', '', $_INFINITY_CFG['domain']);
+		public function __construct() {
+			$config = CONFIGURATION::singleton();
+			if ($config->framework['domain'] != '') {
+				$this->name = str_replace('.', '', $config->framework['domain']);
 				session_name($this->name);
 			}
-			$this->domain = $_INFINITY_CFG['domain'];
-			$this->subdomain = $subdomain;
-			$this->idletime = $idletime;
-			session_set_cookie_params(0, '/', ($subdomain ? '.' : '').$_INFINITY_CFG['domain']);
+			$this->domain = $config->framework['domain'];
+			$this->subdomain = $config->framework['subdomain'];
+			session_set_cookie_params(0, '/', ($this->subdomain ? '.' : '').$config->framework['domain']);
 			session_start();
 			if (!isset($_SESSION['timeout']))
-				$_SESSION['timeout'] = time() + $this->idletime;
+				$_SESSION['timeout'] = time() + $config->framework['idletime'];
 			else {
 				if ($_SESSION['timeout'] < time())
 					$this->timeout = true;
 				else
-					$_SESSION['timeout'] = time() + $this->idletime;
+					$_SESSION['timeout'] = time() + $config->framework['idletime'];
 			}
 		}
 
@@ -44,10 +39,10 @@
 		}
 
 		//singleton method - avoids the creation of more than one instance
-		public static function singleton($subdomain = false, $idletime = 1800) {
+		public static function singleton() {
 			//checks if there is an instance of class, if not, create it
 			if (!isset(self::$instance))
-				self::$instance = new SESSION($subdomain, $idletime);
+				self::$instance = new SESSION;
 			return self::$instance;
 		}
 

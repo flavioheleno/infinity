@@ -1,7 +1,6 @@
 <?php
 
 	require_once 'swift_required.php';
-	AUTOLOAD::require_core_config('framework');
 
 	class EMAIL {
 
@@ -18,16 +17,17 @@
 
 		//sends the email
 		public static function send($acc, array $to, $subject, $body, &$failures = array(), $attachment = null) {
-			global $_INFINITY_CFG;
-			if (isset($_INFINITY_CFG['email']['accs'][$acc]))
+			$config = CONFIGURATION::singleton();
+			$config->load_core('email');
+			if (isset($config->email['accs'][$acc]))
 				try {
-					if (isset($_INFINITY_CFG['email']['accs'][$acc]['host']))
-						$smtp = new Swift_SmtpTransport($_INFINITY_CFG['email']['accs'][$acc]['host'], $_INFINITY_CFG['email']['accs'][$acc]['port']);
+					if (isset($config->email['accs'][$acc]['host']))
+						$smtp = new Swift_SmtpTransport($config->email['accs'][$acc]['host'], $config->email['accs'][$acc]['port']);
 					else
-						$smtp = new Swift_SmtpTransport($_INFINITY_CFG['email']['host'], $_INFINITY_CFG['email']['port']);
-					$smtp->setUsername($_INFINITY_CFG['email']['accs'][$acc]['user']);
-					if (isset($_INFINITY_CFG['email']['accs'][$acc]['pass']))
-						$smtp->setpassword($_INFINITY_CFG['email']['accs'][$acc]['pass']);
+						$smtp = new Swift_SmtpTransport($config->email['host'], $config->email['port']);
+					$smtp->setUsername($config->email['accs'][$acc]['user']);
+					if (isset($config->email['accs'][$acc]['pass']))
+						$smtp->setpassword($config->email['accs'][$acc]['pass']);
 					$message = new Swift_Message();
 					$message->setPriority(1);
 					$message->getHeaders()->addTextHeader('X-Mailer', 'infinity-framework');
@@ -35,12 +35,12 @@
 					$message->setSubject($subject);
 					$message->setBody($body, 'text/html');
 					$message->addPart(utf8_encode(html_entity_decode(strip_tags($body))), 'text/plain');
-					$message->setFrom(array($_INFINITY_CFG['email']['accs'][$acc]['user'] => $_INFINITY_CFG['email']['accs'][$acc]['name']));
+					$message->setFrom(array($config->email['accs'][$acc]['user'] => $config->email['accs'][$acc]['name']));
 					$message->setTo($to);
-					if (isset($_INFINITY_CFG['email']['accs'][$acc]['reply']))
-						$message->setReplyTo($_INFINITY_CFG['email']['accs'][$acc]['reply']);
+					if (isset($config->email['accs'][$acc]['reply']))
+						$message->setReplyTo($config->email['accs'][$acc]['reply']);
 					else
-						$message->setReplyTo(array($_INFINITY_CFG['email']['accs'][$acc]['user'] => $_INFINITY_CFG['email']['accs'][$acc]['name']));
+						$message->setReplyTo(array($config->email['accs'][$acc]['user'] => $config->email['accs'][$acc]['name']));
 					if (!is_null($attachment)) {
 						if (is_array($attachment))
 							foreach ($attachment as $file)

@@ -1,7 +1,5 @@
 <?php
 
-	AUTOLOAD::require_core_config('framework');
-
 	class CONTROLLER {
 		//module name
 		protected $name = '';
@@ -17,6 +15,8 @@
 		protected $cookie = null;
 		//instance of log class
 		protected $log = null;
+		//instance of config class
+		protected $config = null;
 		//web path
 		protected $path = '/';
 		//sets the aliases for this controller
@@ -29,21 +29,21 @@
 		public $default_action = 'index';
 
 		//class constructor
-		public function __construct($name, &$log) {
-			global $_INFINITY_CFG;
+		public function __construct($name) {
+			$this->config = CONFIGURATION::singleton();
+			$this->log = LOG::singleton('infinity.log');
 			$this->name = $name;
-			$this->path = $_INFINITY_CFG['base_path'];
-			$this->log = $log;
+			$this->path = $this->config->framework['base_path'];
 			$this->data = DATA::singleton();
 			//creates view object
 			if (in_array('view', $this->uses))
-				$this->view = AUTOLOAD::load_view($name, $log);
+				$this->view = AUTOLOAD::load_view($name);
 			//creates model object
 			if (in_array('model', $this->uses))
-				$this->model = AUTOLOAD::load_model($name, $log);
+				$this->model = AUTOLOAD::load_model($name);
 			//creates session helper
 			if (in_array('session', $this->uses))
-				$this->session = SESSION::singleton($_INFINITY_CFG['subdomain']);
+				$this->session = SESSION::singleton();
 			//creates cookie helper
 			if (in_array('cookie', $this->uses))
 				$this->cookie = COOKIE::singleton();
@@ -80,8 +80,7 @@
 
 		//checks if request comes from expected referer
 		protected function check_referer() {
-			global $_INFINITY_CFG;
-			if ((isset($_SERVER['HTTP_REFERER'])) && (!preg_match('/^http:\/\/'.$_INFINITY_CFG['domain'].'/', $_SERVER['HTTP_REFERER'])))
+			if ((isset($_SERVER['HTTP_REFERER'])) && (!preg_match('/^http:\/\/'.$this->config->framework['domain'].'/', $_SERVER['HTTP_REFERER'])))
 				return false;
 			return true;
 		}
@@ -89,9 +88,10 @@
 		//dispatches the response
 		protected function dispatch() {
 			if (!is_null($this->response))
-				if (is_array($this->response))
+				if (is_array($this->response)) {
+					header('Content-Type: application/json');
 					echo json_encode($this->response);
-				else
+				} else
 					echo $this->response;
 		}
 

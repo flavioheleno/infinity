@@ -6,7 +6,7 @@
 		for every array
 	*/
 
-	$_INFINITY_MSG = array(
+	$_infinity = array(
 		//messages for errors
 		'ERR' => array(
 		),

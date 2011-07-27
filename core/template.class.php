@@ -7,9 +7,9 @@
 		private $log = null;
 		private $sigma = null;
 
-		public function __construct(&$log, $name, $path, $cache) {
+		public function __construct($name, $path, $cache) {
 			$this->name = strtolower($name);
-			$this->log = $log;
+			$this->log = LOG::singleton('infinity.log');
 			$this->sigma = new HTML_Template_Sigma($path, $cache);
 			$this->sigma->setCallbackFunction('url_create', function () {
 				if (func_num_args() > 0) {

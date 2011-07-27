@@ -1,7 +1,5 @@
 <?php
 
-	AUTOLOAD::require_core_config('framework');
-
 	class CACHE {
 		private $log = null;
 		private $module = '';
@@ -10,14 +8,14 @@
 		private $enabled = false;
 		private $signature = true;
 
-		public function __construct(&$log, $module = '', $action = '', $signature = true) {
-			global $_INFINITY_CFG;
-			$this->log = $log;
+		public function __construct($module = '', $action = '', $signature = true) {
+			$this->log = LOG::singleton('infinity.log');
+			$config = CONFIGURATION::singleton();
 			//base name for cache control
 			$this->module = strtolower($module);
 			$this->action = strtolower($action);
-			if (isset($_INFINITY_CFG['cache']['enabled']))
-				$this->enabled = $_INFINITY_CFG['cache']['enabled'];
+			if (isset($config->framework['cache']['enabled']))
+				$this->enabled = $config->framework['cache']['enabled'];
 			$this->signature = $signature;
 			if ($this->enabled) {
 				$this->log->add('Cache is enabled');

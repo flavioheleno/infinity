@@ -22,56 +22,38 @@
 				require_once $file;
 		}
 
-		public static function load_controller($name, &$log) {
+		public static function load_controller($name) {
 			$file = __DIR__.'/../app/'.strtolower($name).'.controller.php';
 			if ((file_exists($file)) && (is_file($file))) {
 				require_once $file;
 				$name = strtoupper($name);
 				$module = $name.'_CONTROLLER';
-				return new $module($name, $log);
-			} else
+				return new $module($name);
+			}
 			require_once __DIR__.'/controller.class.php';
-			return new CONTROLLER(strtoupper($name), $log);
+			return new CONTROLLER(strtoupper($name));
 		}
 
-		public static function load_view($name, &$log) {
+		public static function load_view($name) {
 			$file = __DIR__.'/../app/'.strtolower($name).'.view.php';
 			if ((file_exists($file)) && (is_file($file))) {
 				require_once $file;
 				$name = strtoupper($name);
 				$module = $name.'_VIEW';
-				return new $module($name, $log);
+				return new $module($name);
 			}
 			return null;
 		}
 
-		public static function load_model($name, &$log) {
+		public static function load_model($name) {
 			$file = __DIR__.'/../app/'.strtolower($name).'.model.php';
 			if ((file_exists($file)) && (is_file($file))) {
 				require_once $file;
 				$name = strtoupper($name);
 				$module = $name.'_MODEL';
-				return new $module($name, $log);
+				return new $module($name);
 			}
 			return null;
-		}
-
-		public static function require_core_config($id) {
-			$file = __DIR__.'/../cfg/core/'.strtolower($id).'.config.php';
-			if ((file_exists($file)) && (is_file($file))) {
-				require_once $file;
-				return;
-			}
-			exit('require_core_config('.$id.')');
-		}
-
-		public static function require_app_config($id) {
-			$file = __DIR__.'/../cfg/app/'.strtolower($id).'.config.php';
-			if ((file_exists($file)) && (is_file($file))) {
-				require_once $file;
-				return;
-			}
-			exit('require_app_config('.$id.')');
 		}
 
 	}

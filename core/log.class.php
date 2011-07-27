@@ -51,7 +51,7 @@
 		}
 
 		//singleton method - avoids the creation of more than one instance per log file
-		public static function singleton($filename = 'data.log', $path = '') {
+		public static function singleton($filename = 'infinity.log', $path = '') {
 			//checks if there is an instance of class, if not, create it
 			if (!isset(self::$instance[$filename]))
 				self::$instance[$filename] = new LOG($filename, $path);

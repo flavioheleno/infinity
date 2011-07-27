@@ -1,7 +1,5 @@
 <?php
 
-	AUTOLOAD::require_core_config('framework');
-
 	abstract class VIEW {
 		//module name
 		protected $name = '';
@@ -23,24 +21,24 @@
 		protected $response = null;
 
 		//class constructor
-		public function __construct($name, &$log) {
-			global $_INFINITY_CFG;
+		public function __construct($name) {
 			$this->name = $name;
-			$this->log = $log;
+			$this->log = LOG::singleton('infinity.log');
 			$this->data = DATA::singleton();
 			//creates template object
 			if (in_array('template', $this->uses))
-				$this->tpl = new TEMPLATE($log, $name, __DIR__.'/../tpl', __DIR__.'/../tpl/cache');
+				$this->tpl = new TEMPLATE($name, __DIR__.'/../tpl', __DIR__.'/../tpl/cache');
 			//creates xhtml object
 			if (in_array('xhtml', $this->uses)) {
 				$this->xhtml = new XHTML;
-				$this->xhtml->set_base('http://'.$_INFINITY_CFG['domain'].$_INFINITY_CFG['base_path']);
+				$config = CONFIGURATION::singleton();
+				$this->xhtml->set_base('http://'.$config->framework['domain'].$config->framework['base_path']);
 				if ((file_exists(__DIR__.'/../img/favicon.ico')) && (is_file(__DIR__.'/../img/favicon.ico')))
 					$this->xhtml->set_favicon('img/favicon.ico');
 			}
 			//creates form object
 			if (in_array('form', $this->uses)) {
-				$this->form = new FORM($log, $name);
+				$this->form = new FORM($name);
 				if (!is_null($this->xhtml)) {
 					$this->xhtml->add_js(FORM::js());
 					$this->xhtml->add_css(FORM::css());

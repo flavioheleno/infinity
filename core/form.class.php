@@ -14,8 +14,8 @@
 		//ajaxsubmit control
 		public $ajaxsubmit = true;
 
-		public function __construct(&$log, $name) {
-			$this->log = $log;
+		public function __construct($name) {
+			$this->log = LOG::singleton('infinity.log');
 			$this->name = strtolower($name);
 		}
 
@@ -380,6 +380,9 @@
 			$bfr .= '</div>'."\n";
 			if ($this->validation) {
 				$bfr .= '<script type="text/javascript">'."\n";
+				$bfr .= '	$(document).ajaxError(function(e, xhr, settings, exception) {'."\n";
+				$bfr .= '		alert(\'( AJAX ERROR )\nurl: \'+settings.url+\'\nerror:\n\'+xhr.responseText);'."\n";
+				$bfr .= '	});'."\n";
 				$bfr .= '	$(document).ready(function() {'."\n";
 				if (isset($this->handler['script']))
 					foreach ($this->handler['script'] as $line)

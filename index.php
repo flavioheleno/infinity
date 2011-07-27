@@ -4,26 +4,25 @@
 		define('__DIR__', dirname(__FILE__));
 
 	require_once __DIR__.'/core/autoload.class.php';
-	require_once __DIR__.'/cfg/core/framework.config.php';
 
-	global $_INFINITY_CFG;
+	//creates config object
+	$config = CONFIGURATION::singleton();
 
 	//creates log object
 	$log = LOG::singleton('infinity.log');
 
 	//adds benchmark time to log file
-	if ($_INFINITY_CFG['benchmark'])
+	if ($config->framework['benchmark'])
 		register_shutdown_function(function(&$log, $start) {
-			$log->add('Benchmark: '.round(((microtime(true) - $start) * 1000), 2));
+			$log->add('Benchmark: '.round(((microtime(true) - $start) * 1000), 2).'ms');
 		}, $log, microtime(true));
 
-	if ($_INFINITY_CFG['route']) {
+	if ($config->framework['route']) {
 		$log->add('Using routing');
-		require_once __DIR__.'/cfg/core/route.config.php';
-		global $_INFINITY_ROUTE;
+		$config->load_core('route');
 		$qs = trim($_SERVER['QUERY_STRING']);
 		if ($qs == '') {
-			$module = $_INFINITY_CFG['default_module'];
+			$module = $config->framework['default_module'];
 			$action = '';
 		} else {
 			if (strpos($qs, '/') === false) {
@@ -33,8 +32,8 @@
 				$pieces = explode('/', $qs);
 				$module = $pieces[0];
 				$action = $pieces[1];
-				if (isset($_INFINITY_ROUTE[$module][$action])) {
-					foreach ($_INFINITY_ROUTE[$module][$action] as $index => $variable)
+				if (isset($config->route[$module][$action])) {
+					foreach ($config->route[$module][$action] as $index => $variable)
 						if (isset($pieces[($index + 2)]))
 							$_REQUEST[$variable] = $pieces[($index + 2)];
 						else
@@ -52,7 +51,7 @@
 		else if (isset($_REQUEST['module']))
 			$module = strtolower($_REQUEST['module']);
 		else
-			$module = $_INFINITY_CFG['default_module'];
+			$module = $config->framework['default_module'];
 		//defines the action
 		if (isset($_REQUEST['a']))
 			$action = strtolower($_REQUEST['a']);
@@ -72,7 +71,7 @@
 	//checks if module name is well formed
 	if (preg_match('/^[a-z_][a-z0-9_-]+$/i', $module))
 		//grabs a new instance of module
-		$controller = AUTOLOAD::load_controller($module, $log);
+		$controller = AUTOLOAD::load_controller($module);
 	else
 		$controller = null;
 
@@ -86,7 +85,7 @@
 			$controller->check_alias($action);
 			$log->add('Action alias: '.$action);
 			//creates an instance of cache class
-			$cache = new CACHE($log, $module, $action);
+			$cache = new CACHE($module, $action);
 			//checks if action exists
 			if ((method_exists($controller, $action)) && (is_callable(array($controller, $action)))) {
 				$log->add('Controller has the action');

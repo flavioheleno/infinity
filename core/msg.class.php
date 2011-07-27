@@ -1,7 +1,5 @@
 <?php
 
-	AUTOLOAD::require_core_config('msg');
-
 	class MSG {
 		const ERR = 0x01;
 		const SUC = 0x02;
@@ -17,7 +15,6 @@
 		}
 
 		public static function retrieve($id, $code) {
-			global $_INFINITY_MSG;
 			switch ($id) {
 				case self::ERR:
 					$type = 'ERR';
@@ -33,8 +30,10 @@
 					
 			}
 			$code = intval($code);
-			if (isset($_INFINITY_MSG[$type][$code]))
-				return $_INFINITY_MSG[$type][$code];
+			$config = CONFIGURATION::singleton();
+			$config->load_core('msg');
+			if (isset($config->msg[$type][$code]))
+				return $config->msg[$type][$code];
 			else
 				return array();
 		}
