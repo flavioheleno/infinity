@@ -39,7 +39,7 @@
 		//singleton method - avoids the creation of more than one instance
 		public static function singleton() {
 			//checks if there is an instance of class, if not, create it
-			if (!isset(self::$instance))
+			if (!(self::$instance instanceof CONFIGURATION))
 				self::$instance = new CONFIGURATION;
 			return self::$instance;
 		}

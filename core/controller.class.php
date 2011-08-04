@@ -17,6 +17,10 @@
 		protected $log = null;
 		//instance of config class
 		protected $config = null;
+		//instance of xcache class
+		protected $xcache = null;
+		//instance of mcache class
+		protected $mcache = null;
 		//web path
 		protected $path = '/';
 		//sets the aliases for this controller
@@ -47,6 +51,12 @@
 			//creates cookie helper
 			if (in_array('cookie', $this->uses))
 				$this->cookie = COOKIE::singleton();
+			//creates xcache object
+			if (in_array('xcache', $this->uses))
+				$this->xcache = XCACHE::singleton();
+			//creates mcache object
+			if (in_array('mcache', $this->uses))
+				$this->mcache = MCACHE::singleton();
 		}
 
 		//changes an alias for a given action

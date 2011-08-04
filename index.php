@@ -85,7 +85,7 @@
 			$controller->check_alias($action);
 			$log->add('Action alias: '.$action);
 			//creates an instance of cache class
-			$cache = new CACHE($module, $action);
+			$cache = CACHE::singleton($module, $action);
 			//checks if action exists
 			if ((method_exists($controller, $action)) && (is_callable(array($controller, $action)))) {
 				$log->add('Controller has the action');

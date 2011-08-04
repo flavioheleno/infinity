@@ -153,7 +153,7 @@
 				'type' => strtolower($type),
 				'label' => htmlentities(utf8_decode($label)),
 				'name' => strtolower($name),
-				'value' => htmlentities(utf8_decode($value)),
+				'value' => (is_array($value) ? $value : htmlentities(utf8_decode($value))),
 				'properties' => $properties,
 				'rules' => $rules,
 				'messages' => $messages

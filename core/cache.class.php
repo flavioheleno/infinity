@@ -1,6 +1,7 @@
 <?php
 
 	class CACHE {
+		private static $instance = null;
 		private $log = null;
 		private $module = '';
 		private $action = '';
@@ -31,6 +32,14 @@
 				else
 					CACHE::clean();
 			}
+		}
+
+		//singleton method - avoids the creation of more than one instance
+		public static function singleton() {
+			//checks if there is an instance of class, if not, create it
+			if (!(self::$instance instanceof CACHE))
+				self::$instance = new CACHE;
+			return self::$instance;
 		}
 
 		public function __destruct() {
