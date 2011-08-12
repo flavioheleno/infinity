@@ -50,8 +50,24 @@
 			return false;
 		}
 
+		public function block_parse($data) {
+			foreach ($data as $block => $items) {
+				if (is_array($items))
+					foreach ($items as $item) {
+						$this->set($block, $item);
+						$this->parse($block);
+					}
+				else
+					$this->set($block, $items);
+			}
+		}
+
 		public function set($index, $value) {
-			$this->sigma->setVariable($index, $value);
+			if (is_array($value))
+				foreach ($value as $key => $item)
+					$this->set($index.'_'.$key, $item);
+			else
+				$this->sigma->setVariable($index, $value);
 		}
 
 		public function add($block, $id, $fullid = false) {

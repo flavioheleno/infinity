@@ -131,16 +131,21 @@
 			$bfr = '';
 			for ($i = 0; $i < $count; $i++) {
 				$tmp[$i] = trim($tmp[$i]);	
-				if ((preg_match('/^<[^>]+\/>$/', $tmp[$i])) || (preg_match('/<[^>]+>.*?<\/[^>]+>$/', $tmp[$i])) || (preg_match('/^<!--.*?-->/', $tmp[$i])))
-					$bfr .= str_repeat("\t", $indent).$tmp[$i]."\n";
-				else if ((preg_match('/^<\/[^>]+>$/', $tmp[$i])) || (preg_match('/^\}/', $tmp[$i]))) {
-					$indent--;
-					$bfr .= str_repeat("\t", $indent).$tmp[$i]."\n";
-				} else if ((preg_match('/^<[^>]+>$/', $tmp[$i])) || (preg_match('/\{$/', $tmp[$i]))) {
-					$bfr .= str_repeat("\t", $indent).$tmp[$i]."\n";
-					$indent++;
-				} else
-					$bfr .= str_repeat("\t", $indent).$tmp[$i]."\n";
+				if ($tmp[$i] != '') {
+					if (preg_match('/^<[^>]+\/><[^>]+>$/', $tmp[$i])) {
+						$bfr .= str_repeat("\t", $indent).$tmp[$i]."\n";
+						$indent++;
+					} else if ((preg_match('/^<[^>]+\/>$/', $tmp[$i])) || (preg_match('/<[^>]+>.*?<\/[^>]+>$/', $tmp[$i])) || (preg_match('/^<!--.*?-->/', $tmp[$i])))
+						$bfr .= str_repeat("\t", $indent).$tmp[$i]."\n";
+					else if ((preg_match('/^<\/[^>]+>$/', $tmp[$i])) || (preg_match('/^\}/', $tmp[$i]))) {
+						$indent--;
+						$bfr .= str_repeat("\t", $indent).$tmp[$i]."\n";
+					} else if ((preg_match('/^<[^>]+>$/', $tmp[$i])) || (preg_match('/\{$/', $tmp[$i]))) {
+						$bfr .= str_repeat("\t", $indent).$tmp[$i]."\n";
+						$indent++;
+					} else
+						$bfr .= str_repeat("\t", $indent).$tmp[$i]."\n";
+				}
 			}
 			return $bfr;
 		}

@@ -5,6 +5,7 @@
 		'default_module' => 'main', //module that will be used when no module is provided
 		'domain' => 'localhost', //defines the domain name
 		'subdomain' => true, //defines if cookies must be valid for subdomains
+		'localhost' => true, //defines if the app is running in localhost
 		'idletime' => 1800, //defines max idle time of session until logout
 		'base_path' => '/', //defines the web path to scripts
 		'route' => false, //defines the routing status

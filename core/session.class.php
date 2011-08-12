@@ -21,7 +21,8 @@
 			}
 			$this->domain = $config->framework['domain'];
 			$this->subdomain = $config->framework['subdomain'];
-			session_set_cookie_params(0, '/', ($this->subdomain ? '.' : '').$config->framework['domain']);
+			if (!$config->framework['localhost'])
+				session_set_cookie_params(0, '/', ($this->subdomain ? '.' : '').$config->framework['domain']);
 			session_start();
 			if (!isset($_SESSION['timeout']))
 				$_SESSION['timeout'] = time() + $config->framework['idletime'];
