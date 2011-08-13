@@ -95,6 +95,11 @@
 						$field['value'] = '';
 						if (isset($item['value']))
 							$field['value'] = (string)$item['value'];
+						if (isset($item->value)) {
+							foreach ($item->value as $value)
+								if ((isset($value['id'])) && (isset($value['value'])))
+									$field['value'][(string)$value['id']] = (string)$value['value'];
+						}
 						$field['extra'] = array();
 						if (isset($item->extra)) {
 							foreach ($item->extra as $extra)
@@ -131,6 +136,7 @@
 							default:
 								$this->input($item['type'], $field['label'], $item['id'], $field['value'], $field['extra'], $field['rules'], $field['alert']);
 						}
+						unset($field);
 					}
 				}
 				if (isset($xml->submit)) {
