@@ -29,5 +29,3 @@
 			xcache_unset($index);
 		}
 	}
-
-?>

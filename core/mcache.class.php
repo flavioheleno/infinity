@@ -38,5 +38,3 @@
 			$this->memcache->delete($index);
 		}
 	}
-
-?>

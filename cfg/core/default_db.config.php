@@ -9,5 +9,3 @@
 		'mysqli' => true, //sets to use mysql improved driver instead of mysql standard driver
 		'debug' => false //sets debug mode
 	);
-
-?>

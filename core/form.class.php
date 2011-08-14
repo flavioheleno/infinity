@@ -86,6 +86,12 @@
 				$form['enctype'] = 'application/x-www-form-urlencoded';
 				if (isset($xml['enctype']))
 					$form['enctype'] = $xml['enctype'];
+				if (isset($xml['validation']))
+					$this->validation = (((string)$xml['validation']) == 'false' ? false : true);
+				if (isset($xml['autoclean']))
+					$this->autoclean = (((string)$xml['autoclean']) == 'false' ? false : true);
+				if (isset($xml['ajaxsubmit']))
+					$this->ajaxsubmit = (((string)$xml['ajaxsubmit']) == 'false' ? false : true);
 				$this->create($form['title'], $form['id'], $form['action'], $form['method'], $form['enctype']);
 				foreach ($xml->fields->field as $item) {
 					if ((isset($item['type'])) && (isset($item['id']))) {
@@ -346,6 +352,23 @@
 							$bfr .='			</div>'."\n";
 						}
 						break;
+					case 'file':
+						$bfr .= '			<div class="fb">'."\n";
+						$bfr .= '				<div class="fbl">'."\n";
+						$bfr .= '					<label id="label_'.$item['name'].'" for="'.$item['type'].'_'.$item['name'].'">'.$item['label'].':</label>'."\n";
+						$bfr .= '				</div>'."\n";
+						$bfr .= '				<div class="fbr">'."\n";
+						$bfr .= '					<input type="'.$item['type'].'" id="'.$item['type'].'_'.$item['name'].'" name="'.$item['type'].'_'.$item['name'].'"';
+						foreach ($item['properties'] as $key => $value)
+							$bfr .= ' '.$key.'="'.$value.'"';
+						$bfr .= ' />'."\n";
+						$bfr .= '				</div>'."\n";
+						$bfr .= '			</div>'."\n";
+						if ($this->validation) {
+							$bfr .= '			<div id="error_'.$item['type'].'_'.$item['name'].'" class="error_container">'."\n";
+							$bfr .='			</div>'."\n";
+						}
+						break;
 					default:
 						$bfr .= '			<p><strong>Unsupported type: '.$item['type'].'</strong></p>'."\n";
 				}
@@ -396,15 +419,17 @@
 				$bfr .= '		$(\'[id^=error_]\').hide();'."\n";
 				if ($this->autoclean) {
 					$bfr .= '		$(\'input:text, input:password\').each(function() {'."\n";
-					$bfr .= '			var defval = this.value;'."\n";
-					$bfr .= '			$(this).focus(function() {'."\n";
-					$bfr .= '				if (this.value == defval)'."\n";
-					$bfr .= '					this.value = \'\';'."\n";
-					$bfr .= '			});'."\n";
-					$bfr .= '			$(this).blur(function() {'."\n";
-					$bfr .= '				if (this.value == \'\')'."\n";
-					$bfr .= '					this.value = defval;'."\n";
-					$bfr .= '			});'."\n";
+					$bfr .= '			if (!$(this).attr(\'readonly\')) {'."\n";
+					$bfr .= '				var defval = this.value;'."\n";
+					$bfr .= '				$(this).focus(function() {'."\n";
+					$bfr .= '					if (this.value == defval)'."\n";
+					$bfr .= '						this.value = \'\';'."\n";
+					$bfr .= '				});'."\n";
+					$bfr .= '				$(this).blur(function() {'."\n";
+					$bfr .= '					if (this.value == \'\')'."\n";
+					$bfr .= '						this.value = defval;'."\n";
+					$bfr .= '				});'."\n";
+					$bfr .= '			}'."\n";
 					$bfr .= '		});'."\n";
 				}
 				$bfr .= '	});'."\n";
@@ -509,5 +534,3 @@
 		}
 
 	}
-
-?>

@@ -16,5 +16,3 @@
 			'enabled' => true, //defines cache work state
 		),
 	);
-
-?>
