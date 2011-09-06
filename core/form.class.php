@@ -73,19 +73,19 @@
 				}
 				$form['title'] = '';
 				if (isset($xml['title']))
-					$form['title'] = $xml['title'];
+					$form['title'] = (string)$xml['title'];
 				$form['id'] = '';
 				if (isset($xml['id']))
-					$form['id'] = $xml['id'];
+					$form['id'] = (string)$xml['id'];
 				$form['action'] = '';
 				if (isset($xml['action']))
-					$form['action'] = $xml['action'];
+					$form['action'] = (string)$xml['action'];
 				$form['method'] = 'post';
 				if (isset($xml['method']))
-					$form['method'] = $xml['method'];
+					$form['method'] = (string)$xml['method'];
 				$form['enctype'] = 'application/x-www-form-urlencoded';
 				if (isset($xml['enctype']))
-					$form['enctype'] = $xml['enctype'];
+					$form['enctype'] = (string)$xml['enctype'];
 				if (isset($xml['validation']))
 					$this->validation = (((string)$xml['validation']) == 'false' ? false : true);
 				if (isset($xml['autoclean']))
@@ -107,11 +107,9 @@
 									$field['value'][(string)$value['id']] = (string)$value['value'];
 						}
 						$field['extra'] = array();
-						if (isset($item->extra)) {
-							foreach ($item->extra as $extra)
-								if ((isset($extra['id'])) && (isset($extra['value'])))
-									$field['extra'][(string)$extra['id']] = (string)$extra['value'];
-						}
+						foreach ($item->attributes() as $key => $value)
+							if (!in_array((string)$key, array('type', 'id', 'label', 'value')))
+								$field['extra'][(string)$key] = (string)$value;
 						$field['rules'] = array();
 						if (isset($item->rule)) {
 							foreach ($item->rule as $rule) {
@@ -121,13 +119,9 @@
 									else
 										$field['rules'][] = (string)$rule['id'];
 								}
+								if (isset($rule['alert']))
+									$field['alert'][(string)$rule['id']] = (string)$rule['alert'];
 							}
-						}
-						$field['alert'] = array();
-						if (isset($item->alert)) {
-							foreach ($item->alert as $alert)
-								if ((isset($alert['id'])) && (isset($alert['value'])))
-									$field['alert'][(string)$alert['id']] = (string)$alert['value'];
 						}
 						switch ($item['type']) {
 							case 'submit':

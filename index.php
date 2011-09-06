@@ -8,6 +8,14 @@
 	//creates config object
 	$config = CONFIGURATION::singleton();
 
+	if ($config->framework['debug']) {
+		ini_set("display_errors",1);
+		error_reporting(E_ALL);
+	} else {
+		ini_set("display_errors",0);
+		error_reporting(0);
+	}
+
 	//creates log object
 	$log = LOG::singleton('infinity.log');
 
@@ -69,7 +77,7 @@
 
 
 	//checks if module name is well formed
-	if (preg_match('/^[a-z_][a-z0-9_-]+$/i', $module))
+	if (preg_match('/^[a-z_][a-z0-9_-]*$/i', $module))
 		//grabs a new instance of module
 		$controller = AUTOLOAD::load_controller($module);
 	else
@@ -80,7 +88,7 @@
 		if ($action == '')
 			$action = $controller->default_action;
 		//checks if action name is well formed
-		if ((preg_match('/^[a-z_][a-z0-9_-]+$/i', $action)) && (substr($action, 0, 2) != '__')) {
+		if ((preg_match('/^[a-z_][a-z0-9_-]*$/i', $action)) && (substr($action, 0, 2) != '__')) {
 			//checks if there is an alias for the given module->action and updates it
 			$controller->check_alias($action);
 			$log->add('Action alias: '.$action);

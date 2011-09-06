@@ -90,7 +90,7 @@
 				else
 					$tmp = $field;
 				if (isset($this->alias[$field]))
-					$tmp .= ' AS '.$this->alias[$field];
+					$tmp .= ' AS '.$this->protect_keyword($this->alias[$field]);
 				$r[] = $tmp;
 			}
 			return implode(', ', $r);
@@ -284,6 +284,7 @@
 		}
 
 		public function __call($function, $args) {
+			$fn = $function;
 			$or = false;
 			if (preg_match('/^or_/', $function)) {
 				$or = true;
@@ -459,6 +460,8 @@
 				case 'join':
 					$this->join($args[0], $args[1]);
 					break;
+				default:
+					trigger_error(__CLASS__.': invalid function '.$fn, E_ERROR);
 			}
 		}
 

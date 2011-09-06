@@ -15,22 +15,19 @@
 		//class constructor
 		public function __construct() {
 			$config = CONFIGURATION::singleton();
-			if ($config->framework['domain'] != '') {
-				$this->name = str_replace('.', '', $config->framework['domain']);
-				session_name($this->name);
-			}
+			session_name($config->framework['session']['name']);
 			$this->domain = $config->framework['domain'];
-			$this->subdomain = $config->framework['subdomain'];
-			if (!$config->framework['localhost'])
+			$this->subdomain = $config->framework['session']['subdomain'];
+			if (!$config->framework['session']['localhost'])
 				session_set_cookie_params(0, '/', ($this->subdomain ? '.' : '').$config->framework['domain']);
 			session_start();
 			if (!isset($_SESSION['timeout']))
-				$_SESSION['timeout'] = time() + $config->framework['idletime'];
+				$_SESSION['timeout'] = time() + $config->framework['session']['idletime'];
 			else {
 				if ($_SESSION['timeout'] < time())
 					$this->timeout = true;
 				else
-					$_SESSION['timeout'] = time() + $config->framework['idletime'];
+					$_SESSION['timeout'] = time() + $config->framework['session']['idletime'];
 			}
 		}
 

@@ -75,6 +75,12 @@
 			exit;
 		}
 
+		//creates an HTTP error
+		protected function http_error($code, $message) {
+			header('Status: '.$code.' '.$message);
+			exit;
+		}
+
 		//cleans every form variable
 		public static function clean_enviroment() {
 			foreach ($_REQUEST as $key => $value)
