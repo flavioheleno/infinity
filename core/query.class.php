@@ -111,9 +111,9 @@
 				$info['condition'][0] = $this->protect_keyword($info['condition'][0]);
 				$info['condition'][1] = $this->protect_keyword($info['condition'][1]);
 				if ($info['type'] != '')
-					$r[] = strtoupper($info['type']).' JOIN '.$table.' ON ('.implode(' = ', $info['condition']).')';
+					$r[] = strtoupper($info['type']).' JOIN '.$this->protect_keyword($this->prefix.$table).' ON ('.implode(' = ', $info['condition']).')';
 				else
-					$r[] = 'JOIN '.$table.' ON ('.implode(' = ', $info['condition']).')';
+					$r[] = 'JOIN '.$this->protect_keyword($this->prefix.$table).' ON ('.implode(' = ', $info['condition']).')';
 			}
 			return implode(' ', $r);
 		}
@@ -559,7 +559,7 @@
 				$sql = 'SELECT DISTINCT '.$sql_fields;
 			else
 				$sql = 'SELECT '.$sql_fields;
-			$sql .= ' FROM `'.$this->prefix.$table.'`';
+			$sql .= ' FROM '.$this->protect_keyword($this->prefix.$table);
 			if ($sql_join !== false)
 				$sql .= ' '.$sql_join;
 			if ($sql_where !== false)
@@ -598,7 +598,7 @@
 			}
 			$sql_duplicate = $this->sql_duplicate();
 
-			$sql = 'INSERT INTO `'.$this->prefix.$table.'` ';
+			$sql = 'INSERT INTO '.$this->protect_keyword($this->prefix.$table).' ';
 			$sql .= '('.implode(', ', $f).')';
 			$sql .= ' VALUES ';
 			$sql .= '('.implode(', ', $v).')';
@@ -620,7 +620,7 @@
 			$sql_where = $this->sql_where();
 			$sql_limit = $this->sql_limit();
 
-			$sql = 'DELETE FROM `'.$this->prefix.$table.'`';
+			$sql = 'DELETE FROM '.$this->protect_keyword($this->prefix.$table);
 			if ($sql_where !== false)
 				$sql .= ' WHERE '.$sql_where;
 			if ($sql_limit !== false)
@@ -644,7 +644,7 @@
 			$sql_where = $this->sql_where();
 			$sql_limit = $this->sql_limit();
 
-			$sql = 'UPDATE `'.$this->prefix.$table.'`';
+			$sql = 'UPDATE '.$this->protect_keyword($this->prefix.$table);
 			$sql .= ' SET ';
 			$sql .= $sql_value;
 			if ($sql_where)
