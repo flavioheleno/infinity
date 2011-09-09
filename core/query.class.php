@@ -1,4 +1,26 @@
 <?php
+/**
+* Basic SQL abstraction
+*
+* @version 0.1
+* @author Flávio Heleno <flaviohbatista@gmail.com>
+* @link http://code.google.com/p/infinity-framework
+* @copyright Copyright (c) 2010/2011, Flávio Heleno
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*
+*/
 
 	class QUERY {
 		//instance of class DB
@@ -655,6 +677,30 @@
 				$sql .= ' '.$raw;
 			$this->last_query = $sql;
 			return $this->db->query($sql);
+		}
+
+		public function analyze($table) {
+			return $this->db->query('ANALYZE TABLE '.$this->protect_keyword($this->prefix.$table));
+		}
+
+		public function check($table) {
+			return $this->db->query('CHECK TABLE '.$this->protect_keyword($this->prefix.$table));
+		}
+
+		public function flush($table) {
+			return $this->db->query('FLUSH TABLE '.$this->protect_keyword($this->prefix.$table));
+		}
+
+		public function optimize($table) {
+			return $this->db->query('OPTIMIZE TABLE '.$this->protect_keyword($this->prefix.$table));
+		}
+
+		public function repair($table) {
+			return $this->db->query('REPAIR TABLE '.$this->protect_keyworkd($this->prefix.$table));
+		}
+
+		public function truncate($table) {
+			return $this->db->query('TRUNCATE TABLE '.$this->protect_keyword($this->prefix.$table));
 		}
 
 		public function __toString() {
