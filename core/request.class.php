@@ -60,7 +60,7 @@
 			}
 		}
 
-		private static function parse_routeless(&$module, &$action) {
+		private static function parse_route(&$module, &$action) {
 			//defines the module
 			if (isset($_REQUEST['m']))
 				$module = strtolower($_REQUEST['m']);
