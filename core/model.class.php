@@ -81,10 +81,11 @@
 		}
 
 		public function load($id, $fullid = false) {
+			$path = PATH::singleton();
 			if ($fullid)
-				$file = __DIR__.'/../cfg/form/'.strtolower($id).'.xml';
+				$file = $path->get_path('cfg', 'form').strtolower($id).'.xml';
 			else
-				$file = __DIR__.'/../cfg/form/'.strtolower($this->name).'_'.$id.'.xml';
+				$file = $path->get_path('cfg', 'form').strtolower($this->name).'_'.$id.'.xml';
 			if ((file_exists($file)) && (is_file($file))) {
 				$src = file_get_contents($file);
 				$xml = new SimpleXMLElement($src);

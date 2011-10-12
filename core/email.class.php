@@ -27,7 +27,8 @@
 	class EMAIL {
 
 		public static function load($file, array $replace) {
-			$file = __DIR__.'/../mail/'.$file;
+			$path = PATH::singleton();
+			$file = $path->get_path('mail').$file;
 			if ((file_exists($file)) && (is_file($file))) {
 				$src = file_get_contents($file);
 				foreach ($replace as $key => $value)

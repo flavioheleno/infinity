@@ -31,7 +31,7 @@
 		private $enabled = true;
 
 		//class constructor
-		public function __construct($filename, $path) {
+		public function __construct($filename, $folder = false) {
 			//checks filename
 			if (trim($filename) == '')
 				$filename = 'data.log';
@@ -39,25 +39,28 @@
 				$filename .= '.log';
 
 			//checks path
-			if (trim($path) == '')
-				$path = __DIR__.'/../log';
-			else if (substr($path, -1) == '/')
-				$path = substr($path, 0, (strlen($path) - 1));
+			if ($folder === false) {
+				$path = PATH::singleton();
+				$folder = $path->get_path('log');
+			} else if (substr($folder, -1) != '/')
+				$folder .= '/';
 
 			//ensure path exists
-			if (!file_exists($path))
-				if (!mkdir($path))
-					exit(__CLASS__.': can\'t create path ('.$path.')');
+			if (!file_exists($folder)) {
+				if (!mkdir($folder))
+					exit(__CLASS__.': can\'t create path ('.$folder.')');
+				@chmod($folder, 0777);
+			}
 
 			//creates log history
-			if ((file_exists($path.'/'.$filename)) && (is_file($path.'/'.$filename))) {
-				$ctime = filectime($path.'/'.$filename);
+			if ((file_exists($folder.$filename)) && (is_file($folder.$filename))) {
+				$ctime = filectime($folder.$filename);
 				if (($ctime !== false) && ((date('d') > date('d', $ctime)) || (date('m') > date('m', $ctime)) || (date('Y') > date('Y', $ctime))))
-					@rename($path.'/'.$filename, $path.'/'.date('Ymd', $ctime).$filename);
+					@rename($folder.$filename, $folder.date('Ymd', $ctime).$filename);
 			}
 
 			//open log file
-			$this->handler = fopen($path.'/'.$filename, 'a');
+			$this->handler = fopen($folder.$filename, 'a');
 			if ($this->handler === false)
 				exit(__CLASS__.': can\'t open log file ('.$filename.')');
 			$this->add('Log start');
@@ -73,10 +76,10 @@
 		}
 
 		//singleton method - avoids the creation of more than one instance per log file
-		public static function singleton($filename = 'infinity.log', $path = '') {
+		public static function singleton($filename = 'infinity.log', $folder = false) {
 			//checks if there is an instance of class, if not, create it
 			if ((!isset(self::$instance[$filename])) || (!(self::$instance[$filename] instanceof LOG)))
-				self::$instance[$filename] = new LOG($filename, $path);
+				self::$instance[$filename] = new LOG($filename, $folder);
 			return self::$instance[$filename];
 		}
 

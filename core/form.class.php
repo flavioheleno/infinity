@@ -43,21 +43,23 @@
 
 		//returns the css files needed by form
 		public static function css() {
+			$path = PATH::singleton();
 			return array(
-				'css/core/form.css'
+				$path->get_path('css', 'core').'form.css'
 			);
 		}
 
 		//returns the js files needed by validation script
 		public static function js() {
+			$path = PATH::singleton();
 			return array(
-				'js/core/jquery.js',
-				'js/core/jquery.form.js',
-				'js/core/jquery.maskedinput.js',
-				'js/core/jquery.validate.js',
-				'js/core/jquery.validate.additional-methods.js',
-				'js/core/jquery.validate.messages_ptbr.js',
-				'js/core/jquery.infinity.js'
+				$path->get_path('js', 'core').'jquery.js',
+				$path->get_path('js', 'core').'jquery.form.js',
+				$path->get_path('js', 'core').'jquery.maskedinput.js',
+				$path->get_path('js', 'core').'jquery.validate.js',
+				$path->get_path('js', 'core').'jquery.validate.additional-methods.js',
+				$path->get_path('js', 'core').'jquery.validate.messages_ptbr.js',
+				$path->get_path('js', 'core').'jquery.infinity.js'
 			);
 		}
 
@@ -82,10 +84,11 @@
 
 		//loads a form structure from an xml file
 		public function load($id, $fullid = false) {
+			$path = PATH::singleton();
 			if ($fullid)
-				$file = __DIR__.'/../cfg/form/'.$id.'.xml';
+				$file = $path->get_path('cfg', 'form').$id.'.xml';
 			else
-				$file = __DIR__.'/../cfg/form/'.$this->name.'_'.$id.'.xml';
+				$file = $path->get_path('cfg', 'form').$this->name.'_'.$id.'.xml';
 			if ((file_exists($file)) && (is_file($file))) {
 				$src = file_get_contents($file);
 				$xml = new SimpleXMLElement($src);

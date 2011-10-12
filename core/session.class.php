@@ -38,10 +38,10 @@
 		public function __construct() {
 			$config = CONFIGURATION::singleton();
 			session_name($config->framework['session']['name']);
-			$this->domain = $config->framework['domain'];
+			$this->domain = $config->framework['main']['domain'];
 			$this->subdomain = $config->framework['session']['subdomain'];
 			if (!$config->framework['session']['localhost'])
-				session_set_cookie_params(0, '/', ($this->subdomain ? '.' : '').$config->framework['domain']);
+				session_set_cookie_params(0, '/', ($this->subdomain ? '.' : '').$config->framework['main']['domain']);
 			session_start();
 			if (!isset($_SESSION['timeout']))
 				$_SESSION['timeout'] = time() + $config->framework['session']['idletime'];

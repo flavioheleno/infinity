@@ -59,7 +59,7 @@
 			$this->config = CONFIGURATION::singleton();
 			$this->log = LOG::singleton('infinity.log');
 			$this->name = $name;
-			$this->path = $this->config->framework['base_path'];
+			$this->path = $this->config->framework['main']['base_path'];
 			$this->data = DATA::singleton();
 			//creates view object
 			if (in_array('view', $this->uses))
@@ -118,7 +118,7 @@
 
 		//checks if request comes from expected referer
 		protected function check_referer() {
-			if ((isset($_SERVER['HTTP_REFERER'])) && (!preg_match('/^http:\/\/'.$this->config->framework['domain'].'/', $_SERVER['HTTP_REFERER'])))
+			if ((isset($_SERVER['HTTP_REFERER'])) && (!preg_match('/^http:\/\/'.$this->config->framework['main']['domain'].'/', $_SERVER['HTTP_REFERER'])))
 				return false;
 			return true;
 		}

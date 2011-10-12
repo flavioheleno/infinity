@@ -27,48 +27,53 @@
 	class AUTOLOAD {
 
 		public static function load($class) {
+			$path = PATH::singleton();
 			$class = strtolower($class);
 			if (preg_match('/^aux_/i', $class)) {
 				$class = str_replace('_', '.', $class);
-				$file = __DIR__.'/../app/'.$class.'.php';
+				$file = $path->get_path('app').$class.'.php';
 				if ((file_exists($file)) && (is_file($file)))
 					require_once $file;
-			} else if ((file_exists(__DIR__.'/'.$class.'.class.php')) && (is_file(__DIR__.'/'.$class.'.class.php')))
-				require_once __DIR__.'/'.$class.'.class.php';
+			} else if ((file_exists($path->get_path('core').$class.'.class.php')) && (is_file($path->get_path('core').$class.'.class.php')))
+				require_once $path->get_path('core').$class.'.class.php';
 		}
 
 		public static function load_plugin($name) {
+			$path = PATH::singleton();
 			$name = strtolower($name);
-			$file = __DIR__.'/../plugin/'.$name.'.class.php';
+			$file = $path->get_path('plugin').$name.'.class.php';
 			if ((file_exists($file)) && (is_file($file)))
 				require_once $file;
 		}
 
 		public static function load_controller($name) {
-			$file = __DIR__.'/../app/'.strtolower($name).'.controller.php';
+			$path = PATH::singleton();
+			$file = $path->get_path('app').strtolower($name).'.controller.php';
 			if ((file_exists($file)) && (is_file($file))) {
 				require_once $file;
 				$name = strtoupper($name);
 				$module = $name.'_CONTROLLER';
 				return new $module($name);
 			}
-			require_once __DIR__.'/controller.class.php';
+			require_once $path->get_path('core').'/controller.class.php';
 			return new CONTROLLER(strtoupper($name));
 		}
 
-		public static function load_view($name) {
-			$file = __DIR__.'/../app/'.strtolower($name).'.view.php';
+		public static function load_view($name, $lang) {
+			$path = PATH::singleton();
+			$file = $path->get_path('app').strtolower($name).'.view.php';
 			if ((file_exists($file)) && (is_file($file))) {
 				require_once $file;
 				$name = strtoupper($name);
 				$module = $name.'_VIEW';
-				return new $module($name);
+				return new $module($name, $lang);
 			}
 			return null;
 		}
 
 		public static function load_model($name) {
-			$file = __DIR__.'/../app/'.strtolower($name).'.model.php';
+			$path = PATH::singleton();
+			$file = $path->get_path('app').strtolower($name).'.model.php';
 			if ((file_exists($file)) && (is_file($file))) {
 				require_once $file;
 				$name = strtoupper($name);

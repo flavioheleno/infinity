@@ -31,6 +31,10 @@
 			return self::$instance;
 		}
 
+		public function flush() {
+			//no operation yet
+		}
+
 		public function extended_set($index, $value, $ttl) {
 			xcache_set($index, $value, $ttl);
 		}

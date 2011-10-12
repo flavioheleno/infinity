@@ -49,14 +49,17 @@
 			$this->data = DATA::singleton();
 			//creates template object
 			if (in_array('template', $this->uses))
-				$this->tpl = new TEMPLATE($name, __DIR__.'/../tpl', __DIR__.'/../tpl/cache');
+				$this->tpl = new TEMPLATE($name);
 			//creates xhtml object
 			if (in_array('xhtml', $this->uses)) {
 				$this->xhtml = new XHTML;
 				$config = CONFIGURATION::singleton();
-				$this->xhtml->set_base('http://'.$config->framework['domain'].$config->framework['base_path']);
-				if ((file_exists(__DIR__.'/../img/favicon.ico')) && (is_file(__DIR__.'/../img/favicon.ico')))
+				$this->xhtml->set_base('http://'.$config->framework['main']['domain'].$config->framework['main']['base_path']);
+				$path = PATH::singleton();
+				if ((file_exists($path->get_path('img').'favicon.ico')) && (is_file($path->get_path('img').'favicon.ico')))
 					$this->xhtml->set_favicon('img/favicon.ico');
+				else if ((file_exists($path->get_path('root').'favicon.ico')) && (is_file($path->get_path('root').'favicon.ico')))
+					$this->xhtml->set_favicon('favicon.ico');
 			}
 			//creates form object
 			if (in_array('form', $this->uses)) {

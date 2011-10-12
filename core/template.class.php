@@ -29,10 +29,11 @@
 		private $log = null;
 		private $sigma = null;
 
-		public function __construct($name, $path, $cache) {
+		public function __construct($name) {
 			$this->name = strtolower($name);
 			$this->log = LOG::singleton('infinity.log');
-			$this->sigma = new HTML_Template_Sigma($path, $cache);
+			$path = PATH::singleton();
+			$this->sigma = new HTML_Template_Sigma($path->get_path('template'), $path->get_path('template', 'cache'));
 			$this->sigma->setCallbackFunction('url_create', function () {
 				if (func_num_args() > 0) {
 					$par = array();

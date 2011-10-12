@@ -37,6 +37,10 @@
 			return self::$instance;
 		}
 
+		public function flush() {
+			$this->memcache->flush();
+		}
+
 		public function extended_set($index, $value, $ttl) {
 			$this->memcache->set($index, $value, false, $ttl);
 		}

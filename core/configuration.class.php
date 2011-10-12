@@ -34,7 +34,8 @@
 
 		public function load_core($filename, $name = '_infinity') {
 			if (!isset($this->$filename)) {
-				$file = __DIR__.'/../cfg/core/'.$filename.'.config.php';
+				$path = PATH::singleton();
+				$file = $path->get_path('cfg', 'core').$filename.'.config.php';
 				if ((file_exists($file)) && (is_file($file))) {
 					require_once $file;
 					$this->$filename = ${$name};
@@ -44,7 +45,8 @@
 
 		public function load_app($filename, $name = '_app') {
 			if (!isset($this->$filename)) {
-				$file = __DIR__.'/../cfg/app/'.$filename.'.config.php';
+				$path = PATH::singleton();
+				$file = $path->get_path('cfg', 'app').$filename.'.config.php';
 				if ((file_exists($file)) && (is_file($file))) {
 					require_once $file;
 					$this->$filename = ${$name};
