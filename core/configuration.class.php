@@ -27,30 +27,37 @@
 		private static $instance = null;
 		//holds configuration
 		private $config = array();
+		//instance of log class
+		protected $log = null;
 
 		public function __construct() {
+			$this->log = LOG::singleton('infinity.log');
 			$this->load_core('framework', '_infinity');
 		}
 
 		public function load_core($filename, $name = '_infinity') {
 			if (!isset($this->$filename)) {
+				$this->log->add('Loading core configuration from "'.$filename.'.config.php"');
 				$path = PATH::singleton();
 				$file = $path->get_path('cfg', 'core').$filename.'.config.php';
 				if ((file_exists($file)) && (is_file($file))) {
 					require_once $file;
 					$this->$filename = ${$name};
-				}
+				} else
+					$this->log->add('File not found: '.$filename);
 			}
 		}
 
 		public function load_app($filename, $name = '_app') {
 			if (!isset($this->$filename)) {
+				$this->log->add('Loading app configuration from "'.$filename.'.config.php"');
 				$path = PATH::singleton();
 				$file = $path->get_path('cfg', 'app').$filename.'.config.php';
 				if ((file_exists($file)) && (is_file($file))) {
 					require_once $file;
 					$this->$filename = ${$name};
-				}
+				} else
+					$this->log->add('File not found: '.$filename);
 			}
 		}
 

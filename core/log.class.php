@@ -26,7 +26,7 @@
 		//holds class instances for singleton
 		private static $instance = array();
 		//holds log file handler
-		private $handler = null;
+		private $handler = false;
 		//holds log enable/disabled
 		private $enabled = true;
 
@@ -47,7 +47,7 @@
 
 			//ensure path exists
 			if (!file_exists($folder)) {
-				if (!mkdir($folder))
+				if (!@mkdir($folder))
 					exit(__CLASS__.': can\'t create path ('.$folder.')');
 				@chmod($folder, 0777);
 			}
@@ -60,7 +60,7 @@
 			}
 
 			//open log file
-			$this->handler = fopen($folder.$filename, 'a');
+			$this->handler = @fopen($folder.$filename, 'a');
 			if ($this->handler === false)
 				exit(__CLASS__.': can\'t open log file ('.$filename.')');
 			$this->add('Log start');

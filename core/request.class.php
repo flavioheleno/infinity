@@ -31,12 +31,11 @@
 				self::parse_route($config, $module, $action);
 			} else {
 				$log->add('Using query string');
-				self::parse_qs($module, $action);
+				self::parse_qs($config, $module, $action);
 			}
 		}
 
-		private static function parse_qs(&$config, &$module, &$action) {
-			$config->load_core('route');
+		private static function parse_route(&$config, &$module, &$action) {
 			$qs = trim($_SERVER['QUERY_STRING']);
 			if ($qs == '') {
 				$module = $config->framework['main']['default_module'];
@@ -46,6 +45,7 @@
 					$module = $qs;
 					$action = '';
 				} else {
+					$config->load_core('route');
 					$pieces = explode('/', $qs);
 					$module = $pieces[0];
 					$action = $pieces[1];
@@ -60,7 +60,7 @@
 			}
 		}
 
-		private static function parse_route(&$module, &$action) {
+		private static function parse_qs(&$config, &$module, &$action) {
 			//defines the module
 			if (isset($_REQUEST['m']))
 				$module = strtolower($_REQUEST['m']);

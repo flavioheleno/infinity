@@ -33,8 +33,7 @@
 			'cfg' => array(
 				'app' => '/cfg/app/',
 				'core' => '/cfg/core/',
-				'form' => '/cfg/form/',
-				'i18n' => '/cfg/i18n/'
+				'form' => '/cfg/form/'
 			),
 			'core' => '/core/',
 			'css' => array(
