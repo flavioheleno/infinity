@@ -26,7 +26,7 @@
 		private static $instance = null;
 
 		public static function singleton() {
-			if (!(self::$instance instanceof XCACHE))
+			if ((is_null(self::$instance)) || (!(self::$instance instanceof XCACHE)))
 				self::$instance = new XCACHE;
 			return self::$instance;
 		}

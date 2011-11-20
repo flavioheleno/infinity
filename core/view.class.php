@@ -45,7 +45,7 @@
 		//class constructor
 		public function __construct($name) {
 			$this->name = $name;
-			$this->log = LOG::singleton('infinity.log');
+			$this->log = LOG::singleton();
 			$this->data = DATA::singleton();
 			//creates template object
 			if (in_array('template', $this->uses))

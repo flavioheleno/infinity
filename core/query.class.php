@@ -161,6 +161,8 @@
 					if ($item[3] === true)
 						$item[2] = $this->protect_value($item[2]);
 					unset($item[3]);
+					if ((is_array($item[2])) && ($item[1] == 'BETWEEN'))
+						$item[2] = '('.implode(' AND ', $item[2]).')';
 					$r[] = implode(' ', $item);
 				} else {
 					$item = strtoupper(trim($item));
@@ -442,6 +444,8 @@
 							case 'isnull':
 								$this->where($args[0], ($not ? 'IS NOT' : 'IS'), 'NULL', $or, $escape, $command);
 								break;
+							case 'between':
+								$this->where($args[0], ($not ? 'NOT ' : '').'BETWEEN', $args[1], $or, $escape, $command);
 						}
 					break;
 				case 'having':
@@ -483,7 +487,7 @@
 					$this->join($args[0], $args[1]);
 					break;
 				default:
-					trigger_error(__CLASS__.': invalid function '.$fn, E_ERROR);
+					die(__CLASS__.': invalid function '.$fn);
 			}
 		}
 

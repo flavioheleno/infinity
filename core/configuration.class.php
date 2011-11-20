@@ -31,7 +31,7 @@
 		protected $log = null;
 
 		public function __construct() {
-			$this->log = LOG::singleton('infinity.log');
+			$this->log = LOG::singleton();
 			$this->load_core('framework', '_infinity');
 		}
 
@@ -44,7 +44,7 @@
 					require_once $file;
 					$this->$filename = ${$name};
 				} else
-					$this->log->add('File not found: '.$filename);
+					$this->log->add('File not found: "'.$filename.'.config.php"');
 			}
 		}
 
@@ -57,7 +57,7 @@
 					require_once $file;
 					$this->$filename = ${$name};
 				} else
-					$this->log->add('File not found: '.$filename);
+					$this->log->add('File not found: "'.$filename.'.config.php"');
 			}
 		}
 
@@ -70,7 +70,7 @@
 		//singleton method - avoids the creation of more than one instance
 		public static function singleton() {
 			//checks if there is an instance of class, if not, create it
-			if (!(self::$instance instanceof CONFIGURATION))
+			if ((is_null(self::$instance)) || (!(self::$instance instanceof CONFIGURATION)))
 				self::$instance = new CONFIGURATION;
 			return self::$instance;
 		}

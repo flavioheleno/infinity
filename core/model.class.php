@@ -43,7 +43,7 @@
 		//class constructor
 		public function __construct($name) {
 			$this->name = $name;
-			$this->log = LOG::singleton('infinity.log');
+			$this->log = LOG::singleton();
 			$this->data = DATA::singleton();
 			$config = CONFIGURATION::singleton();
 			$config->load_core('db');

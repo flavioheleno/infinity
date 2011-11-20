@@ -31,9 +31,9 @@
 
 		public function __construct($name) {
 			$this->name = strtolower($name);
-			$this->log = LOG::singleton('infinity.log');
+			$this->log = LOG::singleton();
 			$path = PATH::singleton();
-			$this->sigma = new HTML_Template_Sigma($path->get_path('template'), $path->get_path('template', 'cache'));
+			$this->sigma = new HTML_Template_Sigma($path->get_path('template', 'root'), $path->get_path('template', 'cache'));
 			$this->sigma->setCallbackFunction('url_create', function () {
 				if (func_num_args() > 0) {
 					$par = array();
@@ -62,7 +62,7 @@
 			});
 		}
 
-		public function load_template($id, $fullid = false) {
+		public function load($id, $fullid = false) {
 			if ($fullid)
 				$res = $this->sigma->loadTemplateFile($id.'.html', true, true);
 			else
@@ -73,17 +73,6 @@
 			return false;
 		}
 
-		public function block_parse($data) {
-			foreach ($data as $block => $items) {
-				if (is_array($items))
-					foreach ($items as $item) {
-						$this->set($block, $item);
-						$this->parse($block);
-					}
-				else
-					$this->set($block, $items);
-			}
-		}
 
 		public function set($index, $value) {
 			if (is_array($value))
@@ -91,6 +80,11 @@
 					$this->set($index.'_'.$key, $item);
 			else
 				$this->sigma->setVariable($index, $value);
+		}
+
+		public function block_set(array $data) {
+			foreach ($data as $key => $value)
+				$this->set($key, $value);
 		}
 
 		public function add($block, $id, $fullid = false) {
@@ -127,6 +121,18 @@
 			} catch (Exception $e) {
 				$this->log->add($e->getMessage());
 				return false;
+			}
+		}
+
+		public function block_parse(array $data) {
+			foreach ($data as $block => $items) {
+				if (is_array($items))
+					foreach ($items as $item) {
+						$this->set($block, $item);
+						$this->parse($block);
+					}
+				else
+					$this->set($block, $items);
 			}
 		}
 

@@ -57,7 +57,7 @@
 		//class constructor
 		public function __construct($name) {
 			$this->config = CONFIGURATION::singleton();
-			$this->log = LOG::singleton('infinity.log');
+			$this->log = LOG::singleton();
 			$this->name = $name;
 			$this->path = $this->config->framework['main']['base_path'];
 			$this->data = DATA::singleton();

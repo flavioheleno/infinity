@@ -36,7 +36,7 @@
 		const DRIVER_XCACHE = 0x02;
 
 		public function __construct($module = '', $action = '', $signature = true) {
-			$this->log = LOG::singleton('infinity.log');
+			$this->log = LOG::singleton();
 			$config = CONFIGURATION::singleton();
 			//base name for cache control
 			$this->module = strtolower($module);
@@ -68,7 +68,7 @@
 		//singleton method - avoids the creation of more than one instance
 		public static function singleton($module = '', $action = '', $signature = true) {
 			//checks if there is an instance of class, if not, create it
-			if (!(self::$instance instanceof CACHE))
+			if ((is_null(self::$instance)) || (!(self::$instance instanceof CACHE)))
 				self::$instance = new CACHE($module, $action, $signature);
 			return self::$instance;
 		}

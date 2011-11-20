@@ -24,46 +24,30 @@
 
 	class LOG {
 		//holds class instances for singleton
-		private static $instance = array();
+		private static $instance = null;
 		//holds log file handler
 		private $handler = false;
 		//holds log enable/disabled
 		private $enabled = true;
 
 		//class constructor
-		public function __construct($filename, $folder = false) {
-			//checks filename
-			if (trim($filename) == '')
-				$filename = 'data.log';
-			else if (substr($filename, -4) != '.log')
-				$filename .= '.log';
-
+		public function __construct() {
 			//checks path
-			if ($folder === false) {
-				$path = PATH::singleton();
-				$folder = $path->get_path('log');
-			} else if (substr($folder, -1) != '/')
-				$folder .= '/';
+			$path = PATH::singleton();
+			$folder = $path->get_path('log');
 
 			//ensure path exists
 			if (!file_exists($folder)) {
-				if (!@mkdir($folder))
-					exit(__CLASS__.': can\'t create path ('.$folder.')');
-				@chmod($folder, 0777);
+				if ((!@mkdir($folder)) || (!@chmod($folder, 0777)))
+					return false;
 			}
-
-			//creates log history
-			if ((file_exists($folder.$filename)) && (is_file($folder.$filename))) {
-				$ctime = filectime($folder.$filename);
-				if (($ctime !== false) && ((date('d') > date('d', $ctime)) || (date('m') > date('m', $ctime)) || (date('Y') > date('Y', $ctime))))
-					@rename($folder.$filename, $folder.date('Ymd', $ctime).$filename);
-			}
-
 			//open log file
+			$filename = date('Ymd').'.log';
 			$this->handler = @fopen($folder.$filename, 'a');
 			if ($this->handler === false)
-				exit(__CLASS__.': can\'t open log file ('.$filename.')');
+				$this->disable();
 			$this->add('Log start');
+			return true;
 		}
 
 		//class destructor
@@ -71,16 +55,17 @@
 			//if log file was oppened, close it
 			if ($this->handler !== false) {
 				$this->add('Log end');
+				$this->add('');
 				fclose($this->handler);
 			}
 		}
 
 		//singleton method - avoids the creation of more than one instance per log file
-		public static function singleton($filename = 'infinity.log', $folder = false) {
+		public static function singleton() {
 			//checks if there is an instance of class, if not, create it
-			if ((!isset(self::$instance[$filename])) || (!(self::$instance[$filename] instanceof LOG)))
-				self::$instance[$filename] = new LOG($filename, $folder);
-			return self::$instance[$filename];
+			if ((is_null(self::$instance)) || (!(self::$instance instanceof LOG)))
+				self::$instance = new LOG;
+			return self::$instance;
 		}
 
 		//enables log
@@ -102,7 +87,7 @@
 		public function add($text) {
 			//if log is enabled and log file was oppened, prints text to it
 			if (($this->enabled) && ($this->handler !== false))
-				fwrite($this->handler, date('[d/m/Y - H:i:s] ').$text."\n");
+				fwrite($this->handler, ($text != '' ? date('[d/m/Y - H:i:s] ').$text."\n" : "\n"));
 		}
 
 		//clean method - truncates log file

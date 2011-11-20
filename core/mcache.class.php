@@ -32,7 +32,7 @@
 		}
 
 		public static function singleton() {
-			if (!(self::$instance instanceof MCACHE))
+			if ((is_null(self::$instance)) || (!(self::$instance instanceof MCACHE)))
 				self::$instance = new MCACHE;
 			return self::$instance;
 		}

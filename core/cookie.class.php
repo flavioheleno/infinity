@@ -29,7 +29,7 @@
 		//singleton method - avoids the creation of more than one instance
 		public static function singleton() {
 			//checks if there is an instance of class, if not, create it
-			if (!(self::$instance instanceof COOKIE))
+			if ((is_null(self::$instance)) || (!(self::$instance instanceof COOKIE)))
 				self::$instance = new COOKIE;
 			return self::$instance;
 		}

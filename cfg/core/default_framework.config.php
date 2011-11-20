@@ -35,7 +35,8 @@
 		),
 		'other' => array(
 			'benchmark' => true, //defines if benchmark should be calculated
-			'debug' => true //defines debug mode (display errors or not)
+			'debug' => true, //defines debug mode (display errors or not)
+			'log' => true //defines log state
 		),
 		'secure' => array( //defines secure system configuration
 			'seed' => '' //defines the secure class seed for encrypt/decrypt and hash operations

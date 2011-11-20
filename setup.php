@@ -24,7 +24,7 @@
 
 	function display_help() {
 		echo 'Usage:'."\n";
-		echo "\t".'php -f '.$_SERVER['SCRIPT_NAME'].' [options] folder'."\n\n";
+		echo "\t".'php -f '.__FILE__.' [options] folder'."\n\n";
 		echo 'Options:'."\n";
 		echo "\t".'skip-cache'."\t".'Skip cache folder creation (used in filecache)'."\n";
 		echo "\t".'skip-log'."\t".'Skip log folder creation'."\n";
@@ -39,29 +39,31 @@
 		exit;
 	}
 
-	function copy_files($path, $folder, $extension) {
+	function copy_files($base, $path, $folder, $extension) {
 		if (is_array($extension))
 			$extension = implode('|', $extension);
 		$regex = '/('.str_replace('.', '\.', $extension).')$/i';
 		if (substr($path, -1) != '/')
 			$path .= '/';
-		$list = scandir($path);
+		$list = scandir($base.$path);
 		foreach ($list as $file)
 			if (preg_match($regex, $file)) {
-				if (!@copy($path.$file, $folder.$path.$file))
+				if (!@copy($base.$path.$file, $folder.$path.$file))
 					abort('Failed to copy file ('.$file.')');
 			}
 	}
 
-	function setup($folder, array $options) {
+	function setup($base, $folder, array $options) {
+		if (substr($base, -1) != '/')
+			$base .= '/';
+		if (substr($folder, -1) != '/')
+			$folder .= '/';
 		info('Setup folder: '.$folder);
 		info('Options: '.count($options));
 		if ((file_exists($folder)) && (is_dir($folder)))
 			abort('Folder ('.$folder.') already exists');
 		if (!@mkdir($folder))
 			abort('Failed to create folder ('.$folder.')');
-		if (substr($folder, -1) != '/')
-			$folder .= '/';
 		info ('Creating directory structure');
 		$ds = array(
 			'app',
@@ -125,12 +127,12 @@
 		foreach ($dp as $path)
 			@chmod($folder.$path, 0777);
 		info('Copying files');
-		copy_files('cfg/core', $folder, '.php');
-		copy_files('css/core', $folder, '.css');
-		copy_files('core', $folder, '.php');
-		copy_files('img', $folder, array('.ico', '.png', '.jpg', '.gif'));
-		copy_files('js', $folder, '.js');
-		if (!@copy('index.php', $folder.'index.php'))
+		copy_files($base, 'cfg/core', $folder, '.php');
+		copy_files($base, 'css/core', $folder, '.css');
+		copy_files($base, 'core', $folder, '.php');
+		copy_files($base, 'img', $folder, array('.ico', '.png', '.jpg', '.gif'));
+		copy_files($base, 'js', $folder, '.js');
+		if (!@copy($base.'index.php', $folder.'index.php'))
 			abort('Failed to copy index file');
 		info('Don\'t forget to rename default_* config files into their real names');
 		info('Finished');
@@ -152,4 +154,4 @@
 		foreach ($argv as $option)
 			$options[$option] = true;
 	}
-	setup($folder, $options);
+	setup(dirname(__FILE__), $folder, $options);

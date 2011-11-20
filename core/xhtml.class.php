@@ -71,6 +71,14 @@
 			$this->keywords = $value;
 		}
 
+		public function set_http($index, $value) {
+			$this->http[$index] = $value;
+		}
+
+		public function set_meta($index, $value) {
+			$this->meta[$index] = $value;
+		}
+
 		public function set_favicon($file) {
 			$this->favicon = $file;
 		}

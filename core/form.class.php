@@ -37,7 +37,7 @@
 		public $ajaxsubmit = true;
 
 		public function __construct($name) {
-			$this->log = LOG::singleton('infinity.log');
+			$this->log = LOG::singleton();
 			$this->name = strtolower($name);
 		}
 

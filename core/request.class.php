@@ -36,6 +36,7 @@
 		}
 
 		private static function parse_route(&$config, &$module, &$action) {
+			$config->load_core('route');
 			$qs = trim($_SERVER['QUERY_STRING']);
 			if ($qs == '') {
 				$module = $config->framework['main']['default_module'];

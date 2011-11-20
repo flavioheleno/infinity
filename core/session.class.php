@@ -61,7 +61,7 @@
 		//singleton method - avoids the creation of more than one instance
 		public static function singleton() {
 			//checks if there is an instance of class, if not, create it
-			if (!(self::$instance instanceof SESSION))
+			if ((is_null(self::$instance)) || (!(self::$instance instanceof SESSION)))
 				self::$instance = new SESSION;
 			return self::$instance;
 		}

@@ -22,24 +22,30 @@
 *
 */
 
+	//sets output and internal encoding to UTF8
+	mb_http_output('UTF-8');
+	mb_internal_encoding('UTF-8');
+
 	require_once __DIR__.'/core/autoload.class.php';
 
 	//creates path object (setting base path)
-	$path = PATH::singleton(dirname(__FILE__));
+	$path = PATH::singleton();
 
 	//creates config object
 	$config = CONFIGURATION::singleton();
 
 	if ($config->framework['other']['debug']) {
 		ini_set("display_errors",1);
-		error_reporting(E_ALL);
+		error_reporting(E_ALL | E_STRICT | E_DEPRECATED);
 	} else {
 		ini_set("display_errors",0);
 		error_reporting(0);
 	}
 
 	//creates log object
-	$log = LOG::singleton('infinity.log');
+	$log = LOG::singleton();
+	if (!$config->framework['other']['log'])
+		$log->disable();
 
 	//adds benchmark time to log file
 	if ($config->framework['other']['benchmark'])
@@ -50,8 +56,8 @@
 	//handles request information (routes, variables, etc)
 	REQUEST::parse($config, $log, $module, $action);
 
-	$log->add('Module parameter: '.$module);
-	$log->add('Action parameter: '.$action);
+	$log->add('Module parameter: '.($module != '' ? $module : 'empty value'));
+	$log->add('Action parameter: '.($action != '' ? $action : 'empty value'));
 
 	//checks if module name is well formed
 	if (preg_match('/^[a-z_][a-z0-9_-]*$/i', $module))
@@ -146,6 +152,6 @@
 			}
 		}
 	}
-	$log->add('Can\'t find '.$module.'->'.$action.', showing default page');
+	$log->add('Can\'t find '.($module != '' ? $module : 'module').'->'.($action != '' ? $action : 'action').', showing 404 error');
 	header('Status: 404 Not Found');
 	echo '404 - Not Found'."\n";

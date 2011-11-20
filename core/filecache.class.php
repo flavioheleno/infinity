@@ -50,7 +50,7 @@
 		}
 
 		public static function singleton() {
-			if (!(self::$instance instanceof FILECACHE))
+			if ((is_null(self::$instance)) || (!(self::$instance instanceof FILECACHE)))
 				self::$instance = new FILECACHE;
 			return self::$instance;
 		}

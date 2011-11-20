@@ -23,7 +23,7 @@
 */
 
 	spl_autoload_register('AUTOLOAD::load');
-	require_once 'path.class.php';
+	require_once __DIR__.'/path.class.php';
 
 	class AUTOLOAD {
 

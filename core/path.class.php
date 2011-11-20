@@ -55,8 +55,8 @@
 			'root' => '/'
 		);
 
-		public function __construct($path) {
-			$this->path = $path;
+		public function __construct() {
+			$this->path = realpath(__DIR__.'/../');
 		}
 
 		public function get_path($parent, $child = false) {
@@ -72,9 +72,9 @@
 			return false;
 		}
 
-		public static function singleton($path = '') {
-			if (!(self::$instance instanceof PATH))
-				self::$instance = new PATH($path);
+		public static function singleton() {
+			if ((is_null(self::$instance)) || (!(self::$instance instanceof PATH)))
+				self::$instance = new PATH;
 			return self::$instance;
 		}
 
