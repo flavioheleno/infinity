@@ -60,14 +60,14 @@
 			return new CONTROLLER(strtoupper($name));
 		}
 
-		public static function load_view($name, $lang) {
+		public static function load_view($name) {
 			$path = PATH::singleton();
 			$file = $path->get_path('app').strtolower($name).'.view.php';
 			if ((file_exists($file)) && (is_file($file))) {
 				require_once $file;
 				$name = strtoupper($name);
 				$module = $name.'_VIEW';
-				return new $module($name, $lang);
+				return new $module($name);
 			}
 			return null;
 		}
