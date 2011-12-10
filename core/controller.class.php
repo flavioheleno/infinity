@@ -92,8 +92,11 @@
 			$this->log->add('Redirecting to '.$url);
 			if (($url != '') && (strtolower(substr($url, 0, 7)) == 'http://'))
 				header('Location: '.$url);
-			else
+			else {
+				if ((substr($this->path, -1) == '/') && (substr($url, 0, 1) == '/'))
+					$url = substr($url, 1);
 				header('Location: '.$this->path.$url);
+			}
 			exit;
 		}
 

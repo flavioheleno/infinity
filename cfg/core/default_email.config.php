@@ -25,6 +25,7 @@
 	$_infinity = array(
 		'host' => 'localhost',
 		'port' => 25,
+		'secure' => '',
 		'accs' => array(
 			'system' => array(
 				'name' => '',

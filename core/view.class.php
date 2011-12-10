@@ -56,9 +56,9 @@
 				$config = CONFIGURATION::singleton();
 				$this->xhtml->set_base('http://'.$config->framework['main']['domain'].$config->framework['main']['base_path']);
 				$path = PATH::singleton();
-				if ((file_exists($path->get_path('img').'favicon.ico')) && (is_file($path->get_path('img').'favicon.ico')))
+				if ((file_exists($path->absolute('img').'favicon.ico')) && (is_file($path->absolute('img').'favicon.ico')))
 					$this->xhtml->set_favicon('img/favicon.ico');
-				else if ((file_exists($path->get_path('root').'favicon.ico')) && (is_file($path->get_path('root').'favicon.ico')))
+				else if ((file_exists($path->absolute('root').'favicon.ico')) && (is_file($path->absolute('root').'favicon.ico')))
 					$this->xhtml->set_favicon('favicon.ico');
 			}
 			//creates form object

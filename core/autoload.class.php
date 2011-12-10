@@ -32,37 +32,37 @@
 			$class = strtolower($class);
 			if (preg_match('/^aux_/i', $class)) {
 				$class = str_replace('_', '.', $class);
-				$file = $path->get_path('app').$class.'.php';
+				$file = $path->absolute('app').$class.'.php';
 				if ((file_exists($file)) && (is_file($file)))
 					require_once $file;
-			} else if ((file_exists($path->get_path('core').$class.'.class.php')) && (is_file($path->get_path('core').$class.'.class.php')))
-				require_once $path->get_path('core').$class.'.class.php';
+			} else if ((file_exists($path->absolute('core').$class.'.class.php')) && (is_file($path->absolute('core').$class.'.class.php')))
+				require_once $path->absolute('core').$class.'.class.php';
 		}
 
 		public static function load_plugin($name) {
 			$path = PATH::singleton();
 			$name = strtolower($name);
-			$file = $path->get_path('plugin').$name.'.class.php';
+			$file = $path->absolute('plugin').$name.'.class.php';
 			if ((file_exists($file)) && (is_file($file)))
 				require_once $file;
 		}
 
 		public static function load_controller($name) {
 			$path = PATH::singleton();
-			$file = $path->get_path('app').strtolower($name).'.controller.php';
+			$file = $path->absolute('app').strtolower($name).'.controller.php';
 			if ((file_exists($file)) && (is_file($file))) {
 				require_once $file;
 				$name = strtoupper($name);
 				$module = $name.'_CONTROLLER';
 				return new $module($name);
 			}
-			require_once $path->get_path('core').'/controller.class.php';
+			require_once $path->absolute('core').'/controller.class.php';
 			return new CONTROLLER(strtoupper($name));
 		}
 
 		public static function load_view($name) {
 			$path = PATH::singleton();
-			$file = $path->get_path('app').strtolower($name).'.view.php';
+			$file = $path->absolute('app').strtolower($name).'.view.php';
 			if ((file_exists($file)) && (is_file($file))) {
 				require_once $file;
 				$name = strtoupper($name);
@@ -74,7 +74,7 @@
 
 		public static function load_model($name) {
 			$path = PATH::singleton();
-			$file = $path->get_path('app').strtolower($name).'.model.php';
+			$file = $path->absolute('app').strtolower($name).'.model.php';
 			if ((file_exists($file)) && (is_file($file))) {
 				require_once $file;
 				$name = strtoupper($name);

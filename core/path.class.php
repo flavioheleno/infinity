@@ -59,17 +59,24 @@
 			$this->path = realpath(__DIR__.'/../');
 		}
 
-		public function get_path($parent, $child = false) {
+		public function relative($parent, $child = false) {
 			$parent = strtolower($parent);
 			if ($child === false) {
 				if (isset($this->location[$parent]))
-					return $this->path.$this->location[$parent];
+					return $this->location[$parent];
 			} else {
 				$child = strtolower($child);
 				if (isset($this->location[$parent][$child]))
-					return $this->path.$this->location[$parent][$child];
+					return $this->location[$parent][$child];
 			}
 			return false;
+		}
+
+		public function absolute($parent, $child = false) {
+			$path = $this->relative($parent, $child);
+			if ($path === false)
+				return false;
+			return $this->path.$path;
 		}
 
 		public static function singleton() {

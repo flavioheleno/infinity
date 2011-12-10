@@ -30,7 +30,7 @@
 		public function __construct() {
 			//path controller
 			$path = PATH::singleton();
-			$this->path = $path->get_path('cache');
+			$this->path = $path->absolute('cache');
 			//ensure that cache dir exists and has the right permissions
 			if (!file_exists($this->path)) {
 				@mkdir($this->path);

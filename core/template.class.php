@@ -33,7 +33,7 @@
 			$this->name = strtolower($name);
 			$this->log = LOG::singleton();
 			$path = PATH::singleton();
-			$this->sigma = new HTML_Template_Sigma($path->get_path('template', 'root'), $path->get_path('template', 'cache'));
+			$this->sigma = new HTML_Template_Sigma($path->absolute('template', 'root'), $path->absolute('template', 'cache'));
 			$this->sigma->setCallbackFunction('url_create', function () {
 				if (func_num_args() > 0) {
 					$par = array();

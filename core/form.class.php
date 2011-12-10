@@ -45,7 +45,7 @@
 		public static function css() {
 			$path = PATH::singleton();
 			return array(
-				$path->get_path('css', 'core').'form.css'
+				$path->relative('css', 'core').'form.css'
 			);
 		}
 
@@ -53,13 +53,13 @@
 		public static function js() {
 			$path = PATH::singleton();
 			return array(
-				$path->get_path('js', 'core').'jquery.js',
-				$path->get_path('js', 'core').'jquery.form.js',
-				$path->get_path('js', 'core').'jquery.maskedinput.js',
-				$path->get_path('js', 'core').'jquery.validate.js',
-				$path->get_path('js', 'core').'jquery.validate.additional-methods.js',
-				$path->get_path('js', 'core').'jquery.validate.messages_ptbr.js',
-				$path->get_path('js', 'core').'jquery.infinity.js'
+				$path->relative('js', 'core').'jquery.js',
+				$path->relative('js', 'core').'jquery.form.js',
+				$path->relative('js', 'core').'jquery.maskedinput.js',
+				$path->relative('js', 'core').'jquery.validate.js',
+				$path->relative('js', 'core').'jquery.validate.additional-methods.js',
+				$path->relative('js', 'core').'jquery.validate.messages_ptbr.js',
+				$path->relative('js', 'core').'jquery.infinity.js'
 			);
 		}
 
@@ -86,9 +86,9 @@
 		public function load($id, $fullid = false) {
 			$path = PATH::singleton();
 			if ($fullid)
-				$file = $path->get_path('cfg', 'form').$id.'.xml';
+				$file = $path->absolute('cfg', 'form').$id.'.xml';
 			else
-				$file = $path->get_path('cfg', 'form').$this->name.'_'.$id.'.xml';
+				$file = $path->absolute('cfg', 'form').$this->name.'_'.$id.'.xml';
 			if ((file_exists($file)) && (is_file($file))) {
 				$src = file_get_contents($file);
 				$xml = new SimpleXMLElement($src);
@@ -136,6 +136,7 @@
 							if (!in_array((string)$key, array('type', 'id', 'label', 'value')))
 								$field['extra'][(string)$key] = (string)$value;
 						$field['rules'] = array();
+						$field['alert'] = array();
 						if (isset($item->rule)) {
 							foreach ($item->rule as $rule) {
 								if (isset($rule['id'])) {

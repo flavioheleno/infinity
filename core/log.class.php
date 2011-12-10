@@ -34,7 +34,7 @@
 		public function __construct() {
 			//checks path
 			$path = PATH::singleton();
-			$folder = $path->get_path('log');
+			$folder = $path->absolute('log');
 
 			//ensure path exists
 			if (!file_exists($folder)) {

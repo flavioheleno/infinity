@@ -39,7 +39,7 @@
 			if (!isset($this->$filename)) {
 				$this->log->add('Loading core configuration from "'.$filename.'.config.php"');
 				$path = PATH::singleton();
-				$file = $path->get_path('cfg', 'core').$filename.'.config.php';
+				$file = $path->absolute('cfg', 'core').$filename.'.config.php';
 				if ((file_exists($file)) && (is_file($file))) {
 					require_once $file;
 					$this->$filename = ${$name};
@@ -52,7 +52,7 @@
 			if (!isset($this->$filename)) {
 				$this->log->add('Loading app configuration from "'.$filename.'.config.php"');
 				$path = PATH::singleton();
-				$file = $path->get_path('cfg', 'app').$filename.'.config.php';
+				$file = $path->absolute('cfg', 'app').$filename.'.config.php';
 				if ((file_exists($file)) && (is_file($file))) {
 					require_once $file;
 					$this->$filename = ${$name};

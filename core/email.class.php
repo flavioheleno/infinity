@@ -28,7 +28,7 @@
 
 		public static function load($file, array $replace) {
 			$path = PATH::singleton();
-			$file = $path->get_path('mail').$file;
+			$file = $path->absolute('mail').$file;
 			if ((file_exists($file)) && (is_file($file))) {
 				$src = file_get_contents($file);
 				foreach ($replace as $key => $value)
