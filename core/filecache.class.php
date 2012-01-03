@@ -37,7 +37,7 @@
 				@chmod($this->path, 777);
 			}
 			//if cache control is found, loads it, else, cleans cache dir
-			$file = $this->path.'control.cache';
+			$file = $this->path.'cache.control';
 			if ((file_exists($file)) && (is_file($file)))
 				$this->control = unserialize(file_get_contents($file));
 			else
@@ -46,7 +46,7 @@
 
 		public function __destruct() {
 			//saves cache control
-			file_put_contents($this->path.'control.cache', serialize($this->control));
+			file_put_contents($this->path.'cache.control', serialize($this->control));
 		}
 
 		public static function singleton() {
@@ -59,32 +59,31 @@
 			if (file_exists($this->path)) {
 				$ids = scandir($this->path);
 				foreach ($ids as $id)
-					if (preg_match('/\.(html|cache)$/i', $id))
+					if (preg_match('/\.(control|cache)$/i', $id))
 						@unlink($this->path.$id);
 			}
 		}
 
 		public function extended_set($index, $value, $ttl) {
 			$this->control[$index] = (time() + $ttl);
-			file_put_contents($this->path.$index.'.html', $data);
+			file_put_contents($this->path.$index.'.cache', serialize($value));
 		}
 
 		public function __set($index, $value) {
-			$this->control[$index] = (time() + 3600);
-			file_put_contents($this->path.$index.'.html', $data);
+			$this->extended_set($index, $value, 3600);
 		}
 
 		public function __get($index) {
-			$file = $this->path.$index.'.html';
+			$file = $this->path.$index.'.cache';
 			if ((file_exists($file)) && (is_file($file))) {
 				if ((isset($this->control[$index])) && ($this->control[$index] > time()))
-					return file_get_contents($file);
+					return unserialize(file_get_contents($file));
 			}
 			return '';
 		}
 
 		public function __isset($index) {
-			$file = $this->path.$index.'.html';
+			$file = $this->path.$index.'.cache';
 			if ((file_exists($file)) && (is_file($file))) {
 				if ((isset($this->control[$index])) && ($this->control[$index] > time()))
 					return true;
@@ -95,7 +94,7 @@
 		public function __unset($index) {
 			if (isset($this->control[$index]))
 				unset($this->control[$index]);
-			$file = $this->path.$index.'.html';
+			$file = $this->path.$index.'.cache';
 			if ((file_exists($file)) && (is_file($file)))
 				@unlink($file);
 		}

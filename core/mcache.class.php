@@ -42,25 +42,25 @@
 		}
 
 		public function extended_set($index, $value, $ttl) {
-			$this->memcache->set($index, $value, false, $ttl);
+			$this->memcache->set($index, serialize($value), false, $ttl);
 		}
 
 		public function __set($index, $value) {
-			$this->memcache->set($index, $value);
+			$this->memcache->set($index, serialize($value));
 		}
 
 		public function __get($index) {
-			return $this->memcache->get($index);
+			return unserialize($this->memcache->get($index));
 		}
 
 		public function __isset($index) {
 			if ($this->memcache->add($index, 0) === false)
 				return true;
-			$this->memcache->delete($index);
+			$this->memcache->delete($index, 0);
 			return false;
 		}
 
 		public function __unset($index) {
-			$this->memcache->delete($index);
+			$this->memcache->delete($index, 0);
 		}
 	}

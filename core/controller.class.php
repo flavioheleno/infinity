@@ -43,6 +43,8 @@
 		protected $xcache = null;
 		//instance of mcache class
 		protected $mcache = null;
+		//instance of filecache class
+		protected $filecache = null;
 		//web path
 		protected $path = '/';
 		//sets the aliases for this controller
@@ -79,6 +81,9 @@
 			//creates mcache object
 			if (in_array('mcache', $this->uses))
 				$this->mcache = MCACHE::singleton();
+			//creates filecache object
+			if (in_array('filecache', $this->uses))
+				$this->filecache = FILECACHE::singleton();
 		}
 
 		//changes an alias for a given action

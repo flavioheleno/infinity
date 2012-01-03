@@ -45,7 +45,8 @@
 		public static function css() {
 			$path = PATH::singleton();
 			return array(
-				$path->relative('css', 'core').'form.css'
+				$path->relative('css', 'core').'form.css',
+				$path->relative('css', 'core').'msg.css'
 			);
 		}
 
@@ -126,10 +127,10 @@
 						$field['value'] = '';
 						if (isset($item['value']))
 							$field['value'] = (string)$item['value'];
-						if (isset($item->value)) {
-							foreach ($item->value as $value)
-								if ((isset($value['id'])) && (isset($value['value'])))
-									$field['value'][(string)$value['id']] = (string)$value['value'];
+						if (isset($item->option)) {
+							foreach ($item->option as $option)
+								if ((isset($option['caption'])) && (isset($option['value'])))
+									$field['value'][(string)$option['value']] = (string)$option['caption'];
 						}
 						$field['extra'] = array();
 						foreach ($item->attributes() as $key => $value)

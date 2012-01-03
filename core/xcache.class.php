@@ -36,15 +36,15 @@
 		}
 
 		public function extended_set($index, $value, $ttl) {
-			xcache_set($index, $value, $ttl);
+			xcache_set($index, serialize($value), $ttl);
 		}
 
 		public function __set($index, $value) {
-			xcache_set($index, $value);
+			xcache_set($index, serialize($value));
 		}
 
 		public function __get($index) {
-			return xcache_get($index);
+			return unserialize(xcache_get($index));
 		}
 
 		public function __isset($index) {

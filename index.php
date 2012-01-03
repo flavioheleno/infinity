@@ -35,10 +35,10 @@
 	$config = CONFIGURATION::singleton();
 
 	if ($config->framework['other']['debug']) {
-		ini_set("display_errors",1);
+		ini_set('display_errors', 1);
 		error_reporting(E_ALL | E_STRICT | E_DEPRECATED);
 	} else {
-		ini_set("display_errors",0);
+		ini_set('display_errors', 0);
 		error_reporting(0);
 	}
 
@@ -49,9 +49,9 @@
 
 	//adds benchmark time to log file
 	if ($config->framework['other']['benchmark'])
-		register_shutdown_function(function(&$log, $start) {
-			$log->add('Benchmark: '.round(((microtime(true) - $start) * 1000), 2).'ms');
-		}, $log, microtime(true));
+		register_shutdown_function(function(&$log) {
+			$log->add('Benchmark: '.round(((microtime(true) - $_SERVER['REQUEST_TIME']) * 1000), 2).'ms');
+		}, $log);
 
 	//handles request information (routes, variables, etc)
 	REQUEST::parse($config, $log, $module, $action);
