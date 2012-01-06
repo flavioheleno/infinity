@@ -294,10 +294,10 @@
 					case 'password':
 						$bfr .= '			<div class="fb">'."\n";
 						$bfr .= '				<div class="fbl">'."\n";
-						$bfr .= '					<label id="label_'.$item['name'].'" for="'.$item['type'].'_'.$item['name'].'">'.$item['label'].':</label>'."\n";
+						$bfr .= '					<label id="label_'.$item['name'].'" for="'.$item['name'].'">'.$item['label'].':</label>'."\n";
 						$bfr .= '				</div>'."\n";
 						$bfr .= '				<div class="fbr">'."\n";
-						$bfr .= '					<input type="'.$item['type'].'" id="'.$item['type'].'_'.$item['name'].'" name="'.$item['type'].'_'.$item['name'].'"';
+						$bfr .= '					<input type="'.$item['type'].'" id="'.$item['name'].'" name="'.$item['name'].'"';
 						if ((isset($item['value'])) && ($item['value'] != ''))
 							$bfr .= ' value="'.$item['value'].'"';
 						foreach ($item['properties'] as $key => $value)
@@ -306,17 +306,17 @@
 						$bfr .= '				</div>'."\n";
 						$bfr .= '			</div>'."\n";
 						if ($this->validation) {
-							$bfr .= '			<div id="error_'.$item['type'].'_'.$item['name'].'" class="error_container">'."\n";
+							$bfr .= '			<div id="error_'.$item['name'].'" class="error_container">'."\n";
 							$bfr .='			</div>'."\n";
 						}
 						break;
 					case 'textarea':
 						$bfr .= '			<div class="fb">'."\n";
 						$bfr .= '				<div class="fbl">'."\n";
-						$bfr .= '					<label id="label_'.$item['name'].'" for="'.$item['type'].'_'.$item['name'].'">'.$item['label'].':</label>'."\n";
+						$bfr .= '					<label id="label_'.$item['name'].'" for="'.$item['name'].'">'.$item['label'].':</label>'."\n";
 						$bfr .= '				</div>'."\n";
 						$bfr .= '				<div class="fbr">'."\n";
-						$bfr .= '					<textarea id="'.$item['type'].'_'.$item['name'].'" name="'.$item['type'].'_'.$item['name'].'"';
+						$bfr .= '					<textarea id="'.$item['name'].'" name="'.$item['name'].'"';
 						foreach ($item['properties'] as $key => $value)
 							$bfr .= ' '.$key.'="'.$value.'"';
 						$bfr .= '>';
@@ -326,7 +326,7 @@
 						$bfr .= '				</div>'."\n";
 						$bfr .= '			</div>'."\n";
 						if ($this->validation) {
-							$bfr .= '			<div id="error_'.$item['type'].'_'.$item['name'].'" class="error_container">'."\n";
+							$bfr .= '			<div id="error_'.$item['name'].'" class="error_container">'."\n";
 							$bfr .='			</div>'."\n";
 						}
 						break;
@@ -334,7 +334,7 @@
 					case 'radio':
 						$bfr .= '			<div class="fb">'."\n";
 						$bfr .= '				<div class="fbl">'."\n";
-						$bfr .= '					<input type="'.$item['type'].'" id="'.$item['type'].'_'.$item['name'].'" name="'.$item['type'].'_'.$item['name'].'"';
+						$bfr .= '					<input type="'.$item['type'].'" id="'.$item['name'].'" name="'.$item['name'].'"';
 						if ((isset($item['value'])) && ($item['value'] != ''))
 							$bfr .= ' value="'.$item['value'].'"';
 						foreach ($item['properties'] as $key => $value)
@@ -342,21 +342,21 @@
 						$bfr .= ' />'."\n";
 						$bfr .= '				</div>'."\n";
 						$bfr .= '				<div class="fbr">'."\n";
-						$bfr .= '					<label id="label_'.$item['name'].'" for="'.$item['type'].'_'.$item['name'].'">'.$item['label'].'</label>'."\n";
+						$bfr .= '					<label id="label_'.$item['name'].'" for="'.$item['name'].'">'.$item['label'].'</label>'."\n";
 						$bfr .= '				</div>'."\n";
 						$bfr .= '			</div>'."\n";
 						if ($this->validation) {
-							$bfr .= '			<div id="error_'.$item['type'].'_'.$item['name'].'" class="error_container">'."\n";
+							$bfr .= '			<div id="error_'.$item['name'].'" class="error_container">'."\n";
 							$bfr .='			</div>'."\n";
 						}
 						break;
 					case 'select':
 						$bfr .= '			<div class="fb">'."\n";
 						$bfr .= '				<div class="fbl">'."\n";
-						$bfr .= '					<label id="label_'.$item['name'].'" for="'.$item['type'].'_'.$item['name'].'">'.$item['label'].':</label>'."\n";
+						$bfr .= '					<label id="label_'.$item['name'].'" for="'.$item['name'].'">'.$item['label'].':</label>'."\n";
 						$bfr .= '				</div>'."\n";
 						$bfr .= '				<div class="fbr">'."\n";
-						$bfr .= '					<select id="'.$item['type'].'_'.$item['name'].'" name="'.$item['type'].'_'.$item['name'].'"';
+						$bfr .= '					<select id="'.$item['name'].'" name="'.$item['name'].'"';
 						foreach ($item['properties'] as $key => $value)
 							$bfr .= ' '.$key.'="'.$value.'"';
 						$bfr .= '>'."\n";
@@ -369,24 +369,24 @@
 						$bfr .= '				</div>'."\n";
 						$bfr .= '			</div>'."\n";
 						if ($this->validation) {
-							$bfr .= '			<div id="error_'.$item['type'].'_'.$item['name'].'" class="error_container">'."\n";
+							$bfr .= '			<div id="error_'.$item['name'].'" class="error_container">'."\n";
 							$bfr .='			</div>'."\n";
 						}
 						break;
 					case 'file':
 						$bfr .= '			<div class="fb">'."\n";
 						$bfr .= '				<div class="fbl">'."\n";
-						$bfr .= '					<label id="label_'.$item['name'].'" for="'.$item['type'].'_'.$item['name'].'">'.$item['label'].':</label>'."\n";
+						$bfr .= '					<label id="label_'.$item['name'].'" for="'.$item['name'].'">'.$item['label'].':</label>'."\n";
 						$bfr .= '				</div>'."\n";
 						$bfr .= '				<div class="fbr">'."\n";
-						$bfr .= '					<input type="'.$item['type'].'" id="'.$item['type'].'_'.$item['name'].'" name="'.$item['type'].'_'.$item['name'].'"';
+						$bfr .= '					<input type="'.$item['type'].'" id="'.$item['name'].'" name="'.$item['name'].'"';
 						foreach ($item['properties'] as $key => $value)
 							$bfr .= ' '.$key.'="'.$value.'"';
 						$bfr .= ' />'."\n";
 						$bfr .= '				</div>'."\n";
 						$bfr .= '			</div>'."\n";
 						if ($this->validation) {
-							$bfr .= '			<div id="error_'.$item['type'].'_'.$item['name'].'" class="error_container">'."\n";
+							$bfr .= '			<div id="error_'.$item['name'].'" class="error_container">'."\n";
 							$bfr .='			</div>'."\n";
 						}
 						break;
@@ -458,7 +458,7 @@
 				$r = array();
 				foreach ($this->handler['input'] as $item) {
 					if (count($item['rules'])) {
-						$line = '			'.$item['type'].'_'.$item['name'].': {'."\n";
+						$line = '			'.$item['name'].': {'."\n";
 						$tmp = array();
 						foreach ($item['rules'] as $key => $value)
 							if (is_bool($value))
@@ -489,7 +489,7 @@
 				$m = array();
 				foreach ($this->handler['input'] as $item) {
 					if (count($item['messages'])) {
-						$line = '			'.$item['type'].'_'.$item['name'].': {'."\n";
+						$line = '			'.$item['name'].': {'."\n";
 						$tmp = array();
 						foreach ($item['messages'] as $key => $value)
 							$tmp[] = '				'.$key.': \''.htmlentities(utf8_decode($value)).'\'';

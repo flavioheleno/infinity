@@ -1,6 +1,6 @@
 <?php
 /**
-* XHTML creation helper
+* HTML creation helper
 *
 * @version 0.1
 * @author Flávio Heleno <flaviohbatista@gmail.com>
@@ -22,7 +22,7 @@
 *
 */
 
-	class XHTML {
+	class HTML {
 		private $lang = null;
 		private $enc = null;
 		private $base = null;
@@ -30,6 +30,7 @@
 		private $description = null;
 		private $keywords = null;
 		private $favicon = null;
+		private $html5 = false;
 		private $http = array();
 		private $meta = array();
 		private $css = array();
@@ -39,17 +40,10 @@
 		public function __construct($lang = 'pt-br', $enc = 'utf-8', array $http = array(), array $meta = array()) {
 			$this->lang = $lang;
 			$this->enc = $enc;
-			$this->http = array(
-				'Content-Language' => $this->lang,
-				'Content-Type' => 'text/html; charset='.$this->enc,
-				'Cache-Control' => 'public'
-			);
 			foreach ($http as $key => $value)
 				$this->http[$key] = $value;
 			$this->meta = array(
-				'robots' => 'index,follow',
-				'copyright' => 'none',
-				'rating' => 'general'
+				'robots' => 'index,follow'
 			);
 			foreach ($meta as $key => $value)
 				$this->meta[$key] = $value;
@@ -154,6 +148,10 @@
 			$this->content = array();
 		}
 
+		public function set_html5() {
+			$this->html5 = true;
+		}
+
 		public function parse($content, $indent = 0) {
 			$content = str_replace("\r", '', $content);
 			$tmp = explode("\n", $content);
@@ -181,26 +179,50 @@
 		}
 
 		public function render() {
-			$bfr = '<?xml version="1.0" encoding="'.$this->enc.'" ?>'."\n";
-			$bfr .= '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'."\n";
-			$bfr .= '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="'.$this->lang.'" lang="'.$this->lang.'">'."\n";
+			if ($this->html5) {
+				$bfr = '<!DOCTYPE html>'."\n";
+				$bfr .= '<html>'."\n";
+			} else {
+				$bfr = '<?xml version="1.0" encoding="'.$this->enc.'" ?>'."\n";
+				$bfr .= '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'."\n";
+				$bfr .= '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="'.$this->lang.'" lang="'.$this->lang.'">'."\n";
+			}
 			$bfr .= '	<head>'."\n";
+			if ($this->html5) {
+				$bfr .= '		<!--[if lt IE 9]>'."\n";
+				$bfr .= '		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>'."\n";
+				$bfr .= '		<![endif]-->'."\n";
+				$bfr .= '		<meta charset="'.$this->enc.'" />'."\n";
+			} else
+				$this->http['Content-Type'] = 'text/html; charset='.$this->enc;
 			$this->http = array_unique($this->http);
 			foreach ($this->http as $key => $value)
 				$bfr .= '		<meta http-equiv="'.$key.'" content="'.$value.'" />'."\n";
 			$this->meta = array_unique($this->meta);
-			foreach ($this->meta as $key => $value)
-				$bfr .= '		<meta name="'.$key.'" content="'.$value.'" xml:lang="'.$this->lang.'" lang="'.$this->lang.'" />'."\n";
-			if ((!is_null($this->description)) && ($this->description))
-				$bfr .= '		<meta name="description" content="'.$this->description.'" xml:lang="'.$this->lang.'" lang="'.$this->lang.'" />'."\n";
-			if ((!is_null($this->keywords)) && ($this->keywords))
-				$bfr .= '		<meta name="keywords" content="'.$this->keywords.'" xml:lang="'.$this->lang.'" lang="'.$this->lang.'" />'."\n";
+			foreach ($this->meta as $key => $value) {
+				$bfr .= '		<meta name="'.$key.'" content="'.$value;
+				if (!$this->html5)
+					$bfr .= '" xml:lang="'.$this->lang.'" lang="'.$this->lang;
+				$bfr .= '" />'."\n";
+			}
+			if ((!is_null($this->description)) && ($this->description)) {
+				$bfr .= '		<meta name="description" content="'.$this->description;
+				if (!$this->html5)
+					$bfr .= '" xml:lang="'.$this->lang.'" lang="'.$this->lang;
+				$bfr .= '" />'."\n";
+			}
+			if ((!is_null($this->keywords)) && ($this->keywords)) {
+				$bfr .= '		<meta name="keywords" content="'.$this->keywords;
+				if (!$this->html5)
+					$bfr .= '" xml:lang="'.$this->lang.'" lang="'.$this->lang;
+				$bfr .= '" />'."\n";
+			}
 			if ((!is_null($this->title)) && ($this->title))
 				$bfr .= '		<title>'.$this->title.'</title>'."\n";
 			if ((!is_null($this->base)) && ($this->base))
 				$bfr .= '		<base href="'.$this->base.'" />'."\n";
 			if ((!is_null($this->favicon)) && ($this->favicon))
-				$bfr .= '		<link rel="shortcut icon" type="image/x-icon" href="'.$this->favicon.'" />'."\n";
+				$bfr .= '		<link rel="icon" type="image/x-icon" href="'.$this->favicon.'" />'."\n";
 			$this->css = array_unique($this->css);
 			foreach ($this->css as $item)
 				$bfr .= '		<link rel="stylesheet" type="text/css" href="'.$item.'" />'."\n";

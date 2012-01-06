@@ -29,8 +29,8 @@
 		protected $data = null;
 		//instance of template class
 		protected $tpl = null;
-		//instance of xhtml class
-		protected $xhtml = null;
+		//instance of html class
+		protected $html = null;
 		//instance of form class
 		protected $form = null;
 		//instance of log class
@@ -51,22 +51,22 @@
 			if (in_array('template', $this->uses))
 				$this->tpl = new TEMPLATE($name);
 			//creates xhtml object
-			if (in_array('xhtml', $this->uses)) {
-				$this->xhtml = new XHTML;
+			if (in_array('html', $this->uses)) {
+				$this->html = new HTML;
 				$config = CONFIGURATION::singleton();
-				$this->xhtml->set_base('http://'.$config->framework['main']['domain'].$config->framework['main']['base_path']);
+				$this->html->set_base('http://'.$config->framework['main']['domain'].$config->framework['main']['base_path']);
 				$path = PATH::singleton();
 				if ((file_exists($path->absolute('img').'favicon.ico')) && (is_file($path->absolute('img').'favicon.ico')))
-					$this->xhtml->set_favicon('img/favicon.ico');
+					$this->html->set_favicon('img/favicon.ico');
 				else if ((file_exists($path->absolute('root').'favicon.ico')) && (is_file($path->absolute('root').'favicon.ico')))
-					$this->xhtml->set_favicon('favicon.ico');
+					$this->html->set_favicon('favicon.ico');
 			}
 			//creates form object
 			if (in_array('form', $this->uses)) {
 				$this->form = new FORM($name);
-				if (!is_null($this->xhtml)) {
-					$this->xhtml->add_js(FORM::js());
-					$this->xhtml->add_css(FORM::css());
+				if (!is_null($this->html)) {
+					$this->html->add_js(FORM::js());
+					$this->html->add_css(FORM::css());
 				}
 			}
 		}
@@ -83,15 +83,15 @@
 		}
 
 		protected function render($title, $description = '', $keywords = '') {
-			if ((!is_null($this->tpl)) && (!is_null($this->xhtml))) {
-				$this->xhtml->set_title($title);
-				$this->xhtml->set_description($description);
-				$this->xhtml->set_keywords($keywords);
-				$this->xhtml->append_content($this->tpl->get());
-				$this->response = $this->xhtml->render();
+			if ((!is_null($this->tpl)) && (!is_null($this->html))) {
+				$this->html->set_title($title);
+				$this->html->set_description($description);
+				$this->html->set_keywords($keywords);
+				$this->html->append_content($this->tpl->get());
+				$this->response = $this->html->render();
 				return true;
 			}
-			$this->log->add('Trying to render view without Template or XHTML objects');
+			$this->log->add('Trying to render view without Template or HTML objects');
 			return false;
 		}
 

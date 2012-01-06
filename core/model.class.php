@@ -105,9 +105,8 @@
 							}
 						}
 					}
-					$key = (string)$item['type'].'_'.(string)$item['id'];
-					if (isset($_REQUEST[$key]))
-						$this->field[(string)$item['id']] = $_REQUEST[$key];
+					if (isset($_REQUEST[(string)$item['id']]))
+						$this->field[(string)$item['id']] = $_REQUEST[(string)$item['id']];
 					else
 						$this->field[(string)$item['id']] = false;
 				}
