@@ -165,6 +165,8 @@
 						$indent++;
 					} else if ((preg_match('/^<[^>]+\/>$/', $tmp[$i])) || (preg_match('/<[^>]+>.*?<\/[^>]+>$/', $tmp[$i])) || (preg_match('/^<!--.*?-->/', $tmp[$i])))
 						$bfr .= str_repeat("\t", $indent).$tmp[$i]."\n";
+					else if (preg_match('/^\}[^\{]+\{$/', $tmp[$i]))
+						$bfr .= str_repeat("\t", ($indent - 1)).$tmp[$i]."\n";
 					else if ((preg_match('/^<\/[^>]+>$/', $tmp[$i])) || (preg_match('/^\}/', $tmp[$i]))) {
 						$indent--;
 						$bfr .= str_repeat("\t", $indent).$tmp[$i]."\n";

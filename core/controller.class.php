@@ -132,13 +132,15 @@
 		}
 
 		//dispatches the response
-		protected function dispatch() {
+		protected function dispatch($exit = false) {
 			if (!is_null($this->response))
 				if (is_array($this->response)) {
 					header('Content-Type: application/json');
 					echo json_encode($this->response);
 				} else
 					echo $this->response;
+			if ($exit)
+				exit;
 		}
 
 		//direct calls view function and calls pre/pos action

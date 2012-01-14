@@ -52,7 +52,8 @@
 				'root' => '/tpl/',
 				'cache' => '/tpl/cache/'
 			),
-			'root' => '/'
+			'root' => '/',
+			'worker' => '/worker/'
 		);
 
 		public function __construct() {

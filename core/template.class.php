@@ -67,7 +67,7 @@
 				$res = $this->sigma->loadTemplateFile($id.'.html', true, true);
 			else
 				$res = $this->sigma->loadTemplateFile($this->name.'_'.$id.'.html', true, true);
-			if ($res == SIGMA_OK)
+			if ((!($res instanceof PEAR_Error)) && ($res == SIGMA_OK))
 				return true;
 			$this->log->add($res->getMessage());
 			return false;
@@ -92,7 +92,7 @@
 				$res = $this->sigma->addBlockFile($block, $block, $id.'.html');
 			else
 				$res = $this->sigma->addBlockFile($block, $block, $this->name.'_'.$id.'.html');
-			if ($res == SIGMA_OK)
+			if ((!($res instanceof PEAR_Error)) && ($res == SIGMA_OK))
 				return true;
 			$this->log->add($res->getMessage());
 			return false;
@@ -100,7 +100,7 @@
 
 		public function hide($block) {
 			$res = $this->sigma->hideBlock($block);
-			if ($res == SIGMA_OK)
+			if ((!($res instanceof PEAR_Error)) && ($res == SIGMA_OK))
 				return true;
 			$this->log->add($res->getMessage());
 			return false;
@@ -108,7 +108,7 @@
 
 		public function show($block) {
 			$res = $this->sigma->touchBlock($block);
-			if ($res == SIGMA_OK)
+			if ((!($res instanceof PEAR_Error)) && ($res == SIGMA_OK))
 				return true;
 			$this->log->add($res->getMessage());
 			return false;
