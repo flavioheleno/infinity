@@ -208,19 +208,19 @@
 				$bfr .= '" />'."\n";
 			}
 			if ((!is_null($this->description)) && ($this->description)) {
-				$bfr .= '		<meta name="description" content="'.$this->description;
+				$bfr .= '		<meta name="description" content="'.htmlentities($this->description, ENT_QUOTES | ENT_IGNORE, 'UTF-8');
 				if (!$this->html5)
 					$bfr .= '" xml:lang="'.$this->lang.'" lang="'.$this->lang;
 				$bfr .= '" />'."\n";
 			}
 			if ((!is_null($this->keywords)) && ($this->keywords)) {
-				$bfr .= '		<meta name="keywords" content="'.$this->keywords;
+				$bfr .= '		<meta name="keywords" content="'.htmlentities($this->keywords, ENT_QUOTES | ENT_IGNORE, 'UTF-8');
 				if (!$this->html5)
 					$bfr .= '" xml:lang="'.$this->lang.'" lang="'.$this->lang;
 				$bfr .= '" />'."\n";
 			}
 			if ((!is_null($this->title)) && ($this->title))
-				$bfr .= '		<title>'.$this->title.'</title>'."\n";
+				$bfr .= '		<title>'.htmlentities($this->title, ENT_QUOTES | ENT_IGNORE, 'UTF-8').'</title>'."\n";
 			if ((!is_null($this->base)) && ($this->base))
 				$bfr .= '		<base href="'.$this->base.'" />'."\n";
 			if ((!is_null($this->favicon)) && ($this->favicon))

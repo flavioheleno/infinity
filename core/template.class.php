@@ -74,17 +74,21 @@
 		}
 
 
-		public function set($index, $value) {
+		public function set($index, $value, $escape = true) {
 			if (is_array($value))
 				foreach ($value as $key => $item)
-					$this->set($index.'_'.$key, $item);
-			else
-				$this->sigma->setVariable($index, $value);
+					$this->set($index.'_'.$key, $item, $escape);
+			else {
+				if ($escape)
+					$this->sigma->setVariable($index, htmlentities($value, ENT_QUOTES | ENT_IGNORE, 'UTF-8'));
+				else
+					$this->sigma->setVariable($index, $value);
+			}
 		}
 
-		public function block_set(array $data) {
+		public function block_set(array $data, $escape = true) {
 			foreach ($data as $key => $value)
-				$this->set($key, $value);
+				$this->set($key, $value, $escape);
 		}
 
 		public function add($block, $id, $fullid = false) {

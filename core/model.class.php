@@ -53,33 +53,6 @@
 				$this->secure = new SECURE;
 		}
 
-		protected static function output_date(&$data, $format = 'd/m/y') {
-			if (preg_match('/^([0-9]+)-([0-9]+)-([0-9]+) ([0-9]+):([0-9]+):([0-9]+)$/', $data, $matches)) {
-				$format = str_ireplace('d', $matches[3], $format);
-				$format = str_ireplace('m', $matches[2], $format);
-				$format = str_ireplace('y', $matches[1], $format);
-				$format = str_ireplace('h', $matches[4], $format);
-				$format = str_ireplace('i', $matches[5], $format);
-				$format = str_ireplace('s', $matches[6], $format);
-			} else if (preg_match('/^([0-9]+)-([0-9]+)-([0-9]+)$/', $data, $matches)) {
-				$format = str_ireplace('d', $matches[3], $format);
-				$format = str_ireplace('m', $matches[2], $format);
-				$format = str_ireplace('y', $matches[1], $format);
-			} else if (preg_match('/^([0-9]+):([0-9]+):([0-9]+)$/', $data, $matches)) {
-				$format = str_ireplace('h', $matches[1], $format);
-				$format = str_ireplace('i', $matches[2], $format);
-				$format = str_ireplace('s', $matches[3], $format);
-			} else
-				$format = '';
-			$data = $format;
-			return $format;
-		}
-
-		protected static function output_html(&$data) {
-			$data = nl2br(htmlentities(utf8_decode($data)));
-			return $data;
-		}
-
 		public function load($id, $fullid = false) {
 			$path = PATH::singleton();
 			if ($fullid)

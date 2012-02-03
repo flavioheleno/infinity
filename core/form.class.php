@@ -68,9 +68,9 @@
 		public function create($title, $id, $action, $method = 'post', $enctype = 'application/x-www-form-urlencoded') {
 			$this->handler = array(
 				'header' => array(
-					'title' => htmlentities(utf8_decode($title)),
+					'title' => htmlentities($title, ENT_QUOTES | ENT_IGNORE, 'UTF-8'),
 					'id' => 'form_'.strtolower($id),
-					'action' => htmlentities($action),
+					'action' => htmlentities($action, ENT_QUOTES | ENT_IGNORE, 'UTF-8'),
 					'method' => $method,
 					'enctype' => $enctype
 				),
@@ -184,9 +184,9 @@
 		public function input($type, $label, $name, $value = '', array $properties = array(), array $rules = array(), array $messages = array()) {
 			$this->handler['input'][] = array(
 				'type' => strtolower($type),
-				'label' => htmlentities(utf8_decode($label)),
+				'label' => htmlentities($label, ENT_QUOTES | ENT_IGNORE, 'UTF-8'),
 				'name' => strtolower($name),
-				'value' => (is_array($value) ? $value : htmlentities(utf8_decode($value))),
+				'value' => (is_array($value) ? $value : htmlentities($value, ENT_QUOTES | ENT_IGNORE, 'UTF-8')),
 				'properties' => $properties,
 				'rules' => $rules,
 				'messages' => $messages
@@ -217,7 +217,7 @@
 		public function hidden($name, $value = '') {
 			$this->handler['hidden'][] = array(
 				'name' => strtolower($name),
-				'value' => htmlentities(utf8_decode($value))
+				'value' => htmlentities($value, ENT_QUOTES | ENT_IGNORE, 'UTF-8')
 			);
 		}
 
@@ -235,7 +235,7 @@
 		public function command($name, $value, array $properties = array()) {
 			$this->handler['command'][] = array(
 				'name' => strtolower($name),
-				'value' => htmlentities(utf8_decode($value)),
+				'value' => htmlentities($value, ENT_QUOTES | ENT_IGNORE, 'UTF-8'),
 				'properties' => $properties
 			);
 		}
@@ -244,7 +244,7 @@
 		public function cancel($name, $value, array $properties = array()) {
 			$this->handler['cancel'][] = array(
 				'name' => strtolower($name),
-				'value' => htmlentities(utf8_decode($value)),
+				'value' => htmlentities($value, ENT_QUOTES | ENT_IGNORE, 'UTF-8'),
 				'properties' => $properties
 			);
 		}
@@ -492,7 +492,7 @@
 						$line = '			'.$item['name'].': {'."\n";
 						$tmp = array();
 						foreach ($item['messages'] as $key => $value)
-							$tmp[] = '				'.$key.': \''.htmlentities(utf8_decode($value)).'\'';
+							$tmp[] = '				'.$key.': \''.htmlentities($value, ENT_QUOTES | ENT_IGNORE, 'UTF-8').'\'';
 						$line .= implode(', '."\n", $tmp)."\n";
 						$line .= '			}';
 						$m[] = $line;

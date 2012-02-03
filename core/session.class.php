@@ -43,13 +43,15 @@
 			if (!$config->framework['session']['localhost'])
 				session_set_cookie_params(0, '/', ($this->subdomain ? '.' : '').$config->framework['main']['domain']);
 			session_start();
-			if (!isset($_SESSION['timeout']))
-				$_SESSION['timeout'] = time() + $config->framework['session']['idletime'];
-			else {
-				if ($_SESSION['timeout'] < time())
-					$this->timeout = true;
-				else
+			if ($config->framework['session']['idletime'] > 0) {
+				if (!isset($_SESSION['timeout']))
 					$_SESSION['timeout'] = time() + $config->framework['session']['idletime'];
+				else {
+					if ($_SESSION['timeout'] < time())
+						$this->timeout = true;
+					else
+						$_SESSION['timeout'] = time() + $config->framework['session']['idletime'];
+				}
 			}
 		}
 
@@ -96,12 +98,23 @@
 			return $this->timeout;
 		}
 
+		public function gen_csrf() {
+			$csrf = sha1(microtime(true).time().session_id());
+			$_SESSION['__csrf'] = $csrf;
+			return $csrf;
+		}
+
+		public function check_csrf($value) {
+			if ((isset($_SESSION['__csrf'])) && ($_SESSION['__csrf'] == $value))
+				return true;
+			return false;
+		}
+
 		//gets session value
 		public function __get($index) {
 			if (isset($_SESSION[$index]))
 				return $_SESSION[$index];
-			else
-				return null;
+			return null;
 		}
 
 		//sets session value

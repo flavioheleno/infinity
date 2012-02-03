@@ -38,25 +38,36 @@
 	require_once __DIR__.'/core/autoload.class.php';
 
 	$path = new PATH;
-	if ((file_exists($path->absolute('worker').$argv[1].'.worker.php')) && (is_file($path->absolute('worker').$argv[1].'.worker.php'))) {
+	$worker = $path->absolute('worker').$argv[1].'.worker.php';
+	if ((file_exists($worker)) && (is_file($worker))) {
+		AUTOLOAD::load_plugin('lock');
+		$lock = new LOCK($argv[1]);
 		switch ($argv[2]) {
 			case 'start':
-				echo 'worker start'."\n";
-				AUTOLOAD::load_plugin('lock');
-				$lock = new LOCK($argv[1]);
 				if (!$lock->lock())
 					exit;
+				echo 'worker started'."\n";
 				$pid = getmypid();
 				echo 'worker pid: '.$pid."\n";
 				@file_put_contents(sys_get_temp_dir().'/'.$argv[1].'.pid', $pid);
-				require_once $path->absolute('worker').$argv[1].'.worker.php';
+				$worker_time = microtime(true);
+				require_once $worker;
+				$worker_time = (microtime(true) - $worker_time);
+				echo 'worker finished'."\n";
+				if ($worker_time < 0)
+					echo 'worker took '.round(($worker_time * 1000), 2).' ms'."\n";
+				else if ($worker_time < 60)
+					echo 'worker took '.round($worker_time, 2).' s'."\n";
+				else if ($worker_time < 3600)
+					echo 'worker took '.round(($worker_time / 60), 2).' m'."\n";
+				else
+					echo 'worker took '.round(($worker_time / 3600), 2).' h'."\n";
 				break;
 			case 'stop':
-				echo 'worker stop'."\n";
-				AUTOLOAD::load_plugin('lock');
-				$lock = new LOCK($argv[1]);
-				if ((!$lock->lock()) && (file_exists(sys_get_temp_dir().'/'.$argv[1].'.pid'))) {
-					$pid = @file_get_contents(sys_get_temp_dir().'/'.$argv[1].'.pid');
+				$pidf = sys_get_temp_dir().'/'.$argv[1].'.pid';
+				if ((!$lock->lock()) && (file_exists($pidf))) {
+					echo 'worker stop'."\n";
+					$pid = @file_get_contents($pidf);
 					echo 'worker pid: '.$pid."\n";
 					exec('kill -9 '.$pid);
 				} else
