@@ -41,7 +41,7 @@
 			$this->domain = $config->framework['main']['domain'];
 			$this->subdomain = $config->framework['session']['subdomain'];
 			if (!$config->framework['session']['localhost'])
-				session_set_cookie_params(0, '/', ($this->subdomain ? '.' : '').$config->framework['main']['domain']);
+				session_set_cookie_params(0, $config->framework['main']['base_path'], ($this->subdomain ? '.' : '').$config->framework['main']['domain']);
 			session_start();
 			if ($config->framework['session']['idletime'] > 0) {
 				if (!isset($_SESSION['timeout']))
@@ -99,7 +99,7 @@
 		}
 
 		public function gen_csrf() {
-			$csrf = sha1(microtime(true).time().session_id());
+			$csrf = sha1(microtime(true).session_id());
 			$_SESSION['__csrf'] = $csrf;
 			return $csrf;
 		}

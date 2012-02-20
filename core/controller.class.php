@@ -118,10 +118,18 @@
 					unset($_REQUEST[$key]);
 		}
 
+		//checks if action is cacheable
 		public function cacheable($action) {
 			if (is_null($this->view))
 				return false;
 			return $this->view->cacheable($action);
+		}
+
+		//checks if request is made via an ajax request
+		protected function is_ajax() {
+			if ((isset($_SERVER['HTTP_X_REQUESTED_WITH'])) && (strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'))
+				return true;
+			return false;
 		}
 
 		//checks if request comes from expected referer
