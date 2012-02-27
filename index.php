@@ -43,9 +43,7 @@
 	}
 
 	//creates log object
-	$log = LOG::singleton();
-	if (!$config->framework['other']['log'])
-		$log->disable();
+	$log = LOG::singleton($config->framework['other']['log']);
 
 	//adds benchmark time to log file
 	if ($config->framework['other']['benchmark'])
@@ -54,20 +52,15 @@
 		}, $log);
 
 	//handles request information (routes, variables, etc)
-	REQUEST::parse($config, $log, $module, $action);
+	REQUEST::parse($module, $action);
 
 	$log->add('Module parameter: '.($module != '' ? $module : 'empty value'));
 	$log->add('Action parameter: '.($action != '' ? $action : 'empty value'));
 
 	//checks if module name is well formed
-	if (preg_match('/^[a-z_][a-z0-9_-]*$/i', $module))
+	if (preg_match('/^[a-z_][a-z0-9_-]*$/i', $module)) {
 		//grabs a new instance of module
 		$controller = AUTOLOAD::load_controller($module);
-	else
-		$controller = null;
-
-	//if the module exists
-	if (!is_null($controller)) {
 		if ($action == '')
 			$action = $controller->default_action;
 		//checks if action name is well formed
@@ -75,8 +68,6 @@
 			//checks if there is an alias for the given module->action and updates it
 			$controller->check_alias($action);
 			$log->add('Action alias: '.$action);
-			//creates an instance of cache class
-			$cache = CACHE::singleton($module, $action);
 			//checks if action exists
 			if ((method_exists($controller, $action)) && (is_callable(array($controller, $action)))) {
 				$log->add('Controller has the action');
@@ -89,6 +80,8 @@
 					$controller->$action();
 				else {
 					$log->add('Action is cacheable');
+					//creates an instance of cache class
+					$cache = CACHE::singleton($module, $action);
 					//checks if cache has cached version of action
 					if ($cache->has())
 						//dispatches cached version
@@ -125,6 +118,8 @@
 						exit;
 				} else {
 					$log->add('Action is cacheable');
+					//creates an instance of cache class
+					$cache = CACHE::singleton($module, $action);
 					//checks if cache has cached version of action
 					if ($cache->has()) {
 						//dispatches cached version

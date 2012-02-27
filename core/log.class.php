@@ -31,7 +31,7 @@
 		private $enabled = true;
 
 		//class constructor
-		public function __construct() {
+		public function __construct($disabled) {
 			//checks path
 			$path = PATH::singleton();
 			$folder = $path->absolute('log');
@@ -44,7 +44,7 @@
 			//open log file
 			$filename = date('Ymd').'.log';
 			$this->handler = @fopen($folder.$filename, 'a');
-			if ($this->handler === false)
+			if (($disabled) || ($this->handler === false))
 				$this->disable();
 			$this->add('Log start');
 			return true;
@@ -61,10 +61,10 @@
 		}
 
 		//singleton method - avoids the creation of more than one instance per log file
-		public static function singleton() {
+		public static function singleton($disabled = false) {
 			//checks if there is an instance of class, if not, create it
 			if ((is_null(self::$instance)) || (!(self::$instance instanceof LOG)))
-				self::$instance = new LOG;
+				self::$instance = new LOG($disabled);
 			return self::$instance;
 		}
 

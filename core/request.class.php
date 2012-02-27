@@ -24,7 +24,11 @@
 
 	class REQUEST {
 
-		public static function parse(&$config, &$log, &$module, &$action) {
+		public static function parse(&$module, &$action) {
+			//creates config object
+			$config = CONFIGURATION::singleton();
+			//creates log object
+			$log = LOG::singleton();
 			//checks if framework is using routing
 			if ($config->framework['main']['route']) {
 				$log->add('Using routing');
