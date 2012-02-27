@@ -22,6 +22,10 @@
 *
 */
 
+	define('CURRENT_URL', 'http://infinity-framework.googlecode.com/files/infinity_current.tar.bz2');
+	define('CORE_PATH', '/tmp/infinity_current/');
+	define('UNPACK_CMD', 'tar -jxf');
+
 	function display_help() {
 		echo 'Usage:'."\n";
 		echo "\t".'php -f '.__FILE__.' [options] folder'."\n\n";
@@ -37,6 +41,37 @@
 	function abort($text) {
 		echo ' ! '.$text."\n";
 		exit;
+	}
+
+	function core_check() {
+		info('Checking if core files are available');
+		if ((file_exists(CORE_PATH)) && (is_dir(CORE_PATH))) {
+			info('Core files found');
+			return true;
+		} else {
+			info('Core files not found');
+			return false;
+		}
+	}
+
+	function core_download() {
+		info('Downloading current core files');
+		$src = @file_get_contents(CURRENT_URL);
+		if ($src === false)
+			abort('Download failed');
+		$fn = tempnam('/tmp', 'infinity');
+		if (!@file_put_contents($fn, $src))
+			abort('Failed to write download data to disk');
+		if ((!file_exists(CORE_PATH)) || (!is_dir(CORE_PATH)))
+			if (!@mkdir(CORE_PATH))
+				abort('Failed to create temporary dir to extract core files');
+		$ret = exec(UNPACK_CMD.' '.$fn.' -C '.CORE_PATH);
+		if ($ret == '') {
+			@unlink($fn);
+			info('Download ok');
+			return true;
+		} else
+			abort($ret);
 	}
 
 	function copy_files($base, $path, $folder, $extension) {
@@ -88,7 +123,8 @@
 			'plugin',
 			'tpl' => array(
 				'cache'
-			)
+			),
+			'worker'
 		);
 		$dp = array(
 			'cache',
@@ -134,6 +170,8 @@
 		copy_files($base, 'js', $folder, '.js');
 		if (!@copy($base.'index.php', $folder.'index.php'))
 			abort('Failed to copy index file');
+		if (!@copy($base.'worker.php', $folder.'worker.php'))
+			abort('Failed to copy index file');
 		info('Don\'t forget to rename default_* config files into their real names');
 		info('Finished');
 	}
@@ -145,6 +183,8 @@
 		exit;
 	}
 
+	if (!core_check())
+		core_download();
 	$options = array();
 	if ((file_exists($argv[1])) && (is_dir($argv[1]))) {
 		$folder = $argv[1];
@@ -154,4 +194,4 @@
 		foreach ($argv as $option)
 			$options[$option] = true;
 	}
-	setup(dirname(__FILE__), $folder, $options);
+	setup(CORE_PATH, $folder, $options);
