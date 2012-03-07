@@ -36,15 +36,9 @@
 				'form' => '/cfg/form/'
 			),
 			'core' => '/core/',
-			'css' => array(
-				'app' => '/css/app/',
-				'core' => '/css/core/'
-			),
+			'css' => '/css/',
 			'img' => '/img/',
-			'js' => array(
-				'app' => '/js/app/',
-				'core' => '/js/core/'
-			),
+			'js' => '/js/',
 			'log' => '/log/',
 			'mail' => '/mail/',
 			'plugin' => '/plugin/',

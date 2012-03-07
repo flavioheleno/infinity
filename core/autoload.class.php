@@ -22,21 +22,16 @@
 *
 */
 
-	spl_autoload_register('AUTOLOAD::load');
+	spl_autoload_register('AUTOLOAD::load_core');
 	require_once __DIR__.'/path.class.php';
 
 	class AUTOLOAD {
 
-		public static function load($class) {
+		public static function load_core($name) {
 			$path = PATH::singleton();
-			$class = strtolower($class);
-			if (preg_match('/^aux_/i', $class)) {
-				$class = str_replace('_', '.', $class);
-				$file = $path->absolute('app').$class.'.php';
-				if ((file_exists($file)) && (is_file($file)))
-					require_once $file;
-			} else if ((file_exists($path->absolute('core').$class.'.class.php')) && (is_file($path->absolute('core').$class.'.class.php')))
-				require_once $path->absolute('core').$class.'.class.php';
+			$file = $path->absolute('core').strtolower($name).'.class.php';
+			if ((file_exists($file)) && (is_file($file)))
+				require_once $file;
 		}
 
 		public static function load_plugin($name) {

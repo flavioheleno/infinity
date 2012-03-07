@@ -109,15 +109,9 @@
 				'form'
 			),
 			'core',
-			'css' => array(
-				'app',
-				'core'
-			),
+			'css',
 			'img',
-			'js' => array(
-				'app',
-				'core'
-			),
+			'js',
 			'log',
 			'mail',
 			'plugin',
@@ -164,14 +158,14 @@
 			@chmod($folder.$path, 0777);
 		info('Copying files');
 		copy_files($base, 'cfg/core', $folder, '.php');
-		copy_files($base, 'css/core', $folder, '.css');
+		copy_files($base, 'css', $folder, '.css');
 		copy_files($base, 'core', $folder, '.php');
 		copy_files($base, 'img', $folder, array('.ico', '.png', '.jpg', '.gif'));
 		copy_files($base, 'js', $folder, '.js');
 		if (!@copy($base.'index.php', $folder.'index.php'))
 			abort('Failed to copy index file');
 		if (!@copy($base.'worker.php', $folder.'worker.php'))
-			abort('Failed to copy index file');
+			abort('Failed to copy worker file');
 		info('Don\'t forget to rename default_* config files into their real names');
 		info('Finished');
 	}
