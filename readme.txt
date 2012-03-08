@@ -35,7 +35,6 @@ MODEL
 VIEW
 	html:			gera arquivos html válidos
 	template:		manipulação de templates
-	form:			gera formulários html com validação baseada em jquery
 	url:			controla a criação de urls
 
 CONTROLLER
@@ -52,6 +51,7 @@ SISTEMA
 	data:			compartilhamento de dados entre model/view/controller
 	configuration:	manipulação dos arquivos de configuração
 	path:			resolução de diretórios
+	input:			limpeza e validação de dados
 
 ---------------------------------
  Instalação

@@ -70,6 +70,7 @@
 			$log->add('Action alias: '.$action);
 			//checks if action exists
 			if ((method_exists($controller, $action)) && (is_callable(array($controller, $action)))) {
+				//method exists
 				$log->add('Controller has the action');
 				//calls pre-action function
 				$controller->pre_action();
@@ -106,6 +107,7 @@
 				//prevents default page to be shown
 				exit;
 			} else {
+				//method doesn't exists
 				$log->add('Trying to call view\'s action');
 				//calls pre-action function
 				$controller->pre_action();

@@ -37,7 +37,7 @@
 
 	require_once __DIR__.'/core/autoload.class.php';
 
-	$path = new PATH;
+	$path = new PATH::singleton();
 	$worker = $path->absolute('worker').$argv[1].'.worker.php';
 	if ((file_exists($worker)) && (is_file($worker))) {
 		AUTOLOAD::load_plugin('lock');

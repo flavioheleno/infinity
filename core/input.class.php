@@ -1,0 +1,205 @@
+<?php
+/**
+* User data validation and sanitization
+*
+* @version 0.1
+* @author Flávio Heleno <flaviohbatista@gmail.com>
+* @link http://code.google.com/p/infinity-framework
+* @copyright Copyright (c) 2010/2011, Flávio Heleno
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*
+*/
+
+	class INPUT {
+
+		const INPUT_BOOL = 0;
+		const INPUT_INT = 1;
+		const INPUT_INT_MIN = 2;
+		const INPUT_INT_MAX = 3;
+		const INPUT_INT_RANGE = 4;
+		const INPUT_FLOAT = 5;
+		const INPUT_FLOAT_MIN = 6;
+		const INPUT_FLOAT_MAX = 7;
+		const INPUT_FLOAT_RANGE = 8;
+		const INPUT_STRING = 9;
+		const INPUT_STRING_NOHTML = 10;
+		const INPUT_STRING_MINLEN = 11;
+		const INPUT_STRING_MAXLEN = 12;
+		const INPUT_STRING_RANGELEN = 13;
+		const INPUT_EMAIL = 14;
+		const INPUT_URL = 15;
+		const INPUT_DATE = 16;
+		const INPUT_IP = 17;
+		const INPUT_REGEX = 18;
+
+		//checks if an index exists in _REQUEST variable
+		public static function has($index) {
+			if ((!isset($_REQUEST[$index])) || (trim($_REQUEST[$index]) == ''))
+				return false;
+			return true;
+		}
+
+		public static function has_array(array $list, &$failed = array()) {
+			$ret = true;
+			foreach ($list as $item)
+				if (!self::has($item)) {
+					$failed[] = $item;
+					$ret = false;
+				}
+			return $ret;
+		}
+
+		//cleans and checks if an index is valid in _REQUEST variable
+		public static function check($index, $type, $param = null) {
+			self::sanitize($_REQUEST[$index], $type);
+			return (self::validate($_REQUEST[$index], $type, $param) !== false);
+		}
+
+		public static function check_array(array $list, &$failed = array()) {
+			$ret = true;
+			foreach ($list as $item => $prop)
+				if (is_array($prop)) {
+					if (!self::check($item, $prop['type'], $prop['param'])) {
+						$failed[] = $item;
+						$ret = false;
+					}
+				} else {
+					if (!self::check($item, $prop)) {
+						$failed[] = $item;
+						$ret = false;
+					}
+				}
+			return $ret;
+		}
+
+		private static function sanitize(&$value, $type) {
+			switch ($type) {
+				case INPUT_BOOL:
+					$value = preg_replace('/[^tf01]+/i', '', $value);
+					break;
+				case INPUT_INT:
+				case INPUT_INT_MIN:
+				case INPUT_INT_MAX:
+				case INPUT_INT_RANGE:
+					$value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
+					break;
+				case INPUT_FLOAT:
+				case INPUT_FLOAT_MIN:
+				case INPUT_FLOAT_MAX:
+				case INPUT_FLOAT_RANGE:
+					$value = filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT, (FILTER_FLAG_ALLOW_FRACTION | FILTER_FLAG_ALLOW_THOUSAND));
+					$value = str_replace('.', '', $value);
+					$value = str_replace(',', '.', $value);
+					$value = floatval($value);
+					break;
+				case INPUT_STRING_NOHTML:
+					$value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);	
+					$value = strip_tags($value);
+					break;
+				case INPUT_STRING:
+				case INPUT_STRING_MINLEN:
+				case INPUT_STRING_MAXLEN:
+				case INPUT_STRING_RANGELEN:
+					$value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+					break;
+				case INPUT_EMAIL:
+					$value = filter_var($value, FILTER_SANITIZE_EMAIL);
+					break;
+				case INPUT_URL:
+					$value = filter_var($value, FILTER_SANITIZE_URL);
+					break;
+				case INPUT_DATE:
+					$value = preg_replace('/[^0-9\/]+/', '', $value);
+					break;
+				case INPUT_IP:
+					$value = preg_replace('/[^0-9\.\/]+/', '', $value);
+					break;
+			}
+		}
+
+		private static function validate($value, $type, $param = null) {
+			switch ($type) {
+				case INPUT_BOOL:
+					return filter_var($value, FILTER_VALIDATE_BOOLEAN);
+				case INPUT_INT:
+					return filter_var($value, FILTER_VALIDATE_INT);
+				case INPUT_INT_MIN:
+					$options = array(
+						'options' => array(
+							'min_range' => intval($param)
+						)
+					);
+					return filter_var($value, FILTER_VALIDATE_INT, $options);
+				case INPUT_INT_MAX:
+					$options = array(
+						'options' => array(
+							'max_range' => intval($param)
+						)
+					);
+					return filter_var($value, FILTER_VALIDATE_INT, $options);
+				case INPUT_INT_RANGE:
+					$options = array(
+						'options' => array(
+							'min_range' => intval($param[0]),
+							'max_range' => intval($param[1])
+						)
+					);
+					return filter_var($value, FILTER_VALIDATE_INT, $options);
+				case INPUT_FLOAT:
+					return filter_var($value, FILTER_VALIDATE_FLOAT, (FILTER_FLAG_ALLOW_FRACTION | FILTER_FLAG_ALLOW_THOUSAND));
+				case INPUT_FLOAT_MIN:
+					return ((filter_var($value, FILTER_VALIDATE_FLOAT, (FILTER_FLAG_ALLOW_FRACTION | FILTER_FLAG_ALLOW_THOUSAND))) && ($value >= floatval($param)));
+				case INPUT_FLOAT_MAX:
+					return ((filter_var($value, FILTER_VALIDATE_FLOAT, (FILTER_FLAG_ALLOW_FRACTION | FILTER_FLAG_ALLOW_THOUSAND))) && ($value <= floatval($param)));
+				case INPUT_FLOAT_RANGE:
+					if (filter_var($value, FILTER_VALIDATE_INT, (FILTER_FLAG_ALLOW_FRACTION | FILTER_FLAG_ALLOW_THOUSAND)))
+						return (($value >= floatval($param[0])) && ($value <= floatval($param[1])));
+					return false;
+				case INPUT_STRING:
+				case INPUT_STRING_NOHTML:
+					return true;
+				case INPUT_STRING_MINLEN:
+					return (strlen($value) >= intval($param));
+				case INPUT_STRING_MAXLEN:
+					return (strlen($value) <= intval($param));
+				case INPUT_STRING_RANGELEN:
+					$len = strlen($value);
+					return (($len >= intval($param[0])) && ($len <= intval($param[1])));
+				case INPUT_EMAIL:
+					return filter_var($value, FILTER_VALIDATE_EMAIL);
+				case INPUT_URL:
+					return filter_var($value, FILTER_VALIDATE_URL);
+				case INPUT_DATE:
+					$options = array(
+						'options' => array(
+							'regexp' => '/^(0[1-9]|1[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/[1-2][0-9]{3}$/'
+						)
+					);
+					return filter_var($value, FILTER_VALIDATE_REGEXP, $options);
+				case INPUT_IP:
+					return filter_var($value, FILTER_VALIDATE_IP);
+				case INPUT_REGEX:
+					if (is_null($param))
+						return false;
+					$options = array(
+						'options' => array(
+							'regexp' => $param
+						)
+					);
+					return filter_var($value, FILTER_VALIDATE_REGEXP, $options);
+			}
+		}
+
+	}

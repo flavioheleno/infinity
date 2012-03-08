@@ -23,6 +23,20 @@
 */
 
 	class HTML {
+
+		const BS_ALERT = 0;
+		const BS_BUTTON = 1;
+		const BS_CAROUSEL = 2;
+		const BS_COLLAPSE = 3;
+		const BS_DROPDOWN = 4;
+		const BS_MODAL = 5;
+		const BS_POPOVER = 6;
+		const BS_SCROLLSPY = 7;
+		const BS_TAB = 8;
+		const BS_TOOLTIP = 9;
+		const BS_TRANSITION = 10;
+		const BS_TYPEAHEAD = 11;
+
 		private $lang = null;
 		private $enc = null;
 		private $base = null;
@@ -30,12 +44,12 @@
 		private $description = null;
 		private $keywords = null;
 		private $favicon = null;
-		private $html5 = false;
 		private $http = array();
 		private $meta = array();
 		private $css = array();
 		private $js = array();
 		private $content = array();
+		private $path = null;
 
 		public function __construct($lang = 'pt-br', $enc = 'utf-8', array $http = array(), array $meta = array()) {
 			$this->lang = $lang;
@@ -47,6 +61,8 @@
 			);
 			foreach ($meta as $key => $value)
 				$this->meta[$key] = $value;
+			$this->path = PATH::singleton();
+			$this->add_css('bootstrap.css');
 		}
 
 		public function set_base($value) {
@@ -77,12 +93,19 @@
 			$this->favicon = $file;
 		}
 
+		public function basic_js() {
+			if (count($this->js) == 0) {
+				$this->add_js('jquery.js');
+				$this->add_js('bootstrap.js');
+			}
+		}
+
 		public function add_js($file) {
 			if (!is_array($file))
-				$this->js[] = $file;
+				$this->js[] = $this->path->relative('js').$file;
 			else
 				foreach ($file as $item)
-					$this->js[] = $item;
+					$this->js[] = $this->path->relative('js').$item;
 		}
 
 		public function clean_js() {
@@ -90,49 +113,59 @@
 			$this->js = array();
 		}
 
+		public function bootstrap($plugin) {
+			$this->basic_js();
+			switch ($plugin) {
+				case BS_ALERT:
+					$this->add_js('bootstrap-alert.js');
+					break;
+				case BS_BUTTON:
+					$this->add_js('bootstrap-button.js');
+					break;
+				case BS_CAROUSEL:
+					$this->add_js('bootstrap-carousel.js');
+					break;
+				case BS_COLLAPSE:
+					$this->add_js('bootstrap-collapse.js');
+					break;
+				case BS_DROPDOWN:
+					$this->add_js('bootstrap-dropdown.js');
+					break;
+				case BS_MODAL:
+					$this->add_js('bootstrap-modal.js');
+					break;
+				case BS_POPOVER:
+					$this->add_js('bootstrap-popover.js');
+					break;
+				case BS_SCROLLSPY:
+					$this->add_js('bootstrap-scrollspy.js');
+					break;
+				case BS_TAB:
+					$this->add_js('bootstrap-tab.js');
+					break;
+				case BS_TOOLTIP:
+					$this->add_js('bootstrap-tooltip.js');
+					break;
+				case BS_TRANSITION:
+					$this->add_js('bootstrap-transition.js');
+					break;
+				case BS_TYPEAHEAD:
+					$this->add_js('bootstrap-typeahead.js');
+					break;
+			}
+		}
+
 		public function add_css($file) {
 			if (!is_array($file))
-				$this->css[] = $file;
+				$this->css[] = $this->path->relative('css').$file;
 			else
 				foreach ($file as $item)
-					$this->css[] = $item;
+					$this->css[] = $this->path->relative('css').$item;
 		}
 
 		public function clean_css() {
 			unset($this->css);
 			$this->css = array();
-		}
-
-		public function add_anchor($href, $text, array $prop = array(), $pre = '', $pos = '') {
-			$tmp = $pre."\n";
-			$tmp .= '<a href="'.$href.'"';
-			foreach ($prop as $key => $value)
-				$tmp .= ' '.$key.'="'.$value.'"';
-			$tmp .= '>'.$text.'</a>'."\n";
-			$tmp .= $pos."\n";
-			$this->append_content($tmp);
-		}
-
-		public function add_image($src, $alt = '', array $prop = array(), $pre = '', $pos = '') {
-			$tmp = $pre."\n";
-			$tmp .= '<img src="'.$src.'" alt="'.$alt.'" ';
-			foreach ($prop as $key => $value)
-				$tmp .= $key.'="'.$value.'" ';
-			$tmp .= '/>'."\n";
-			$tmp .= $pos."\n";
-			$this->append_content($tmp);
-		}
-
-		public function add_div($content, $id = null, $class = null) {
-			$tmp = '<div';
-			if (!is_null($id))
-				$tmp .= ' id="'.$id.'"';
-			if (!is_null($class))
-				$tmp .= ' class="'.$class.'"';
-			$tmp .= '>'."\n";
-			$tmp .= $content."\n";
-			$tmp .= '</div>'."\n";
-			$this->append_content($tmp);
 		}
 
 		public function prepend_content($content) {
@@ -146,10 +179,6 @@
 		public function clean_content() {
 			unset($this->content);
 			$this->content = array();
-		}
-
-		public function set_html5() {
-			$this->html5 = true;
 		}
 
 		public function parse($content, $indent = 0) {
@@ -181,44 +210,23 @@
 		}
 
 		public function render() {
-			if ($this->html5) {
-				$bfr = '<!DOCTYPE html>'."\n";
-				$bfr .= '<html>'."\n";
-			} else {
-				$bfr = '<?xml version="1.0" encoding="'.$this->enc.'" ?>'."\n";
-				$bfr .= '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'."\n";
-				$bfr .= '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="'.$this->lang.'" lang="'.$this->lang.'">'."\n";
-			}
+			$bfr = '<!DOCTYPE html>'."\n";
+			$bfr .= '<html lang="'.$this->lang.'">'."\n";
 			$bfr .= '	<head>'."\n";
-			if ($this->html5) {
-				$bfr .= '		<!--[if lt IE 9]>'."\n";
-				$bfr .= '		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>'."\n";
-				$bfr .= '		<![endif]-->'."\n";
-				$bfr .= '		<meta charset="'.$this->enc.'" />'."\n";
-			} else
-				$this->http['Content-Type'] = 'text/html; charset='.$this->enc;
+			$bfr .= '		<!--[if lt IE 9]>'."\n";
+			$bfr .= '		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>'."\n";
+			$bfr .= '		<![endif]-->'."\n";
+			$bfr .= '		<meta charset="'.$this->enc.'" />'."\n";
 			$this->http = array_unique($this->http);
 			foreach ($this->http as $key => $value)
 				$bfr .= '		<meta http-equiv="'.$key.'" content="'.$value.'" />'."\n";
 			$this->meta = array_unique($this->meta);
-			foreach ($this->meta as $key => $value) {
-				$bfr .= '		<meta name="'.$key.'" content="'.$value;
-				if (!$this->html5)
-					$bfr .= '" xml:lang="'.$this->lang.'" lang="'.$this->lang;
-				$bfr .= '" />'."\n";
-			}
-			if ((!is_null($this->description)) && ($this->description)) {
-				$bfr .= '		<meta name="description" content="'.htmlentities($this->description, ENT_QUOTES | ENT_IGNORE, 'UTF-8');
-				if (!$this->html5)
-					$bfr .= '" xml:lang="'.$this->lang.'" lang="'.$this->lang;
-				$bfr .= '" />'."\n";
-			}
-			if ((!is_null($this->keywords)) && ($this->keywords)) {
-				$bfr .= '		<meta name="keywords" content="'.htmlentities($this->keywords, ENT_QUOTES | ENT_IGNORE, 'UTF-8');
-				if (!$this->html5)
-					$bfr .= '" xml:lang="'.$this->lang.'" lang="'.$this->lang;
-				$bfr .= '" />'."\n";
-			}
+			foreach ($this->meta as $key => $value)
+				$bfr .= '		<meta name="'.$key.'" content="'.$value.'" />'."\n";
+			if ((!is_null($this->description)) && ($this->description))
+				$bfr .= '		<meta name="description" content="'.htmlentities($this->description, ENT_QUOTES | ENT_IGNORE, 'UTF-8').'" />'."\n";
+			if ((!is_null($this->keywords)) && ($this->keywords))
+				$bfr .= '		<meta name="keywords" content="'.htmlentities($this->keywords, ENT_QUOTES | ENT_IGNORE, 'UTF-8').'" />'."\n";
 			if ((!is_null($this->title)) && ($this->title))
 				$bfr .= '		<title>'.htmlentities($this->title, ENT_QUOTES | ENT_IGNORE, 'UTF-8').'</title>'."\n";
 			if ((!is_null($this->base)) && ($this->base))

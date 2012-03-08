@@ -23,16 +23,12 @@
 */
 
 	abstract class VIEW {
-		//module name
-		protected $name = '';
 		//instance of data class
 		protected $data = null;
 		//instance of template class
 		protected $tpl = null;
 		//instance of html class
 		protected $html = null;
-		//instance of form class
-		protected $form = null;
 		//instance of log class
 		protected $log = null;
 		//sets the helpers needed by class
@@ -44,9 +40,12 @@
 
 		//class constructor
 		public function __construct($name) {
-			$this->name = $name;
-			$this->log = LOG::singleton();
-			$this->data = DATA::singleton();
+			//creates data object
+			if (in_array('data', $this->uses))
+				$this->data = DATA::singleton();
+			//creates log object
+			if (in_array('log', $this->uses))
+				$this->log = LOG::singleton();
 			//creates template object
 			if (in_array('template', $this->uses))
 				$this->tpl = new TEMPLATE($name);
@@ -60,14 +59,6 @@
 					$this->html->set_favicon('img/favicon.ico');
 				else if ((file_exists($path->absolute('root').'favicon.ico')) && (is_file($path->absolute('root').'favicon.ico')))
 					$this->html->set_favicon('favicon.ico');
-			}
-			//creates form object
-			if (in_array('form', $this->uses)) {
-				$this->form = new FORM($name);
-				if (!is_null($this->html)) {
-					$this->html->add_js(FORM::js());
-					$this->html->add_css(FORM::css());
-				}
 			}
 		}
 
@@ -98,9 +89,10 @@
 		//dispatches the response
 		protected function dispatch() {
 			if (!is_null($this->response))
-				if (is_array($this->response))
+				if (is_array($this->response)) {
+					header('Content-Type: application/json');
 					echo json_encode($this->response);
-				else
+				} else
 					echo $this->response;
 		}
 

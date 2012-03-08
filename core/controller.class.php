@@ -23,8 +23,6 @@
 */
 
 	class CONTROLLER {
-		//module name
-		protected $name = '';
 		//instance of data class
 		protected $data = null;
 		//instance of view class
@@ -37,8 +35,6 @@
 		protected $cookie = null;
 		//instance of log class
 		protected $log = null;
-		//instance of config class
-		protected $config = null;
 		//instance of xcache class
 		protected $xcache = null;
 		//instance of mcache class
@@ -47,6 +43,8 @@
 		protected $filecache = null;
 		//web path
 		protected $path = '/';
+		//domain
+		protected $domain = '';
 		//sets the aliases for this controller
 		protected $alias = array();
 		//sets the helpers needed by class
@@ -58,11 +56,13 @@
 
 		//class constructor
 		public function __construct($name) {
-			$this->config = CONFIGURATION::singleton();
+			$config = CONFIGURATION::singleton();
+			$this->domain = $config->framework['main']['domain'];
+			$this->path = $config->framework['main']['base_path'];
 			$this->log = LOG::singleton();
-			$this->name = $name;
-			$this->path = $this->config->framework['main']['base_path'];
-			$this->data = DATA::singleton();
+			//creates data object
+			if (in_array('data', $this->uses))
+				$this->data = DATA::singleton();
 			//creates view object
 			if (in_array('view', $this->uses))
 				$this->view = AUTOLOAD::load_view($name);
@@ -111,13 +111,6 @@
 			exit;
 		}
 
-		//cleans every form variable
-		public static function clean_enviroment() {
-			foreach ($_REQUEST as $key => $value)
-				if (preg_match('/^(text_|password_|textarea_|checkbox_|radio_|select_|hidden_|submit_|reset_)/', $key))
-					unset($_REQUEST[$key]);
-		}
-
 		//checks if action is cacheable
 		public function cacheable($action) {
 			if (is_null($this->view))
@@ -134,7 +127,7 @@
 
 		//checks if request comes from expected referer
 		protected function check_referer() {
-			if ((isset($_SERVER['HTTP_REFERER'])) && (!preg_match('/^http:\/\/'.$this->config->framework['main']['domain'].'/', $_SERVER['HTTP_REFERER'])))
+			if ((isset($_SERVER['HTTP_REFERER'])) && (!preg_match('/^http:\/\/'.$this->domain.'/', $_SERVER['HTTP_REFERER'])))
 				return false;
 			return true;
 		}

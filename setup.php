@@ -155,7 +155,8 @@
 					abort('Failed to create directory: '.$folder.$sub);
 			}
 		foreach ($dp as $path)
-			@chmod($folder.$path, 0777);
+			if (!@chmod($folder.$path, 0777))
+				info('Can\'t chmod "'.$folder.$path.'"');
 		info('Copying files');
 		copy_files($base, 'cfg/core', $folder, '.php');
 		copy_files($base, 'css', $folder, '.css');
