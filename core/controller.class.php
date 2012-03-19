@@ -25,6 +25,8 @@
 	class CONTROLLER {
 		//instance of data class
 		protected $data = null;
+		//instance of input class
+		protected $input = null;
 		//instance of view class
 		protected $view = null;
 		//instance of model class
@@ -63,6 +65,9 @@
 			//creates data object
 			if (in_array('data', $this->uses))
 				$this->data = DATA::singleton();
+			//creates input object
+			if (in_array('input', $this->uses))
+				$this->input = INPUT::singleton();
 			//creates view object
 			if (in_array('view', $this->uses))
 				$this->view = AUTOLOAD::load_view($name);
@@ -116,6 +121,15 @@
 			if (is_null($this->view))
 				return false;
 			return $this->view->cacheable($action);
+		}
+
+		//returns real client ip address
+		protected function get_ip_address() {
+			foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key)
+				if (array_key_exists($key, $_SERVER) === true)
+					foreach (explode(',', $_SERVER[$key]) as $ip)
+						if (filter_var($ip, FILTER_VALIDATE_IP) !== false)
+							return $ip;
 		}
 
 		//checks if request is made via an ajax request

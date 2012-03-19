@@ -32,10 +32,12 @@
 		private $prefix;
 		private $mysqli;
 		private $debug;
+		private $log = null;
 
 		public function __construct(array $cfg) {
 			if (count($cfg)) {
 				$this->initialize($cfg);
+				$this->log = LOG::singleton();
 				$this->dbg('construct('.$this->username.', '.$this->password.', '.$this->database.', '.$this->hostname.')');
 			} else
 				exit(__CLASS__.': config array is empty'."\n");
@@ -68,7 +70,7 @@
 
 		private function dbg($text) {
 			if ($this->debug)
-				file_put_contents('db.debug.log', $text, FILE_APPEND | LOCK_EX);
+				$this->log->add('DB DEBUG: '.$text);
 		}
 
 		public function set_debug($state) {

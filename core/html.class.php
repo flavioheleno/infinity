@@ -213,9 +213,6 @@
 			$bfr = '<!DOCTYPE html>'."\n";
 			$bfr .= '<html lang="'.$this->lang.'">'."\n";
 			$bfr .= '	<head>'."\n";
-			$bfr .= '		<!--[if lt IE 9]>'."\n";
-			$bfr .= '		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>'."\n";
-			$bfr .= '		<![endif]-->'."\n";
 			$bfr .= '		<meta charset="'.$this->enc.'" />'."\n";
 			$this->http = array_unique($this->http);
 			foreach ($this->http as $key => $value)
@@ -236,6 +233,9 @@
 			$this->css = array_unique($this->css);
 			foreach ($this->css as $item)
 				$bfr .= '		<link rel="stylesheet" type="text/css" href="'.$item.'" />'."\n";
+			$bfr .= '		<!--[if lt IE 9]>'."\n";
+			$bfr .= '		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>'."\n";
+			$bfr .= '		<![endif]-->'."\n";
 			$this->js = array_unique($this->js);
 			foreach ($this->js as $item)
 				$bfr .= '		<script type="text/javascript" src="'.$item.'"></script>'."\n";

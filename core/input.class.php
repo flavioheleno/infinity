@@ -44,17 +44,41 @@
 		const INPUT_IP = 17;
 		const INPUT_REGEX = 18;
 
-		//checks if an index exists in _REQUEST variable
-		public static function has($index) {
-			if ((!isset($_REQUEST[$index])) || (trim($_REQUEST[$index]) == ''))
-				return false;
-			return true;
+		//holds class instances for singleton
+		private static $instance = null;
+		private $data = array();
+
+		//singleton method - avoids the creation of more than one instance per input
+		public static function singleton() {
+			//checks if there is an instance of class, if not, create it
+			if ((is_null(self::$instance)) || (!(self::$instance instanceof INPUT)))
+				self::$instance = new INPUT;
+			return self::$instance;
 		}
 
-		public static function has_array(array $list, &$failed = array()) {
+		public function __construct() {
+			$this->data = $_REQUEST;
+		}
+
+		public function __set($index, $value) {
+			$this->data[$index] = $value;
+		}
+
+		public function __get($index) {
+			return $this->data[$index];
+		}
+
+		//checks if an index exists in _REQUEST variable
+		public function has($index) {
+			if ((isset($this->data[$index])) && (trim($this->data[$index]) == ''))
+				return true;
+			return false;
+		}
+
+		public function has_array(array $list, &$failed = array()) {
 			$ret = true;
 			foreach ($list as $item)
-				if (!self::has($item)) {
+				if (!$this->has($item)) {
 					$failed[] = $item;
 					$ret = false;
 				}
@@ -62,21 +86,24 @@
 		}
 
 		//cleans and checks if an index is valid in _REQUEST variable
-		public static function check($index, $type, $param = null) {
-			self::sanitize($_REQUEST[$index], $type);
-			return (self::validate($_REQUEST[$index], $type, $param) !== false);
+		public function check($index, $type, $param = null) {
+			if ($this->has($index)) {
+				$this->sanitize($this->data[$index], $type);
+				return ($this->validate($this->data[$index], $type, $param) !== false);
+			}
+			return false;
 		}
 
-		public static function check_array(array $list, &$failed = array()) {
+		public function check_array(array $list, &$failed = array()) {
 			$ret = true;
 			foreach ($list as $item => $prop)
 				if (is_array($prop)) {
-					if (!self::check($item, $prop['type'], $prop['param'])) {
+					if (!$this->check($item, $prop['type'], $prop['param'])) {
 						$failed[] = $item;
 						$ret = false;
 					}
 				} else {
-					if (!self::check($item, $prop)) {
+					if (!$this->check($item, $prop)) {
 						$failed[] = $item;
 						$ret = false;
 					}
@@ -84,7 +111,15 @@
 			return $ret;
 		}
 
-		private static function sanitize(&$value, $type) {
+		public function clean($index, $type, $default = null) {
+			if ($this->has($index)) {
+				$this->sanitize($this->data[$index], $type);
+				return $this->data[$index];
+			}
+			return $default;
+		}
+
+		private function sanitize(&$value, $type) {
 			switch ($type) {
 				case INPUT_BOOL:
 					$value = preg_replace('/[^tf01]+/i', '', $value);
@@ -129,7 +164,7 @@
 			}
 		}
 
-		private static function validate($value, $type, $param = null) {
+		private function validate($value, $type, $param = null) {
 			switch ($type) {
 				case INPUT_BOOL:
 					return filter_var($value, FILTER_VALIDATE_BOOLEAN);
