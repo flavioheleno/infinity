@@ -49,7 +49,8 @@
 				echo 'worker started'."\n";
 				$pid = getmypid();
 				echo 'worker pid: '.$pid."\n";
-				@file_put_contents(sys_get_temp_dir().'/'.$argv[1].'.pid', $pid);
+				$pidf = sys_get_temp_dir().'/'.$argv[1].'.pid';
+				@file_put_contents($pidf, $pid);
 				$worker_time = microtime(true);
 				require_once $worker;
 				$worker_time = (microtime(true) - $worker_time);
@@ -62,6 +63,8 @@
 					echo 'worker took '.round(($worker_time / 60), 2).' m'."\n";
 				else
 					echo 'worker took '.round(($worker_time / 3600), 2).' h'."\n";
+				@unlink($pidf);
+				$lock->unlock();
 				break;
 			case 'stop':
 				$pidf = sys_get_temp_dir().'/'.$argv[1].'.pid';

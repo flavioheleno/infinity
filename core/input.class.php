@@ -70,7 +70,7 @@
 
 		//checks if an index exists in _REQUEST variable
 		public function has($index) {
-			if ((isset($this->data[$index])) && (trim($this->data[$index]) == ''))
+			if ((isset($this->data[$index])) && (trim($this->data[$index]) != ''))
 				return true;
 			return false;
 		}
