@@ -116,40 +116,40 @@
 		public function bootstrap($plugin) {
 			$this->basic_js();
 			switch ($plugin) {
-				case BS_ALERT:
+				case self::BS_ALERT:
 					$this->add_js('bootstrap-alert.js');
 					break;
-				case BS_BUTTON:
+				case self::BS_BUTTON:
 					$this->add_js('bootstrap-button.js');
 					break;
-				case BS_CAROUSEL:
+				case self::BS_CAROUSEL:
 					$this->add_js('bootstrap-carousel.js');
 					break;
-				case BS_COLLAPSE:
+				case self::BS_COLLAPSE:
 					$this->add_js('bootstrap-collapse.js');
 					break;
-				case BS_DROPDOWN:
+				case self::BS_DROPDOWN:
 					$this->add_js('bootstrap-dropdown.js');
 					break;
-				case BS_MODAL:
+				case self::BS_MODAL:
 					$this->add_js('bootstrap-modal.js');
 					break;
-				case BS_POPOVER:
+				case self::BS_POPOVER:
 					$this->add_js('bootstrap-popover.js');
 					break;
-				case BS_SCROLLSPY:
+				case self::BS_SCROLLSPY:
 					$this->add_js('bootstrap-scrollspy.js');
 					break;
-				case BS_TAB:
+				case self::BS_TAB:
 					$this->add_js('bootstrap-tab.js');
 					break;
-				case BS_TOOLTIP:
+				case self::BS_TOOLTIP:
 					$this->add_js('bootstrap-tooltip.js');
 					break;
-				case BS_TRANSITION:
+				case self::BS_TRANSITION:
 					$this->add_js('bootstrap-transition.js');
 					break;
-				case BS_TYPEAHEAD:
+				case self::BS_TYPEAHEAD:
 					$this->add_js('bootstrap-typeahead.js');
 					break;
 			}
