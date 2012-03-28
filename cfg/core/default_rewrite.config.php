@@ -25,7 +25,7 @@
 	/*
 		Rewrite example
 		$_infinity = array(
-			'/^[a-zA-Z0-9]+$/' => array('url/redirect/$1', 'GET', 'error/403', true)
+			'/^[a-zA-Z0-9]+$/' => array('GET', 'url/redirect/$1', 'error/403', true)
 		);
 
 		Rules can be:
