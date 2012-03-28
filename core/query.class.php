@@ -226,16 +226,19 @@
 		}
 
 		private function order($field, $type) {
+			$type = strtoupper($type);
+			if ($type == 'RAND')
+				$type = 'RAND()';
 			foreach ($field as $arg)
 				if (is_array($arg))
 					foreach ($arg as $item)
-						$this->order[trim($item)] = strtoupper($type);
+						$this->order[trim($item)] = $type;
 				else if (is_string($arg)) {
 					if (strpos($arg, ','))
 						foreach(explode(',', $arg) as $item)
-							$this->order[trim($item)] = strtoupper($type);
+							$this->order[trim($item)] = $type;
 					else
-						$this->order[trim($arg)] = strtoupper($type);
+						$this->order[trim($arg)] = $type;
 				}
 		}
 
@@ -412,7 +415,7 @@
 								$this->value($field, $value, $escape);
 					break;
 				case 'order':
-					if ((isset($pieces[1])) && ((strtoupper($pieces[1]) == 'ASC') || (strtoupper($pieces[1]) == 'DESC')))
+					if ((isset($pieces[1])) && ((strtoupper($pieces[1]) == 'ASC') || (strtoupper($pieces[1]) == 'DESC') || (strtoupper($pieces[1]) == 'RAND')))
 						$this->order($args, $pieces[1]);
 					break;
 				case 'where':
