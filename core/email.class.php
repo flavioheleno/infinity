@@ -64,6 +64,7 @@
 						$message->setReplyTo($config->email['accs'][$acc]['reply']);
 					else
 						$message->setReplyTo(array($config->email['accs'][$acc]['user'] => $config->email['accs'][$acc]['name']));
+					$config->unload('email');
 					if (!is_null($attachment)) {
 						if (is_array($attachment))
 							foreach ($attachment as $file)

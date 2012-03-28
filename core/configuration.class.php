@@ -25,8 +25,6 @@
 	class CONFIGURATION {
 		//holds class instance for singleton
 		private static $instance = null;
-		//holds configuration
-		private $config = array();
 		//instance of log class
 		protected $log = null;
 
@@ -58,6 +56,13 @@
 					$this->$filename = ${$name};
 				} else
 					$this->log->add('File not found: "'.$filename.'.config.php"');
+			}
+		}
+
+		public function unload($filename) {
+			if (isset($this->$filename)) {
+				$this->log->add('Unloading configuration for "'.$filename.'.config.php"');
+				unset($this->$filename);
 			}
 		}
 

@@ -1,6 +1,6 @@
 <?php
 /**
-* URL handling
+* Rewrite configuration
 *
 * @version 0.1
 * @author Flávio Heleno <flaviohbatista@gmail.com>
@@ -22,21 +22,19 @@
 *
 */
 
-	class URL {
+	/*
+		Rewrite example
+		$_infinity = array(
+			'/^[a-zA-Z0-9]+$/' => array('url/redirect/$1', 'GET', 'error/403', true)
+		);
 
-		public static function create($param, $html = true) {
-			$config = CONFIGURATION::singleton();
-			if ($config->framework['main']['friendly_url'])
-				return $config->framework['main']['base_path'].implode('/', $param);
-			else {
-				parse_str($_SERVER['QUERY_STRING'], $query);
-				foreach ($param as $key => $value)
-					$query[$key] = $value;
-				if ($html)
-					return $config->framework['main']['base_path'].'?'.http_build_query($query, '', '&amp;');
-				else
-					return $config->framework['main']['base_path'].'?'.http_build_query($query);
-			}
-		}
+		Rules can be:
+			'regex' => 'rewrite'
+		or
+			'regex' => array('method', 'rewrite on success', 'rewrite on error')
+		or
+			'regex' => array('method', 'rewrite on success', 'redirect on error', true)
+	*/
 
-	}
+	$_infinity = array(
+	);

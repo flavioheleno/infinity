@@ -30,18 +30,43 @@
 			//creates log object
 			$log = LOG::singleton();
 			//checks if framework is using routing
-			if ($config->framework['main']['route']) {
-				$log->add('Using routing');
+			if ($config->framework['main']['friendly_url']) {
+				$log->add('Using friendly urls');
 				self::parse_route($config, $module, $action);
 			} else {
-				$log->add('Using query string');
+				$log->add('Using default urls');
 				self::parse_qs($config, $module, $action);
 			}
 		}
 
+		private static function parse_rewrite(&$config, &$qs) {
+			$config->load_core('rewrite');
+			foreach ($config->rewrite as $regex => $rule)
+				if (preg_match($regex, $qs)) {
+					if (is_array($rule)) {
+						if (strtoupper($_SERVER['HTTP_METHOD']) == strtoupper($rule[0])) {
+							$qs = preg_replace($regex, $rule[1], $qs);
+							break;
+						} else {
+							if ((isset($rule[3])) && ($rule[3])) {
+								header('Location: '.$rule[2]);
+								exit;
+							} else {
+								$qs = preg_replace($regex, $rule[2], $qs);
+								break;
+							}
+						}
+					} else {
+						$qs = preg_replace($regex, $rule, $qs);
+						break;
+					}
+				}
+			$config->unload('rewrite');
+		}
+
 		private static function parse_route(&$config, &$module, &$action) {
-			$config->load_core('route');
 			$qs = trim($_SERVER['QUERY_STRING']);
+			self::parse_rewrite($config, $qs);
 			if ($qs == '') {
 				$module = $config->framework['main']['default_module'];
 				$action = '';
@@ -61,6 +86,7 @@
 							else
 								$_REQUEST[$variable] = null;
 					}
+					$config->unload('route');
 				}
 			}
 		}

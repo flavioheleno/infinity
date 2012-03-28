@@ -39,6 +39,7 @@
 			$config = CONFIGURATION::singleton();
 			$config->load_core('db');
 			$this->query = new QUERY($config->db);
+			$config->unload('db');
 			//creates data object
 			if (in_array('data', $this->uses))
 				$this->data = DATA::singleton();

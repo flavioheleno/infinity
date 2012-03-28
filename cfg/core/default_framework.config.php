@@ -31,7 +31,7 @@
 			'default_module' => 'main', //module that will be used when no module is provided
 			'domain' => 'localhost', //defines the domain name
 			'base_path' => '/', //defines the web path to scripts
-			'route' => false //defines the routing status
+			'friendly_url' => false //defines the friendly url use
 		),
 		'other' => array(
 			'benchmark' => true, //defines if benchmark should be calculated

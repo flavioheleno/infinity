@@ -51,7 +51,7 @@
 			$log->add('Benchmark: '.round(((microtime(true) - $_SERVER['REQUEST_TIME']) * 1000), 2).'ms');
 		}, $log);
 
-	//handles request information (routes, variables, etc)
+	//handles request information (rewrite, routes, variables, etc)
 	REQUEST::parse($module, $action);
 
 	$log->add('Module parameter: '.($module != '' ? $module : 'empty value'));
