@@ -39,7 +39,7 @@
 				$path = PATH::singleton();
 				$file = $path->absolute('cfg', 'core').$filename.'.config.php';
 				if ((file_exists($file)) && (is_file($file))) {
-					require_once $file;
+					require $file;
 					$this->$filename = ${$name};
 				} else
 					$this->log->add('File not found: "'.$filename.'.config.php"');
@@ -52,7 +52,7 @@
 				$path = PATH::singleton();
 				$file = $path->absolute('cfg', 'app').$filename.'.config.php';
 				if ((file_exists($file)) && (is_file($file))) {
-					require_once $file;
+					require $file;
 					$this->$filename = ${$name};
 				} else
 					$this->log->add('File not found: "'.$filename.'.config.php"');

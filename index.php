@@ -49,6 +49,8 @@
 	if ($config->framework['other']['benchmark'])
 		register_shutdown_function(function(&$log) {
 			$log->add('Benchmark: '.round(((microtime(true) - $_SERVER['REQUEST_TIME']) * 1000), 2).'ms');
+			$log->add('RAM used: '.memory_get_peak_usage(true).' bytes');
+			$log->add('Includes: '.print_r(get_included_files(), true));
 		}, $log);
 
 	//handles request information (rewrite, routes, variables, etc)

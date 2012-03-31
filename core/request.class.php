@@ -31,52 +31,52 @@
 			$log = LOG::singleton();
 			//checks if framework is using routing
 			if ($config->framework['main']['friendly_url']) {
-				$log->add('Using friendly urls');
-				self::parse_route($config, $module, $action);
+				$log->add('Using friendly urls ('.$_SERVER['REQUEST_URI'].')');
+				self::parse_uri($config, $module, $action);
 			} else {
-				$log->add('Using default urls');
+				$log->add('Using default urls ('.$_SERVER['QUERY_STRING'].')');
 				self::parse_qs($config, $module, $action);
 			}
 		}
 
-		private static function parse_rewrite(&$config, &$qs) {
+		private static function parse_rewrite(&$config, &$uri) {
 			$config->load_core('rewrite');
 			foreach ($config->rewrite as $regex => $rule)
-				if (preg_match($regex, $qs)) {
+				if (preg_match($regex, $uri)) {
 					if (is_array($rule)) {
 						if (strtoupper($_SERVER['HTTP_METHOD']) == strtoupper($rule[0])) {
-							$qs = preg_replace($regex, $rule[1], $qs);
+							$uri = preg_replace($regex, $rule[1], $uri);
 							break;
 						} else {
 							if ((isset($rule[3])) && ($rule[3])) {
 								header('Location: '.$rule[2]);
 								exit;
 							} else {
-								$qs = preg_replace($regex, $rule[2], $qs);
+								$uri = preg_replace($regex, $rule[2], $uri);
 								break;
 							}
 						}
 					} else {
-						$qs = preg_replace($regex, $rule, $qs);
+						$uri = preg_replace($regex, $rule, $uri);
 						break;
 					}
 				}
 			$config->unload('rewrite');
 		}
 
-		private static function parse_route(&$config, &$module, &$action) {
-			$qs = trim($_SERVER['QUERY_STRING']);
-			self::parse_rewrite($config, $qs);
-			if ($qs == '') {
+		private static function parse_uri(&$config, &$module, &$action) {
+			$uri = trim($_SERVER['REQUEST_URI']);
+			self::parse_rewrite($config, $uri);
+			if (($uri == '/') || ($uri == '')) {
 				$module = $config->framework['main']['default_module'];
 				$action = '';
 			} else {
-				if (strpos($qs, '/') === false) {
-					$module = $qs;
+				if (strpos($uri, '/') === false) {
+					$module = $uri;
 					$action = '';
 				} else {
 					$config->load_core('route');
-					$pieces = explode('/', $qs);
+					$pieces = explode('/', $uri);
 					$module = $pieces[0];
 					$action = $pieces[1];
 					if (isset($config->route[$module][$action])) {
