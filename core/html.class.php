@@ -94,23 +94,35 @@
 		}
 
 		public function basic_js() {
-			if (count($this->js) == 0) {
-				$this->add_js('jquery.js');
-				$this->add_js('bootstrap.js');
-			}
+			$this->add_js('jquery.js');
+			$this->add_js('jquery.form.js');
+			$this->add_js('bootstrap.js');
+		}
+
+		public function external_js($url) {
+			if (!is_array($url))
+				$this->item_js($url);
+			else
+				foreach ($url as $item)
+					$this->item_js($item);
 		}
 
 		public function add_js($file) {
 			if (!is_array($file))
-				$this->js[] = $this->path->relative('js').$file;
+				$this->item_js($this->path->relative('js').$file);
 			else
 				foreach ($file as $item)
-					$this->js[] = $this->path->relative('js').$item;
+					$this->item_js($this->path->relative('js').$item);
 		}
 
 		public function clean_js() {
 			unset($this->js);
 			$this->js = array();
+		}
+
+		private function item_js($file) {
+			if (!in_array($file, $this->js))
+				$this->js[] = $file;
 		}
 
 		public function bootstrap($plugin) {
