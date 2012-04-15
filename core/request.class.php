@@ -76,6 +76,8 @@
 					$action = '';
 				} else {
 					$config->load_core('route');
+					if (substr($uri, 0, 1) == '/')
+						$uri = substr($uri, 1);
 					$pieces = explode('/', $uri);
 					$module = $pieces[0];
 					$action = $pieces[1];
