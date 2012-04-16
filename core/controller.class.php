@@ -23,6 +23,8 @@
 */
 
 	class CONTROLLER {
+		//controller's name
+		protected $name;
 		//web path
 		protected $path = '/';
 		//domain
@@ -35,7 +37,12 @@
 		public $default_action = 'index';
 
 		//class constructor
-		public function __construct() {
+		public function __construct($name = '') {
+			if ($name == '')
+				$this->name = str_replace('_CONTROLLER', '', get_class($this));
+			else
+				$this->name = $name;
+
 			$config = CONFIGURATION::singleton();
 			$this->domain = $config->framework['main']['domain'];
 			$this->path = $config->framework['main']['base_path'];
@@ -140,10 +147,10 @@
 					$this->input = INPUT::singleton();
 					return $this->input;
 				case 'view':
-					$this->view = AUTOLOAD::load_view(str_replace('_CONTROLLER', '', get_class($this)));
+					$this->view = AUTOLOAD::load_view($this->name);
 					return $this->view;
 				case 'model':
-					$this->model = AUTOLOAD::load_model(str_replace('_CONTROLLER', '', get_class($this)));
+					$this->model = AUTOLOAD::load_model($this->name);
 					return $this->model;
 				case 'session':
 					$this->session = SESSION::singleton();

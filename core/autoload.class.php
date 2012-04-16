@@ -51,7 +51,7 @@
 				return new $name;
 			}
 			require_once $path->absolute('core').'/controller.class.php';
-			return new CONTROLLER(strtoupper($name));
+			return new CONTROLLER(strtolower($name));
 		}
 
 		public static function load_view($name) {
