@@ -44,6 +44,7 @@
 					return $this->secure;
 				default:
 					return null;
+			}
 		}
 
 	}
