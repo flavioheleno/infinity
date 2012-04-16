@@ -23,72 +23,22 @@
 */
 
 	class CONTROLLER {
-		//instance of data class
-		protected $data = null;
-		//instance of input class
-		protected $input = null;
-		//instance of view class
-		protected $view = null;
-		//instance of model class
-		protected $model = null;
-		//instance of session class
-		protected $session = null;
-		//instance of cookie class
-		protected $cookie = null;
-		//instance of log class
-		protected $log = null;
-		//instance of xcache class
-		protected $xcache = null;
-		//instance of mcache class
-		protected $mcache = null;
-		//instance of filecache class
-		protected $filecache = null;
 		//web path
 		protected $path = '/';
 		//domain
 		protected $domain = '';
 		//sets the aliases for this controller
 		protected $alias = array();
-		//sets the helpers needed by class
-		protected $uses = array('view');
 		//sets the response content
 		protected $response = null;
 		//sets the controller's default action
 		public $default_action = 'index';
 
 		//class constructor
-		public function __construct($name) {
+		public function __construct() {
 			$config = CONFIGURATION::singleton();
 			$this->domain = $config->framework['main']['domain'];
 			$this->path = $config->framework['main']['base_path'];
-			$this->log = LOG::singleton();
-			//creates data object
-			if (in_array('data', $this->uses))
-				$this->data = DATA::singleton();
-			//creates input object
-			if (in_array('input', $this->uses))
-				$this->input = INPUT::singleton();
-			//creates view object
-			if (in_array('view', $this->uses))
-				$this->view = AUTOLOAD::load_view($name);
-			//creates model object
-			if (in_array('model', $this->uses))
-				$this->model = AUTOLOAD::load_model($name);
-			//creates session helper
-			if (in_array('session', $this->uses))
-				$this->session = SESSION::singleton();
-			//creates cookie helper
-			if (in_array('cookie', $this->uses))
-				$this->cookie = COOKIE::singleton();
-			//creates xcache object
-			if (in_array('xcache', $this->uses))
-				$this->xcache = XCACHE::singleton();
-			//creates mcache object
-			if (in_array('mcache', $this->uses))
-				$this->mcache = MCACHE::singleton();
-			//creates filecache object
-			if (in_array('filecache', $this->uses))
-				$this->filecache = FILECACHE::singleton();
 		}
 
 		//changes an alias for a given action
@@ -177,4 +127,41 @@
 			return false;
 		}
 
+		//lazy loading
+		public function __get($index) {
+			switch ($index) {
+				case 'log':
+					$this->log = LOG::singleton();
+					return $this->log;
+				case 'data':
+					$this->data = DATA::singleton();
+					return $this->data;
+				case 'input':
+					$this->input = INPUT::singleton();
+					return $this->input;
+				case 'view':
+					$this->view = AUTOLOAD::load_view(str_replace('_CONTROLLER', '', get_class($this)));
+					return $this->view;
+				case 'model':
+					$this->model = AUTOLOAD::load_model(str_replace('_CONTROLLER', '', get_class($this)));
+					return $this->model;
+				case 'session':
+					$this->session = SESSION::singleton();
+					return $this->session;
+				case 'cookie':
+					$this->cookie = COOKIE::singleton();
+					return $this->cookie;
+				case 'xcache':
+					$this->xcache = XCACHE::singleton();
+					return $this->xcache;
+				case 'mcache':
+					$this->mcache = MCACHE::singleton();
+					return $this->mcache;
+				case 'filecache':
+					$this->filecache = FILECACHE::singleton();
+					return $this->filecache;
+				default:
+					return null;
+			}
+		}
 	}

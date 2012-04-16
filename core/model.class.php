@@ -23,32 +23,27 @@
 */
 
 	abstract class MODEL {
-		//instance of data class
-		protected $data = null;
-		//instance of query class
-		protected $query = null;
-		//instance of secure class;
-		protected $secure = null;
-		//instance of log class
-		protected $log = null;
-		//sets the helpers needed by class
-		protected $uses = array();
 
-		//class constructor
-		public function __construct($name) {
-			$config = CONFIGURATION::singleton();
-			$config->load_core('db');
-			$this->query = new QUERY($config->db);
-			$config->unload('db');
-			//creates data object
-			if (in_array('data', $this->uses))
-				$this->data = DATA::singleton();
-			//creates log object
-			if (in_array('log', $this->uses))
-				$this->log = LOG::singleton();
-			//creates secure object
-			if (in_array('secure', $this->uses))
-				$this->secure = new SECURE;
+		//lazy loading
+		public function __get($index) {
+			switch ($index) {
+				case 'query':
+					$config = CONFIGURATION::singleton();
+					$config->load_core('db');
+					$this->query = new QUERY($config->db);
+					$config->unload('db');
+					return $this->query;
+				case 'data':
+					$this->data = DATA::singleton();
+					return $this->data;
+				case 'log':
+					$this->log = LOG::singleton();
+					return $this->log;
+				case 'secure':
+					$this->secure = new SECURE;
+					return $this->secure;
+				default:
+					return null;
 		}
 
 	}

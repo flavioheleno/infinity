@@ -47,9 +47,8 @@
 			$file = $path->absolute('app').strtolower($name).'.controller.php';
 			if ((file_exists($file)) && (is_file($file))) {
 				require_once $file;
-				$name = strtoupper($name);
-				$module = $name.'_CONTROLLER';
-				return new $module($name);
+				$name = strtoupper($name).'_CONTROLLER';
+				return new $name;
 			}
 			require_once $path->absolute('core').'/controller.class.php';
 			return new CONTROLLER(strtoupper($name));
@@ -60,9 +59,8 @@
 			$file = $path->absolute('app').strtolower($name).'.view.php';
 			if ((file_exists($file)) && (is_file($file))) {
 				require_once $file;
-				$name = strtoupper($name);
-				$module = $name.'_VIEW';
-				return new $module($name);
+				$name = strtoupper($name).'_VIEW';
+				return new $name;
 			}
 			return null;
 		}
@@ -72,9 +70,8 @@
 			$file = $path->absolute('app').strtolower($name).'.model.php';
 			if ((file_exists($file)) && (is_file($file))) {
 				require_once $file;
-				$name = strtoupper($name);
-				$module = $name.'_MODEL';
-				return new $module($name);
+				$name = strtoupper($name).'_MODEL';
+				return new $name;
 			}
 			return null;
 		}

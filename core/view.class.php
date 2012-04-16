@@ -23,44 +23,10 @@
 */
 
 	abstract class VIEW {
-		//instance of data class
-		protected $data = null;
-		//instance of template class
-		protected $tpl = null;
-		//instance of html class
-		protected $html = null;
-		//instance of log class
-		protected $log = null;
-		//sets the helpers needed by class
-		protected $uses = array();
 		//sets the actions that can be cached
 		protected $cacheable = array();
 		//sets the response content
 		protected $response = null;
-
-		//class constructor
-		public function __construct($name) {
-			//creates data object
-			if (in_array('data', $this->uses))
-				$this->data = DATA::singleton();
-			//creates log object
-			if (in_array('log', $this->uses))
-				$this->log = LOG::singleton();
-			//creates template object
-			if (in_array('template', $this->uses))
-				$this->tpl = new TEMPLATE($name);
-			//creates xhtml object
-			if (in_array('html', $this->uses)) {
-				$this->html = new HTML;
-				$config = CONFIGURATION::singleton();
-				$this->html->set_base('http://'.$config->framework['main']['domain'].$config->framework['main']['base_path']);
-				$path = PATH::singleton();
-				if ((file_exists($path->absolute('img').'favicon.ico')) && (is_file($path->absolute('img').'favicon.ico')))
-					$this->html->set_favicon('img/favicon.ico');
-				else if ((file_exists($path->absolute('root').'favicon.ico')) && (is_file($path->absolute('root').'favicon.ico')))
-					$this->html->set_favicon('favicon.ico');
-			}
-		}
 
 		public function cacheable($action) {
 			//if action is just cacheable, with no timeout defined
@@ -74,7 +40,7 @@
 		}
 
 		protected function render($title, $description = '', $keywords = '') {
-			if ((!is_null($this->tpl)) && (!is_null($this->html))) {
+			if ((isset($this->tpl)) && (isset($this->html))) {
 				$this->html->set_title($title);
 				$this->html->set_description($description);
 				$this->html->set_keywords($keywords);
@@ -94,6 +60,33 @@
 					echo json_encode($this->response);
 				} else
 					echo $this->response;
+		}
+
+		//lazy loading
+		public function __get($index) {
+			switch ($index) {
+				case 'data':
+					$this->data = DATA::singleton();
+					return $this->data;
+				case 'log':
+					$this->log = LOG::singleton();
+					return $this->log;
+				case 'tpl':
+					$this->tpl = new TEMPLATE(str_replace('_VIEW', '', get_class($this)));
+					return $this->tpl;
+				case 'html':
+					$this->html = new HTML;
+					$config = CONFIGURATION::singleton();
+					$this->html->set_base('http://'.$config->framework['main']['domain'].$config->framework['main']['base_path']);
+					$path = PATH::singleton();
+					if ((file_exists($path->absolute('img').'favicon.ico')) && (is_file($path->absolute('img').'favicon.ico')))
+						$this->html->set_favicon('img/favicon.ico');
+					else if ((file_exists($path->absolute('root').'favicon.ico')) && (is_file($path->absolute('root').'favicon.ico')))
+						$this->html->set_favicon('favicon.ico');
+					return $this->html;
+				default:
+					return null;
+			}
 		}
 
 	}

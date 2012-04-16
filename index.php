@@ -28,9 +28,6 @@
 
 	require_once __DIR__.'/core/autoload.class.php';
 
-	//creates path object (setting base path)
-	$path = PATH::singleton();
-
 	//creates config object
 	$config = CONFIGURATION::singleton();
 
