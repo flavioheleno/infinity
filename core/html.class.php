@@ -23,20 +23,6 @@
 */
 
 	class HTML {
-
-		const BS_ALERT = 0;
-		const BS_BUTTON = 1;
-		const BS_CAROUSEL = 2;
-		const BS_COLLAPSE = 3;
-		const BS_DROPDOWN = 4;
-		const BS_MODAL = 5;
-		const BS_POPOVER = 6;
-		const BS_SCROLLSPY = 7;
-		const BS_TAB = 8;
-		const BS_TOOLTIP = 9;
-		const BS_TRANSITION = 10;
-		const BS_TYPEAHEAD = 11;
-
 		private $lang = null;
 		private $enc = null;
 		private $base = null;
@@ -93,12 +79,6 @@
 			$this->favicon = $file;
 		}
 
-		public function basic_js() {
-			$this->add_js('jquery.js');
-			$this->add_js('jquery.form.js');
-			$this->add_js('bootstrap.js');
-		}
-
 		public function external_js($url) {
 			if (!is_array($url))
 				$this->item_js($url);
@@ -125,46 +105,20 @@
 				$this->js[] = $file;
 		}
 
-		public function bootstrap($plugin) {
-			$this->basic_js();
-			switch ($plugin) {
-				case self::BS_ALERT:
-					$this->add_js('bootstrap-alert.js');
-					break;
-				case self::BS_BUTTON:
-					$this->add_js('bootstrap-button.js');
-					break;
-				case self::BS_CAROUSEL:
-					$this->add_js('bootstrap-carousel.js');
-					break;
-				case self::BS_COLLAPSE:
-					$this->add_js('bootstrap-collapse.js');
-					break;
-				case self::BS_DROPDOWN:
-					$this->add_js('bootstrap-dropdown.js');
-					break;
-				case self::BS_MODAL:
-					$this->add_js('bootstrap-modal.js');
-					break;
-				case self::BS_POPOVER:
-					$this->add_js('bootstrap-popover.js');
-					break;
-				case self::BS_SCROLLSPY:
-					$this->add_js('bootstrap-scrollspy.js');
-					break;
-				case self::BS_TAB:
-					$this->add_js('bootstrap-tab.js');
-					break;
-				case self::BS_TOOLTIP:
-					$this->add_js('bootstrap-tooltip.js');
-					break;
-				case self::BS_TRANSITION:
-					$this->add_js('bootstrap-transition.js');
-					break;
-				case self::BS_TYPEAHEAD:
-					$this->add_js('bootstrap-typeahead.js');
-					break;
-			}
+		public function basic_js() {
+			$this->add_js('jquery.js');
+			$this->add_js('jquery.form.js');
+			$this->add_js('bootstrap.js');
+		}
+
+		public function jquery() {
+			$this->add_js('jquery.js');
+			$this->add_js('jquery.form.js');
+		}
+
+		public function bootstrap() {
+			$this->add_js('jquery.js');
+			$this->add_js('bootstrap.js');
 		}
 
 		public function add_css($file) {
