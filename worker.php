@@ -22,59 +22,59 @@
 *
 */
 
-	mb_internal_encoding('UTF-8');
+mb_internal_encoding('UTF-8');
 
-	if ($argc < 2)
-		exit;
+if ($argc < 2)
+	exit;
 
-	if (!preg_match('/[a-zA-Z0-9-_]+/', $argv[1]))
-		exit;
+if (!preg_match('/[a-zA-Z0-9-_]+/', $argv[1]))
+	exit;
 
-	if ($argc == 2) {
-		$argc++;
-		$argv[2] = 'start';
-	}
+if ($argc == 2) {
+	$argc++;
+	$argv[2] = 'start';
+}
 
-	require_once __DIR__.'/core/autoload.class.php';
+require_once __DIR__.'/core/autoload.class.php';
 
-	$path = PATH::singleton();
-	$worker = $path->absolute('worker').$argv[1].'.worker.php';
-	if ((file_exists($worker)) && (is_file($worker))) {
-		AUTOLOAD::load_plugin('lock');
-		$lock = new LOCK($argv[1]);
-		switch ($argv[2]) {
-			case 'start':
-				if (!$lock->lock())
-					exit;
-				echo 'worker started'."\n";
-				$pid = getmypid();
+$path = PATH::singleton();
+$worker = $path->absolute('worker').$argv[1].'.worker.php';
+if ((file_exists($worker)) && (is_file($worker))) {
+	AUTOLOAD::load_plugin('lock');
+	$lock = new LOCK($argv[1]);
+	switch ($argv[2]) {
+		case 'start':
+			if (!$lock->lock())
+				exit;
+			echo 'worker started'."\n";
+			$pid = getmypid();
+			echo 'worker pid: '.$pid."\n";
+			$pidf = sys_get_temp_dir().'/'.$argv[1].'.pid';
+			@file_put_contents($pidf, $pid);
+			$worker_time = microtime(true);
+			require_once $worker;
+			$worker_time = (microtime(true) - $worker_time);
+			echo 'worker finished'."\n";
+			if ($worker_time < 0)
+				echo 'worker took '.round(($worker_time * 1000), 2).' ms'."\n";
+			else if ($worker_time < 60)
+				echo 'worker took '.round($worker_time, 2).' s'."\n";
+			else if ($worker_time < 3600)
+				echo 'worker took '.round(($worker_time / 60), 2).' m'."\n";
+			else
+				echo 'worker took '.round(($worker_time / 3600), 2).' h'."\n";
+			@unlink($pidf);
+			$lock->unlock();
+			break;
+		case 'stop':
+			$pidf = sys_get_temp_dir().'/'.$argv[1].'.pid';
+			if ((!$lock->lock()) && (file_exists($pidf))) {
+				echo 'worker stop'."\n";
+				$pid = @file_get_contents($pidf);
 				echo 'worker pid: '.$pid."\n";
-				$pidf = sys_get_temp_dir().'/'.$argv[1].'.pid';
-				@file_put_contents($pidf, $pid);
-				$worker_time = microtime(true);
-				require_once $worker;
-				$worker_time = (microtime(true) - $worker_time);
-				echo 'worker finished'."\n";
-				if ($worker_time < 0)
-					echo 'worker took '.round(($worker_time * 1000), 2).' ms'."\n";
-				else if ($worker_time < 60)
-					echo 'worker took '.round($worker_time, 2).' s'."\n";
-				else if ($worker_time < 3600)
-					echo 'worker took '.round(($worker_time / 60), 2).' m'."\n";
-				else
-					echo 'worker took '.round(($worker_time / 3600), 2).' h'."\n";
-				@unlink($pidf);
-				$lock->unlock();
-				break;
-			case 'stop':
-				$pidf = sys_get_temp_dir().'/'.$argv[1].'.pid';
-				if ((!$lock->lock()) && (file_exists($pidf))) {
-					echo 'worker stop'."\n";
-					$pid = @file_get_contents($pidf);
-					echo 'worker pid: '.$pid."\n";
-					exec('kill -9 '.$pid);
-				} else
-					echo 'worker not running'."\n";
-				break;
-		}
+				exec('kill -9 '.$pid);
+			} else
+				echo 'worker not running'."\n";
+			break;
 	}
+}

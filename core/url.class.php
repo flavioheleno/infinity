@@ -22,21 +22,21 @@
 *
 */
 
-	class URL {
+class URL {
 
-		public static function create($param, $html = true) {
-			$config = CONFIGURATION::singleton();
-			if ($config->framework['main']['friendly_url'])
-				return $config->framework['main']['base_path'].implode('/', $param);
-			else {
-				parse_str($_SERVER['QUERY_STRING'], $query);
-				foreach ($param as $key => $value)
-					$query[$key] = $value;
-				if ($html)
-					return $config->framework['main']['base_path'].'?'.http_build_query($query, '', '&amp;');
-				else
-					return $config->framework['main']['base_path'].'?'.http_build_query($query);
-			}
+	public static function create($param, $html = true) {
+		$config = CONFIGURATION::singleton();
+		if ($config->framework['main']['friendly_url'])
+			return $config->framework['main']['base_path'].implode('/', $param);
+		else {
+			parse_str($_SERVER['QUERY_STRING'], $query);
+			foreach ($param as $key => $value)
+				$query[$key] = $value;
+			if ($html)
+				return $config->framework['main']['base_path'].'?'.http_build_query($query, '', '&amp;');
+			else
+				return $config->framework['main']['base_path'].'?'.http_build_query($query);
 		}
-
 	}
+
+}

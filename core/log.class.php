@@ -22,79 +22,82 @@
 *
 */
 
-	class LOG {
-		//holds class instances for singleton
-		private static $instance = null;
-		//holds log file handler
-		private $handler = false;
-		//holds log enable/disabled
-		private $enabled = true;
+class LOG {
+	//holds class instances for singleton
+	private static $instance = null;
+	//holds log file handler
+	private $handler = false;
+	//holds log enable/disabled
+	private $enabled = true;
 
-		//class constructor
-		public function __construct($disabled) {
-			//checks path
-			$path = PATH::singleton();
-			$folder = $path->absolute('log');
+	//class constructor
+	public function __construct($enabled) {
+		//checks path
+		$path = PATH::singleton();
+		$folder = $path->absolute('log');
 
-			//ensure path exists
-			if (!file_exists($folder)) {
-				if ((!@mkdir($folder)) || (!@chmod($folder, 0777)))
-					return false;
-			}
-			//open log file
-			$filename = date('Ymd').'.log';
-			$this->handler = @fopen($folder.$filename, 'a');
-			if (($disabled) || ($this->handler === false))
-				$this->disable();
-			$this->add('Log start');
-			return true;
+		//ensure path exists
+		if (!file_exists($folder)) {
+			if ((!@mkdir($folder)) || (!@chmod($folder, 0777)))
+				return false;
 		}
-
-		//class destructor
-		public function __destruct() {
-			//if log file was oppened, close it
-			if ($this->handler !== false) {
-				$this->add('Log end');
-				$this->add('');
-				fclose($this->handler);
-			}
+		//open log file
+		$filename = date('Ymd').'.log';
+		$this->handler = @fopen($folder.$filename, 'a');
+		if ($this->handler === false) {
+			$this->disable();
+			return false;
 		}
-
-		//singleton method - avoids the creation of more than one instance per log file
-		public static function singleton($disabled = false) {
-			//checks if there is an instance of class, if not, create it
-			if ((is_null(self::$instance)) || (!(self::$instance instanceof LOG)))
-				self::$instance = new LOG($disabled);
-			return self::$instance;
-		}
-
-		//enables log
-		public function enable() {
-			$this->enabled = true;
-		}
-
-		//disables log
-		public function disable() {
-			$this->enabled = false;
-		}
-
-		//returns log state
-		public function is_enabled() {
-			return $this->enabled;
-		}
-
-		//add method - adds text to log file
-		public function add($text) {
-			//if log is enabled and log file was oppened, prints text to it
-			if (($this->enabled) && ($this->handler !== false))
-				fwrite($this->handler, ($text != '' ? date('[d/m/Y - H:i:s] ').$text."\n" : "\n"));
-		}
-
-		//clean method - truncates log file
-		public function clean() {
-			//if log file was oppened, truncate it
-			if ($this->handler !== false)
-				ftruncate($this->handler, 0);
-		}
-
+		$this->enabled = $enabled;
+		$this->add('Log start');
+		return true;
 	}
+
+	//class destructor
+	public function __destruct() {
+		//if log file was oppened, close it
+		if ($this->handler !== false) {
+			$this->add('Log end');
+			$this->add('');
+			fclose($this->handler);
+		}
+	}
+
+	//singleton method - avoids the creation of more than one instance per log file
+	public static function singleton($enabled = false) {
+		//checks if there is an instance of class, if not, create it
+		if ((is_null(self::$instance)) || (!(self::$instance instanceof LOG)))
+			self::$instance = new LOG($enabled);
+		return self::$instance;
+	}
+
+	//enables log
+	public function enable() {
+		$this->enabled = true;
+	}
+
+	//disables log
+	public function disable() {
+		$this->enabled = false;
+	}
+
+	//returns log state
+	public function is_enabled() {
+		return $this->enabled;
+	}
+
+	//add method - adds text to log file
+	public function add($text) {
+		//if log is enabled and log file was oppened, prints text to it
+		if (($this->enabled) && ($this->handler !== false))
+			fwrite($this->handler, ($text != '' ? date('[d/m/Y - H:i:s] ').$text."\n" : "\n"));
+	}
+
+	//clean method - truncates log file
+	public function clean() {
+		//if log file was oppened, truncate it
+		if ($this->handler !== false)
+			ftruncate($this->handler, 0);
+	}
+
+}

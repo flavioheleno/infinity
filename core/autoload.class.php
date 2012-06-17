@@ -22,58 +22,58 @@
 *
 */
 
-	spl_autoload_register('AUTOLOAD::load_core');
-	require_once __DIR__.'/path.class.php';
+spl_autoload_register('AUTOLOAD::load_core');
+require __DIR__.'/path.class.php';
 
-	class AUTOLOAD {
+class AUTOLOAD {
 
-		public static function load_core($name) {
-			$path = PATH::singleton();
-			$file = $path->absolute('core').strtolower($name).'.class.php';
-			if ((file_exists($file)) && (is_file($file)))
-				require_once $file;
-		}
-
-		public static function load_plugin($name) {
-			$path = PATH::singleton();
-			$name = strtolower($name);
-			$file = $path->absolute('plugin').$name.'.class.php';
-			if ((file_exists($file)) && (is_file($file)))
-				require_once $file;
-		}
-
-		public static function load_controller($name) {
-			$path = PATH::singleton();
-			$file = $path->absolute('app').strtolower($name).'.controller.php';
-			if ((file_exists($file)) && (is_file($file))) {
-				require_once $file;
-				$name = strtoupper($name).'_CONTROLLER';
-				return new $name;
-			}
-			require_once $path->absolute('core').'/controller.class.php';
-			return new CONTROLLER(strtolower($name));
-		}
-
-		public static function load_view($name) {
-			$path = PATH::singleton();
-			$file = $path->absolute('app').strtolower($name).'.view.php';
-			if ((file_exists($file)) && (is_file($file))) {
-				require_once $file;
-				$name = strtoupper($name).'_VIEW';
-				return new $name;
-			}
-			return null;
-		}
-
-		public static function load_model($name) {
-			$path = PATH::singleton();
-			$file = $path->absolute('app').strtolower($name).'.model.php';
-			if ((file_exists($file)) && (is_file($file))) {
-				require_once $file;
-				$name = strtoupper($name).'_MODEL';
-				return new $name;
-			}
-			return null;
-		}
-
+	public static function load_core($name) {
+		$path = PATH::singleton();
+		$file = $path->absolute('core').strtolower($name).'.class.php';
+		if ((file_exists($file)) && (is_file($file)))
+			require $file;
 	}
+
+	public static function load_plugin($name) {
+		$path = PATH::singleton();
+		$name = strtolower($name);
+		$file = $path->absolute('plugin').$name.'.class.php';
+		if ((file_exists($file)) && (is_file($file)))
+			require_once $file;
+	}
+
+	public static function load_controller($name) {
+		$path = PATH::singleton();
+		$file = $path->absolute('app').strtolower($name).'.controller.php';
+		if ((file_exists($file)) && (is_file($file))) {
+			require $file;
+			$name = strtoupper($name).'_CONTROLLER';
+			return new $name;
+		}
+		require $path->absolute('core').'/controller.class.php';
+		return new CONTROLLER(strtolower($name));
+	}
+
+	public static function load_view($name) {
+		$path = PATH::singleton();
+		$file = $path->absolute('app').strtolower($name).'.view.php';
+		if ((file_exists($file)) && (is_file($file))) {
+			require $file;
+			$name = strtoupper($name).'_VIEW';
+			return new $name;
+		}
+		return null;
+	}
+
+	public static function load_model($name) {
+		$path = PATH::singleton();
+		$file = $path->absolute('app').strtolower($name).'.model.php';
+		if ((file_exists($file)) && (is_file($file))) {
+			require $file;
+			$name = strtoupper($name).'_MODEL';
+			return new $name;
+		}
+		return null;
+	}
+
+}

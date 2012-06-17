@@ -22,62 +22,62 @@
 *
 */
 
-	class PATH {
-		private static $instance = null;
-		//stores base path
-		private $path = null;
-		//stores all relative paths
-		private $location = array(
-			'app' => '/app/',
-			'cache' => '/cache/',
-			'cfg' => array(
-				'app' => '/cfg/app/',
-				'core' => '/cfg/core/',
-				'form' => '/cfg/form/'
-			),
-			'core' => '/core/',
-			'css' => '/css/',
-			'img' => '/img/',
-			'js' => '/js/',
-			'log' => '/log/',
-			'mail' => '/mail/',
-			'plugin' => '/plugin/',
-			'template' => array(
-				'root' => '/tpl/',
-				'cache' => '/tpl/cache/'
-			),
-			'root' => '/',
-			'worker' => '/worker/'
-		);
+class PATH {
+	private static $instance = null;
+	//stores base path
+	private $path = null;
+	//stores all relative paths
+	private $location = array(
+		'app' => '/app/',
+		'cache' => '/cache/',
+		'cfg' => array(
+			'app' => '/cfg/app/',
+			'core' => '/cfg/core/',
+			'form' => '/cfg/form/'
+		),
+		'core' => '/core/',
+		'css' => '/css/',
+		'img' => '/img/',
+		'js' => '/js/',
+		'log' => '/log/',
+		'mail' => '/mail/',
+		'plugin' => '/plugin/',
+		'template' => array(
+			'root' => '/tpl/',
+			'cache' => '/tpl/cache/'
+		),
+		'root' => '/',
+		'worker' => '/worker/'
+	);
 
-		public function __construct() {
-			$this->path = realpath(__DIR__.'/../');
-		}
-
-		public function relative($parent, $child = false) {
-			$parent = strtolower($parent);
-			if ($child === false) {
-				if (isset($this->location[$parent]))
-					return $this->location[$parent];
-			} else {
-				$child = strtolower($child);
-				if (isset($this->location[$parent][$child]))
-					return $this->location[$parent][$child];
-			}
-			return false;
-		}
-
-		public function absolute($parent, $child = false) {
-			$path = $this->relative($parent, $child);
-			if ($path === false)
-				return false;
-			return $this->path.$path;
-		}
-
-		public static function singleton() {
-			if ((is_null(self::$instance)) || (!(self::$instance instanceof PATH)))
-				self::$instance = new PATH;
-			return self::$instance;
-		}
-
+	public function __construct() {
+		$this->path = realpath(__DIR__.'/../');
 	}
+
+	public function relative($parent, $child = false) {
+		$parent = strtolower($parent);
+		if ($child === false) {
+			if (isset($this->location[$parent]))
+				return $this->location[$parent];
+		} else {
+			$child = strtolower($child);
+			if (isset($this->location[$parent][$child]))
+				return $this->location[$parent][$child];
+		}
+		return false;
+	}
+
+	public function absolute($parent, $child = false) {
+		$path = $this->relative($parent, $child);
+		if ($path === false)
+			return false;
+		return $this->path.$path;
+	}
+
+	public static function singleton() {
+		if ((is_null(self::$instance)) || (!(self::$instance instanceof PATH)))
+			self::$instance = new PATH;
+		return self::$instance;
+	}
+
+}

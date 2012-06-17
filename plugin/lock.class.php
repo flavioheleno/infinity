@@ -22,29 +22,29 @@
 *
 */
 
-	class LOCK {
-		private $handler = null;
+class LOCK {
+	private $handler = null;
 
-		public function __construct($name) {
-			$this->handler = fopen(sys_get_temp_dir().'/'.$name.'.lock', 'w');
-		}
-
-		public function __destruct() {
-			if ($this->handler)
-				fclose($this->handler);
-		}
-
-		public function lock($block = false) {
-			if (!$this->handler)
-				return false;
-			if ($block)
-				return flock($this->handler, LOCK_EX);
-			return flock($this->handler, LOCK_EX | LOCK_NB);
-		}
-
-		public function unlock() {
-			if ($this->handler)
-				flock($this->handler, LOCK_UN);
-		}
-
+	public function __construct($name) {
+		$this->handler = fopen(sys_get_temp_dir().'/'.$name.'.lock', 'w');
 	}
+
+	public function __destruct() {
+		if ($this->handler)
+			fclose($this->handler);
+	}
+
+	public function lock($block = false) {
+		if (!$this->handler)
+			return false;
+		if ($block)
+			return flock($this->handler, LOCK_EX);
+		return flock($this->handler, LOCK_EX | LOCK_NB);
+	}
+
+	public function unlock() {
+		if ($this->handler)
+			flock($this->handler, LOCK_UN);
+	}
+
+}

@@ -22,19 +22,19 @@
 *
 */
 
-	/*
-		Rewrite example
-		$_infinity = array(
-			'/^([a-zA-Z0-9]+)$/' => array('GET', 'url/redirect/$1', 'error/403', true)
-		);
-
-		Rules can be:
-			'regex' => 'rewrite'
-		or
-			'regex' => array('method', 'rewrite on success', 'rewrite on error')
-		or
-			'regex' => array('method', 'rewrite on success', 'redirect on error', true)
-	*/
-
+/*
+	Rewrite example
 	$_infinity = array(
+		'/^([a-zA-Z0-9]+)$/' => array('GET', 'url/redirect/$1', 'error/403', true)
 	);
+
+	Rules can be:
+		'regex' => 'rewrite'
+	or
+		'regex' => array('method', 'rewrite on success', 'rewrite on error')
+	or
+		'regex' => array('method', 'rewrite on success', 'redirect on error', true)
+*/
+
+$_infinity = array(
+);

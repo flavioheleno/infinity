@@ -22,30 +22,30 @@
 *
 */
 
-	class QUEUE {
-		private $beanstalk = null;
+class QUEUE {
+	private $beanstalk = null;
 
-		public function __construct() {
-			$this->beanstalk = new Beanstalk;
-			$this->beanstalk->addserver('localhost', 11300, 1);
-		}
-
-		public function put($queue, $workload, $raw = false) {
-			$this->beanstalk->use($queue);
-			if ($raw)
-				return $this->beanstalk->put($queue, $workload);
-			return $this->beanstalk->put($queue, serialize($workload));
-		}
-
-		public function get($queue, $raw = false) {
-			$this->beanstalk->watch($queue);
-			$job = $this->beanstalk->reserve($queue);
-			if (!isset($job['id']))
-				return false;
-			$this->beanstalk->delete($job['id'], $queue);
-			if ($raw)
-				return $job['data'];
-			return unserialize($job['data']);
-		}
-
+	public function __construct() {
+		$this->beanstalk = new Beanstalk;
+		$this->beanstalk->addserver('localhost', 11300, 1);
 	}
+
+	public function put($queue, $workload, $raw = false) {
+		$this->beanstalk->use($queue);
+		if ($raw)
+			return $this->beanstalk->put($queue, $workload);
+		return $this->beanstalk->put($queue, serialize($workload));
+	}
+
+	public function get($queue, $raw = false) {
+		$this->beanstalk->watch($queue);
+		$job = $this->beanstalk->reserve($queue);
+		if (!isset($job['id']))
+			return false;
+		$this->beanstalk->delete($job['id'], $queue);
+		if ($raw)
+			return $job['data'];
+		return unserialize($job['data']);
+	}
+
+}

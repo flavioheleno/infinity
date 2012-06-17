@@ -22,39 +22,39 @@
 *
 */
 
-	define('PACK_APP', 'tar');
-	define('PACK_PAR', '-pjc --exclude-vcs --exclude-backups -f');
-	define('PACK_FNA', 'infinity_current');
-	define('PACK_EXT', '.tar.bz2');
-	define('PACK_CNT', 'cfg/ core/ css/ img/ js/ plugin/ index.php readme.txt setup.php worker.php');
+define('PACK_APP', 'tar');
+define('PACK_PAR', '-pjc --exclude-vcs --exclude-backups -f');
+define('PACK_FNA', 'infinity_current');
+define('PACK_EXT', '.tar.bz2');
+define('PACK_CNT', 'cfg/ core/ css/ img/ js/ plugin/ index.php readme.txt setup.php worker.php');
 
-	function display_help() {
-		echo 'Usage:'."\n";
-		echo "\t".'php -f '.__FILE__.' [filename]'."\n";
-	}
+function display_help() {
+	echo 'Usage:'."\n";
+	echo "\t".'php -f '.__FILE__.' [filename]'."\n";
+}
 
-	function info($text) {
-		echo ' * '.$text."\n";
-	}
+function info($text) {
+	echo ' * '.$text."\n";
+}
 
-	function abort($text) {
-		echo ' ! '.$text."\n";
+function abort($text) {
+	echo ' ! '.$text."\n";
+	exit;
+}
+
+echo 'INFINITY FRAMEWORK - Packer'."\n\n";
+
+$fn = PACK_FNA.PACK_EXT;
+if ($argc == 2) {
+	if (in_array($argv[1], array('help', '?'))) {
+		display_help();
 		exit;
-	}
+	} else
+		$fn = $argv[1].PACK_EXT;
+}
 
-	echo 'INFINITY FRAMEWORK - Packer'."\n\n";
-
-	$fn = PACK_FNA.PACK_EXT;
-	if ($argc == 2) {
-		if (in_array($argv[1], array('help', '?'))) {
-			display_help();
-			exit;
-		} else
-			$fn = $argv[1].PACK_EXT;
-	}
-
-	$ret = exec(PACK_APP.' '.PACK_PAR.' '.$fn.' '.PACK_CNT);
-	if ($ret == '')
-		info('Package created ('.$fn.')');
-	else
-		abort($ret);
+$ret = exec(PACK_APP.' '.PACK_PAR.' '.$fn.' '.PACK_CNT);
+if ($ret == '')
+	info('Package created ('.$fn.')');
+else
+	abort($ret);

@@ -22,80 +22,80 @@
 *
 */
 
-	class FILECACHE {
-		private static $instance = null;
-		private $path = null;
-		private $control = array();
+class FILECACHE {
+	private static $instance = null;
+	private $path = null;
+	private $control = array();
 
-		public function __construct() {
-			//path controller
-			$path = PATH::singleton();
-			$this->path = $path->absolute('cache');
-			//ensure that cache dir exists and has the right permissions
-			if (!file_exists($this->path)) {
-				@mkdir($this->path);
-				@chmod($this->path, 777);
-			}
-			//if cache control is found, loads it, else, cleans cache dir
-			$file = $this->path.'cache.control';
-			if ((file_exists($file)) && (is_file($file)))
-				$this->control = unserialize(file_get_contents($file));
-			else
-				$this->flush();
+	public function __construct() {
+		//path controller
+		$path = PATH::singleton();
+		$this->path = $path->absolute('cache');
+		//ensure that cache dir exists and has the right permissions
+		if (!file_exists($this->path)) {
+			@mkdir($this->path);
+			@chmod($this->path, 777);
 		}
+		//if cache control is found, loads it, else, cleans cache dir
+		$file = $this->path.'cache.control';
+		if ((file_exists($file)) && (is_file($file)))
+			$this->control = unserialize(file_get_contents($file));
+		else
+			$this->flush();
+	}
 
-		public function __destruct() {
-			//saves cache control
-			file_put_contents($this->path.'cache.control', serialize($this->control));
-		}
+	public function __destruct() {
+		//saves cache control
+		file_put_contents($this->path.'cache.control', serialize($this->control));
+	}
 
-		public static function singleton() {
-			if ((is_null(self::$instance)) || (!(self::$instance instanceof FILECACHE)))
-				self::$instance = new FILECACHE;
-			return self::$instance;
-		}
+	public static function singleton() {
+		if ((is_null(self::$instance)) || (!(self::$instance instanceof FILECACHE)))
+			self::$instance = new FILECACHE;
+		return self::$instance;
+	}
 
-		public function flush() {
-			if (file_exists($this->path)) {
-				$ids = scandir($this->path);
-				foreach ($ids as $id)
-					if (preg_match('/\.(control|cache)$/i', $id))
-						@unlink($this->path.$id);
-			}
-		}
-
-		public function extended_set($index, $value, $ttl) {
-			$this->control[$index] = (time() + $ttl);
-			file_put_contents($this->path.$index.'.cache', serialize($value));
-		}
-
-		public function __set($index, $value) {
-			$this->extended_set($index, $value, 3600);
-		}
-
-		public function __get($index) {
-			$file = $this->path.$index.'.cache';
-			if ((file_exists($file)) && (is_file($file))) {
-				if ((isset($this->control[$index])) && ($this->control[$index] > time()))
-					return unserialize(file_get_contents($file));
-			}
-			return '';
-		}
-
-		public function __isset($index) {
-			$file = $this->path.$index.'.cache';
-			if ((file_exists($file)) && (is_file($file))) {
-				if ((isset($this->control[$index])) && ($this->control[$index] > time()))
-					return true;
-			}
-			return false;
-		}
-
-		public function __unset($index) {
-			if (isset($this->control[$index]))
-				unset($this->control[$index]);
-			$file = $this->path.$index.'.cache';
-			if ((file_exists($file)) && (is_file($file)))
-				@unlink($file);
+	public function flush() {
+		if (file_exists($this->path)) {
+			$ids = scandir($this->path);
+			foreach ($ids as $id)
+				if (preg_match('/\.(control|cache)$/i', $id))
+					@unlink($this->path.$id);
 		}
 	}
+
+	public function extended_set($index, $value, $ttl) {
+		$this->control[$index] = (time() + $ttl);
+		file_put_contents($this->path.$index.'.cache', serialize($value));
+	}
+
+	public function __set($index, $value) {
+		$this->extended_set($index, $value, 3600);
+	}
+
+	public function __get($index) {
+		$file = $this->path.$index.'.cache';
+		if ((file_exists($file)) && (is_file($file))) {
+			if ((isset($this->control[$index])) && ($this->control[$index] > time()))
+				return unserialize(file_get_contents($file));
+		}
+		return '';
+	}
+
+	public function __isset($index) {
+		$file = $this->path.$index.'.cache';
+		if ((file_exists($file)) && (is_file($file))) {
+			if ((isset($this->control[$index])) && ($this->control[$index] > time()))
+				return true;
+		}
+		return false;
+	}
+
+	public function __unset($index) {
+		if (isset($this->control[$index]))
+			unset($this->control[$index]);
+		$file = $this->path.$index.'.cache';
+		if ((file_exists($file)) && (is_file($file)))
+			@unlink($file);
+	}
+}

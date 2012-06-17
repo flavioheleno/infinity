@@ -22,23 +22,23 @@
 *
 */
 
-	/*
-		Accounts example
-		'system' => array(
+/*
+	Accounts example
+	'system' => array(
+		'name' => '',
+		'user' => '',
+		'pass' => '',
+		'reply' => array(
 			'name' => '',
-			'user' => '',
-			'pass' => '',
-			'reply' => array(
-				'name' => '',
-				'mail' => ''
-			)
+			'mail' => ''
 		)
-	*/
+	)
+*/
 
-	$_infinity = array(
-		'host' => 'localhost',
-		'port' => 25,
-		'secure' => '',
-		'accs' => array(
-		)
-	);
+$_infinity = array(
+	'host' => 'localhost',
+	'port' => 25,
+	'secure' => '',
+	'accs' => array(
+	)
+);

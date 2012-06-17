@@ -22,29 +22,29 @@
 *
 */
 
-	abstract class MODEL {
+abstract class MODEL {
 
-		//lazy loading
-		public function __get($index) {
-			switch ($index) {
-				case 'query':
-					$config = CONFIGURATION::singleton();
-					$config->load_core('db');
-					$this->query = new QUERY($config->db);
-					$config->unload('db');
-					return $this->query;
-				case 'data':
-					$this->data = DATA::singleton();
-					return $this->data;
-				case 'log':
-					$this->log = LOG::singleton();
-					return $this->log;
-				case 'secure':
-					$this->secure = new SECURE;
-					return $this->secure;
-				default:
-					return null;
-			}
+	//lazy loading
+	public function __get($index) {
+		switch ($index) {
+			case 'query':
+				$config = CONFIGURATION::singleton();
+				$config->load_core('db');
+				$this->query = new QUERY($config->db);
+				$config->unload('db');
+				return $this->query;
+			case 'data':
+				$this->data = DATA::singleton();
+				return $this->data;
+			case 'log':
+				$this->log = LOG::singleton();
+				return $this->log;
+			case 'secure':
+				$this->secure = new SECURE;
+				return $this->secure;
+			default:
+				return null;
 		}
-
 	}
+
+}
