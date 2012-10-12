@@ -158,4 +158,4 @@ if (preg_match('/^[a-z_][a-z0-9_-]*$/i', $module)) {
 }
 $log->add('Can\'t find '.($module != '' ? $module : 'module').'->'.($action != '' ? $action : 'action').', showing 404 error');
 header('Status: 404 Not Found');
-echo '404 - Not Found'."\n";
+echo "404 - Not Found\n";

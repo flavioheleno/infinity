@@ -66,18 +66,19 @@ class REQUEST {
 
 	private static function parse_uri(&$config, &$module, &$action) {
 		$uri = trim($_SERVER['REQUEST_URI']);
+		$uri = substr($uri, strlen($config->framework['main']['base_path']));
 		self::parse_rewrite($config, $uri);
 		if (($uri == '/') || ($uri == '')) {
 			$module = $config->framework['main']['default_module'];
 			$action = '';
 		} else {
+			if (substr($uri, 0, 1) == '/')
+				$uri = substr($uri, 1);
 			if (strpos($uri, '/') === false) {
 				$module = $uri;
 				$action = '';
 			} else {
 				$config->load_core('route');
-				if (substr($uri, 0, 1) == '/')
-					$uri = substr($uri, 1);
 				$pieces = explode('/', $uri);
 				$module = $pieces[0];
 				$action = $pieces[1];

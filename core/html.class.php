@@ -88,11 +88,11 @@ class HTML {
 	}
 
 	public function add_js($file) {
-		if (!is_array($file))
-			$this->item_js($this->path->relative('js').$file);
-		else
+		if (is_array($file))
 			foreach ($file as $item)
 				$this->item_js($this->path->relative('js').$item);
+		else
+			$this->item_js($this->path->relative('js').$file);
 	}
 
 	public function clean_js() {
@@ -121,17 +121,30 @@ class HTML {
 		$this->add_js('bootstrap.js');
 	}
 
-	public function add_css($file) {
-		if (!is_array($file))
-			$this->css[] = $this->path->relative('css').$file;
+	public function external_css($url) {
+		if (is_array($url))
+			foreach ($url as $item)
+				$this->item_css($item);
 		else
+			$this->item_css($url);
+	}
+
+	public function add_css($file) {
+		if (is_array($file))
 			foreach ($file as $item)
-				$this->css[] = $this->path->relative('css').$item;
+				$this->item_css($this->path->relative('css').$item);
+		else
+			$this->item_css($this->path->relative('css').$file);
 	}
 
 	public function clean_css() {
 		unset($this->css);
 		$this->css = array();
+	}
+
+	private function item_css($file) {
+		if (!in_array($file, $this->css))
+			$this->css[] = $file;
 	}
 
 	public function prepend_content($content) {
@@ -200,7 +213,7 @@ class HTML {
 		foreach ($this->css as $item)
 			$bfr .= '		<link rel="stylesheet" type="text/css" href="'.$item.'" />'."\n";
 		$bfr .= '		<!--[if lt IE 9]>'."\n";
-		$bfr .= '		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>'."\n";
+		$bfr .= '		<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>'."\n";
 		$bfr .= '		<![endif]-->'."\n";
 		$this->js = array_unique($this->js);
 		foreach ($this->js as $item)

@@ -28,30 +28,30 @@ class PATH {
 	private $path = null;
 	//stores all relative paths
 	private $location = array(
-		'app' => '/app/',
-		'cache' => '/cache/',
+		'app' => 'app/',
+		'cache' => 'cache/',
 		'cfg' => array(
-			'app' => '/cfg/app/',
-			'core' => '/cfg/core/',
-			'form' => '/cfg/form/'
+			'app' => 'cfg/app/',
+			'core' => 'cfg/core/',
+			'form' => 'cfg/form/'
 		),
-		'core' => '/core/',
-		'css' => '/css/',
-		'img' => '/img/',
-		'js' => '/js/',
-		'log' => '/log/',
-		'mail' => '/mail/',
-		'plugin' => '/plugin/',
+		'core' => 'core/',
+		'css' => 'css/',
+		'img' => 'img/',
+		'js' => 'js/',
+		'log' => 'log/',
+		'mail' => 'mail/',
+		'plugin' => 'plugin/',
 		'template' => array(
-			'root' => '/tpl/',
-			'cache' => '/tpl/cache/'
+			'root' => 'tpl/',
+			'cache' => 'tpl/cache/'
 		),
-		'root' => '/',
-		'worker' => '/worker/'
+		'root' => '',
+		'worker' => 'worker/'
 	);
 
 	public function __construct() {
-		$this->path = realpath(__DIR__.'/../');
+		$this->path = __DIR__.'/../';
 	}
 
 	public function relative($parent, $child = false) {
@@ -71,7 +71,7 @@ class PATH {
 		$path = $this->relative($parent, $child);
 		if ($path === false)
 			return false;
-		return $this->path.$path;
+		return realpath($this->path.$path).'/';
 	}
 
 	public static function singleton() {

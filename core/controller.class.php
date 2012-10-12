@@ -57,7 +57,7 @@ class CONTROLLER {
 	//creates a 302 HTTP redirect
 	protected function redirect($url = '') {
 		$this->log->add('Redirecting to '.$url);
-		if (($url != '') && (strtolower(substr($url, 0, 7)) == 'http://'))
+		if (($url != '') && (preg_match('/^https?:\/\//', $url)))
 			header('Location: '.$url);
 		else {
 			if ((substr($this->path, -1) == '/') && (substr($url, 0, 1) == '/'))
@@ -104,9 +104,21 @@ class CONTROLLER {
 		return false;
 	}
 
+	//checks if request is made via https
+	protected function is_secure() {
+		if ((isset($_SERVER['HTTPS'])) && ($_SERVER['HTTPS'] == 'on'))
+			return true;
+		return false;
+	}
+
+	//redirects the request to https scheme
+	protected function make_secure() {
+		$this->redirect("https://{$this->domain}{$_SERVER['REQUEST_URI']}");
+	}
+
 	//checks if request comes from expected referer
 	protected function check_referer() {
-		if ((isset($_SERVER['HTTP_REFERER'])) && (!preg_match('/^http:\/\/'.$this->domain.'/', $_SERVER['HTTP_REFERER'])))
+		if ((isset($_SERVER['HTTP_REFERER'])) && (!preg_match('/^https?:\/\/'.quotemeta($this->domain).'/', $_SERVER['HTTP_REFERER'])))
 			return false;
 		return true;
 	}

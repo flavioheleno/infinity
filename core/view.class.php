@@ -77,7 +77,7 @@ abstract class VIEW {
 			case 'html':
 				$this->html = new HTML;
 				$config = CONFIGURATION::singleton();
-				$this->html->set_base('http://'.$config->framework['main']['domain'].$config->framework['main']['base_path']);
+				$this->html->set_base("//{$config->framework['main']['domain']}{$config->framework['main']['base_path']}");
 				$path = PATH::singleton();
 				if ((file_exists($path->absolute('img').'favicon.ico')) && (is_file($path->absolute('img').'favicon.ico')))
 					$this->html->set_favicon('img/favicon.ico');
