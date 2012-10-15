@@ -127,10 +127,12 @@ class CONTROLLER {
 	protected function dispatch($exit = false) {
 		if (!is_null($this->response))
 			if (is_array($this->response)) {
-				header('Content-Type: application/json');
+				header('Content-Type: application/json; charset=UTF-8');
 				echo json_encode($this->response);
-			} else
+			} else {
+				header('Content-Type: text/html; charset=UTF-8');
 				echo $this->response;
+			}
 		if ($exit)
 			exit;
 	}
