@@ -37,6 +37,15 @@ if ($argc == 2) {
 
 require_once __DIR__.'/core/autoload.class.php';
 
+//creates config object
+$config = CONFIGURATION::singleton();
+
+if ($config->framework['main']['include_path'] != '')
+	set_include_path($config->framework['main']['include_path']);
+
+if ($config->framework['main']['timezone'] != '')
+	date_default_timezone_set($config->framework['main']['timezone']);
+
 $path = PATH::singleton();
 $worker = $path->absolute('worker').$argv[1].'.worker.php';
 if ((file_exists($worker)) && (is_file($worker))) {
@@ -46,7 +55,7 @@ if ((file_exists($worker)) && (is_file($worker))) {
 		case 'start':
 			if (!$lock->lock())
 				exit;
-			echo 'worker started'."\n";
+			echo 'worker started ('.date('d/m/Y H:i:s').')'."\n";
 			$pid = getmypid();
 			echo 'worker pid: '.$pid."\n";
 			$pidf = sys_get_temp_dir().'/'.$argv[1].'.pid';
